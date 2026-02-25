@@ -30,30 +30,6 @@ export const AppColors = {
   },
 } as const;
 
-/**
- * Export de compatibilidade para componentes de template do Expo.
- * Usado por `components/ui/` e `hooks/use-theme-color.ts` — NÃO remover.
- * O app principal usa AppColors diretamente; não adicionar lógica de dark mode aqui.
- */
-export const Colors = {
-  light: {
-    text: AppColors.dark,
-    background: AppColors.white,
-    tint: AppColors.primary,
-    icon: AppColors.muted,
-    tabIconDefault: AppColors.muted,
-    tabIconSelected: AppColors.primary,
-  },
-  dark: {
-    text: '#ECEDEE',
-    background: '#151718',
-    tint: AppColors.white,
-    icon: '#9BA1A6',
-    tabIconDefault: '#9BA1A6',
-    tabIconSelected: AppColors.white,
-  },
-};
-
 /** Tema para o componente Calendar do react-native-calendars */
 export const calendarTheme = {
   todayTextColor: AppColors.accent,
