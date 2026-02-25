@@ -5,10 +5,10 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## Commands
 
 ```bash
-# Start dev server (requires Android Studio emulator running)
+# Start dev server via Expo Go (does NOT support notifications since SDK 53 — use npm run android instead)
 npm start
 
-# Run on Android emulator
+# Build and run native development APK on emulator (required for notifications)
 npm run android
 
 # Type-check without emitting
@@ -58,6 +58,8 @@ app/Aproveitamento.tsx        ← consumes useAproveitamento()
 
 `services/notifications.ts` wraps `expo-notifications`. Called only from `RemindersContext` (never from components). `scheduleReminderNotification` returns `null` if permission is denied, the trigger date is in the past, the parsed date is invalid (`isNaN`), or if the OS scheduling call fails.
 
+> **Important:** `expo-notifications` is not supported in Expo Go since SDK 53. To test notifications, always use `npm run android` (native development build), never `npm start`.
+
 ### Validation
 
 `utils/validation.ts` exports `validateReminder()` and `validateAproveitamento()`, both returning `{ valid: boolean; errors: Record<string, string> }`. Called in the component's save handler before any async operations. `validateReminder` also validates that `priority`, when present, is one of `'green' | 'yellow' | 'red'` — any other string value produces a `'Prioridade inválida'` error.
@@ -94,6 +96,36 @@ Defined in `tailwind.config.js` (Tailwind tokens) and `constants/theme.ts` (for 
 - **`react-native-reanimated` v4** is installed (breaking API vs v3). Use v4 API only.
 - **React Compiler is enabled** (`"reactCompiler": true` in `app.json`). Do not add manual `useMemo` / `useCallback`.
 - **New Architecture is enabled** (`"newArchEnabled": true`).
+
+## Android Build — Manual Configurations
+
+These are NOT handled automatically by Expo autolinking or prebuild. Do not remove them.
+
+### `android/local.properties` (not committed — create per machine)
+This file is in `.gitignore`. Must be created manually on each machine:
+```
+sdk.dir=C\:\\Users\\<your-user>\\AppData\\Local\\Android\\Sdk
+```
+
+### `android/gradle.properties` — Android Studio JDK
+If the system `JAVA_HOME` does not point to a JDK (e.g. only a JRE is installed), add:
+```
+org.gradle.java.home=C:\\Program Files\\Android\\Android Studio\\jbr
+```
+Already configured in this repository. Adjust the path if Android Studio is installed elsewhere.
+
+### `expo-splash-screen` — Not autolinked (manual AAR)
+`expo-splash-screen ~31.0.10` has no `android/` folder, so Expo autolinking ignores it entirely. The following were added **manually** and must not be removed:
+
+- **`android/build.gradle`** (`allprojects.repositories`):
+  ```groovy
+  maven { url "$rootDir/../node_modules/expo-splash-screen/local-maven-repo" }
+  ```
+- **`android/app/build.gradle`** (`dependencies`):
+  ```groovy
+  implementation("androidx.core:core-splashscreen:1.0.1")
+  implementation("host.exp.exponent:expo.modules.splashscreen:31.0.10")
+  ```
 
 ## Jest Configuration Notes
 

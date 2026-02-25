@@ -28,7 +28,14 @@
     },
     "plugins": [
       "expo-router",
-      "expo-notifications",
+      [
+        "expo-notifications",
+        {
+          "icon": "./assets/images/android-icon-monochrome.png",
+          "color": "#3A0CA3",
+          "defaultChannel": "default"
+        }
+      ],
       [
         "expo-splash-screen",
         {
