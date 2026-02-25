@@ -1,53 +1,65 @@
 /**
- * Below are the colors that are used in the app. The colors are defined in the light and dark mode.
- * There are many other ways to style your app. For example, [Nativewind](https://www.nativewind.dev/), [Tamagui](https://tamagui.dev/), [unistyles](https://reactnativeunistyles.vercel.app), etc.
+ * Paleta de cores do Repertório Progressivo.
+ *
+ * Use as classes Tailwind (`brand-*`, `priority-*`) nos componentes React Native.
+ * Use `AppColors` apenas para props que não aceitam classes Tailwind
+ * (ex: `theme` do react-native-calendars, `style` inline, `color` de ícones).
  */
 
-import { Platform } from 'react-native';
+export const AppColors = {
+  /** Roxo escuro — títulos, estados ativos */
+  primary: '#3A0CA3',
+  /** Roxo médio — botões, elementos selecionados */
+  accent: '#6C2DC7',
+  /** Off-white — fundo das telas */
+  background: '#F7F6FB',
+  /** Amarelo claro — fundo de barras de progresso */
+  yellow: '#FFF3B0',
+  /** Cinza claro — bordas de cards e inputs */
+  border: '#E0E0E0',
+  /** Cinza médio — texto secundário, placeholders */
+  muted: '#5C5C5C',
+  /** Quase-preto — texto primário */
+  dark: '#1E1E1E',
+  white: '#FFFFFF',
 
-const tintColorLight = '#0a7ea4';
-const tintColorDark = '#fff';
+  priority: {
+    green: '#4ADE80',
+    yellow: '#F5C518',
+    red: '#E11D48',
+  },
+} as const;
 
+/**
+ * Export de compatibilidade para componentes de template do Expo.
+ * Usado por `components/ui/` e `hooks/use-theme-color.ts` — NÃO remover.
+ * O app principal usa AppColors diretamente; não adicionar lógica de dark mode aqui.
+ */
 export const Colors = {
   light: {
-    text: '#11181C',
-    background: '#fff',
-    tint: tintColorLight,
-    icon: '#687076',
-    tabIconDefault: '#687076',
-    tabIconSelected: tintColorLight,
+    text: AppColors.dark,
+    background: AppColors.white,
+    tint: AppColors.primary,
+    icon: AppColors.muted,
+    tabIconDefault: AppColors.muted,
+    tabIconSelected: AppColors.primary,
   },
   dark: {
     text: '#ECEDEE',
     background: '#151718',
-    tint: tintColorDark,
+    tint: AppColors.white,
     icon: '#9BA1A6',
     tabIconDefault: '#9BA1A6',
-    tabIconSelected: tintColorDark,
+    tabIconSelected: AppColors.white,
   },
 };
 
-export const Fonts = Platform.select({
-  ios: {
-    /** iOS `UIFontDescriptorSystemDesignDefault` */
-    sans: 'system-ui',
-    /** iOS `UIFontDescriptorSystemDesignSerif` */
-    serif: 'ui-serif',
-    /** iOS `UIFontDescriptorSystemDesignRounded` */
-    rounded: 'ui-rounded',
-    /** iOS `UIFontDescriptorSystemDesignMonospaced` */
-    mono: 'ui-monospace',
-  },
-  default: {
-    sans: 'normal',
-    serif: 'serif',
-    rounded: 'normal',
-    mono: 'monospace',
-  },
-  web: {
-    sans: "system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif",
-    serif: "Georgia, 'Times New Roman', serif",
-    rounded: "'SF Pro Rounded', 'Hiragino Maru Gothic ProN', Meiryo, 'MS PGothic', sans-serif",
-    mono: "SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace",
-  },
-});
+/** Tema para o componente Calendar do react-native-calendars */
+export const calendarTheme = {
+  todayTextColor: AppColors.accent,
+  arrowColor: AppColors.primary,
+  monthTextColor: AppColors.primary,
+  textDayFontSize: 16,
+  textMonthFontSize: 18,
+  textDayHeaderFontSize: 13,
+};
