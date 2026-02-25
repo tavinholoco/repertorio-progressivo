@@ -201,6 +201,11 @@ Already configured in this repository. Adjust the path if Android Studio is inst
   implementation("host.exp.exponent:expo.modules.splashscreen:31.0.10")
   ```
 
+## TypeScript / VS Code Notes
+
+- **`tsconfig.json`** has an explicit `"exclude": ["node_modules"]`. This is intentional: `expo/tsconfig.base` excludes node_modules using `${configDir}/node_modules` (a TypeScript 5.5+ interpolation), but VS Code's internal TS server may not resolve `${configDir}` correctly, causing red errors to appear in the `node_modules` folder. The explicit exclude using the simple form fixes it without affecting `tsc` or Jest.
+- **`app.json`** shows a yellow warning on `"reactCompiler": true` inside `"experiments"`. This is a VS Code JSON schema false positive — the Expo SchemaStore entry hasn't been updated to include that key yet. The config is valid and the React Compiler is active.
+
 ## Jest Configuration Notes
 
 The project uses `jest-expo` preset with Expo SDK 54 + New Architecture. The `expo/src/winter` runtime installs lazy getters on `global` during `setupFiles`. These getters capture the setup context's `require` and fail when triggered from within a test's module scope.
