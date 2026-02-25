@@ -32,7 +32,7 @@ type Action =
   | { type: 'UPDATE'; payload: Reminder }
   | { type: 'DELETE'; payload: string };
 
-function reducer(state: State, action: Action): State {
+export function reducer(state: State, action: Action): State {
   switch (action.type) {
     case 'LOAD_START':
       return { ...state, isLoading: true, error: null };

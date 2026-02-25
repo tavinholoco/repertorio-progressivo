@@ -29,12 +29,19 @@ npm run lint
 
 Use `npx expo install <package>` (not `npm install`) when adding new dependencies — Expo pins versions validated against SDK 54.
 
+## Branch Strategy
+
+- **`master`** — stable releases only. Never commit work-in-progress here.
+- **`dev`** — active development. All new features and fixes go here first.
+
+Workflow: code on `dev` → test → merge to `master` when stable.
+
 ## Architecture
 
 **Expo Router (file-based routing)** — routes are defined by files in `app/`:
-- [app/_layout.tsx](app/_layout.tsx) — root layout with floating bottom tab navigator + wraps the entire tree with both Context providers
+- [app/_layout.tsx](app/_layout.tsx) — root layout: `ErrorBoundary` → `RemindersProvider` → `AproveitamentoProvider` → `Tabs`
 - [app/index.tsx](app/index.tsx) — Agenda tab (thin wrapper, delegates to `components/AgendaScreen`)
-- [app/Aproveitamento.tsx](app/Aproveitamento.tsx) — Aproveitamento tab (self-contained)
+- [app/Aproveitamento.tsx](app/Aproveitamento.tsx) — Aproveitamento tab (presentational only, logic in `useAproveitamentoForm`)
 
 The Agenda screen lives in `components/AgendaScreen.tsx` (not in `app/`) so it can be unit-tested independently from the router.
 
@@ -43,16 +50,79 @@ The Agenda screen lives in `components/AgendaScreen.tsx` (not in `app/`) so it c
 ```
 AsyncStorage (disk)
       ↕
-services/storage.ts        ← sole owner of AsyncStorage calls
+services/storage.ts           ← sole owner of AsyncStorage calls
       ↕
-context/RemindersContext.tsx      ← global state (useReducer)
-context/AproveitamentoContext.tsx ← global state (useReducer)
+context/RemindersContext.tsx      ← global state (useReducer, reducer exported for testing)
+context/AproveitamentoContext.tsx ← global state (useReducer, reducer exported for testing)
       ↕
-components/AgendaScreen.tsx   ← consumes useReminders()
-app/Aproveitamento.tsx        ← consumes useAproveitamento()
+hooks/useAgendaForm.ts        ← all form logic for Agenda (calls useReminders internally)
+hooks/useAproveitamentoForm.ts← all form logic for Aproveitamento (calls useAproveitamento internally)
+      ↕
+components/AgendaScreen.tsx   ← presentational, consumes useAgendaForm()
+app/Aproveitamento.tsx        ← presentational, consumes useAproveitamentoForm()
 ```
 
 **Rule:** No component ever calls `AsyncStorage` directly. All reads/writes go through `services/storage.ts`. No component uses `useContext(RemindersContext)` directly — always use the `useReminders()` / `useAproveitamento()` hooks.
+
+### Folder Structure
+
+```
+app/              ← Expo Router routes (_layout, index, Aproveitamento)
+components/       ← UI components + ErrorBoundary (index.ts barrel)
+  AgendaScreen.tsx, ReminderItem, PriorityPicker
+  RecordItem, ProgressDonut, DayGrid, MonthGrid
+  ErrorBoundary.tsx
+hooks/            ← Custom hooks (index.ts barrel)
+  useAgendaForm.ts, useAproveitamentoForm.ts
+services/         ← Service layer (index.ts barrel)
+  storage.ts, notifications.ts
+utils/            ← Pure functions (index.ts barrel)
+  dateHelpers.ts, validation.ts
+context/          ← Global state providers
+  RemindersContext.tsx, AproveitamentoContext.tsx
+constants/        ← Theme tokens (index.ts barrel)
+  theme.ts
+types/            ← Shared TypeScript interfaces
+  index.ts
+__tests__/        ← Jest test suites
+  utils/dateHelpers.test.ts
+  context/remindersReducer.test.ts
+  context/aproveitamentoReducer.test.ts
+  services/storage.test.ts
+  services/notifications.test.ts
+  utils/validation.test.ts
+```
+
+### Barrel Exports
+
+Each directory has an `index.ts` that re-exports all public symbols. Prefer barrel imports:
+```ts
+import { ReminderItem, DayGrid } from '@/components';
+import { useAgendaForm } from '@/hooks';
+import { AppColors } from '@/constants';
+import { toDateString, validateReminder } from '@/utils';
+```
+
+### Sub-components
+
+| Component | Props | Used in |
+|-----------|-------|---------|
+| `ReminderItem` | `reminder, onEdit, onDelete` | AgendaScreen |
+| `PriorityPicker` | `selectedColor, onSelect, error` | AgendaScreen |
+| `RecordItem` | `record, onEdit, onDelete` | Aproveitamento |
+| `ProgressDonut` | `percentage` | Aproveitamento |
+| `DayGrid` | `days: boolean[], onToggle` | Aproveitamento |
+| `MonthGrid` | `months: MonthRecord[], onAdjust` | Aproveitamento |
+| `ErrorBoundary` | `children` | _layout (wraps entire tree) |
+
+### Custom Hooks
+
+- `useAgendaForm()` — all state and logic for the Agenda form. Exports form fields, `handleSave`, `resetForm`, `populateForm`, `markedDates`, and the `PRIORITY_COLORS`/`COLOR_TO_PRIORITY` maps.
+- `useAproveitamentoForm()` — all state and logic for Aproveitamento. Exports period navigation, `toggleDia`, `adjustMonth`, `handleSave`, computed `diasMarcados`, `percentualDias`, `cargaProgress`.
+
+### Pure Utils (`utils/dateHelpers.ts`)
+
+`toDateString`, `toTimeString`, `formatDisplayDate`, `formatDisplayTime`, `getDaysInMonth`, `buildAnnualMonths`, `currentPeriod`, `formatPeriodLabel`, `MONTH_NAMES`
 
 ### Notifications
 
@@ -60,9 +130,13 @@ app/Aproveitamento.tsx        ← consumes useAproveitamento()
 
 > **Important:** `expo-notifications` is not supported in Expo Go since SDK 53. To test notifications, always use `npm run android` (native development build), never `npm start`.
 
+### Error Boundary
+
+`components/ErrorBoundary.tsx` is a class component (required by React) that catches runtime errors in the entire tree. Mounted at the root in `_layout.tsx`. Shows a Portuguese-language error message with a "Tentar novamente" retry button.
+
 ### Validation
 
-`utils/validation.ts` exports `validateReminder()` and `validateAproveitamento()`, both returning `{ valid: boolean; errors: Record<string, string> }`. Called in the component's save handler before any async operations. `validateReminder` also validates that `priority`, when present, is one of `'green' | 'yellow' | 'red'` — any other string value produces a `'Prioridade inválida'` error.
+`utils/validation.ts` exports `validateReminder()` and `validateAproveitamento()`, both returning `{ valid: boolean; errors: Record<string, string> }`. Called in the hook's `handleSave` before any async operations. `validateReminder` also validates that `priority`, when present, is one of `'green' | 'yellow' | 'red'` — any other string value produces a `'Prioridade inválida'` error.
 
 ## Styling — NativeWind v2
 
@@ -127,6 +201,11 @@ Already configured in this repository. Adjust the path if Android Studio is inst
   implementation("host.exp.exponent:expo.modules.splashscreen:31.0.10")
   ```
 
+## TypeScript / VS Code Notes
+
+- **`tsconfig.json`** has an explicit `"exclude": ["node_modules"]`. This is intentional: `expo/tsconfig.base` excludes node_modules using `${configDir}/node_modules` (a TypeScript 5.5+ interpolation), but VS Code's internal TS server may not resolve `${configDir}` correctly, causing red errors to appear in the `node_modules` folder. The explicit exclude using the simple form fixes it without affecting `tsc` or Jest.
+- **`app.json`** shows a yellow warning on `"reactCompiler": true` inside `"experiments"`. This is a VS Code JSON schema false positive — the Expo SchemaStore entry hasn't been updated to include that key yet. The config is valid and the React Compiler is active.
+
 ## Jest Configuration Notes
 
 The project uses `jest-expo` preset with Expo SDK 54 + New Architecture. The `expo/src/winter` runtime installs lazy getters on `global` during `setupFiles`. These getters capture the setup context's `require` and fail when triggered from within a test's module scope.
@@ -134,6 +213,34 @@ The project uses `jest-expo` preset with Expo SDK 54 + New Architecture. The `ex
 **Fix is in `jest.setup.after.js` (`setupFilesAfterEnv`):** replaces the lazy getters for `structuredClone` and `__ExpoImportMetaRegistry` using `Object.defineProperty` without triggering them. The `@ungap/structured-clone` module (ESM-only) is also mapped to a CJS mock via `moduleNameMapper` in `package.json`.
 
 **Do not remove** `jest.setup.after.js` or the `moduleNameMapper` entry — tests will break.
+
+### Test Coverage (103 tests across 6 suites)
+
+| Suite | Tests | Notes |
+|-------|-------|-------|
+| `utils/validation.test.ts` | ~20 | Pure function, no mocks needed |
+| `utils/dateHelpers.test.ts` | ~30 | Pure function, no mocks needed |
+| `services/storage.test.ts` | ~12 | Uses AsyncStorage jest mock |
+| `services/notifications.test.ts` | 10 | Mocks `expo-notifications`; `Platform.OS` set via direct assignment (not `spyOn` — it's a plain property in RN Jest env) |
+| `context/remindersReducer.test.ts` | ~20 | Must mock `@react-native-async-storage/async-storage` and `@/services/storage` to avoid native module error when importing the context |
+| `context/aproveitamentoReducer.test.ts` | ~24 | Same pattern as remindersReducer |
+
+**Pattern for reducer tests** (mocks must be declared before imports):
+```ts
+jest.mock('@react-native-async-storage/async-storage', () =>
+  require('@react-native-async-storage/async-storage/jest/async-storage-mock'),
+);
+jest.mock('@/services/storage', () => ({ getReminders: jest.fn(), ... }));
+
+import { reducer } from '@/context/RemindersContext';
+```
+
+**Pattern for `Platform.OS` mock** (spyOn with `'get'` fails in RN Jest env):
+```ts
+const originalOS = Platform.OS;
+beforeEach(() => { (Platform as unknown as { OS: string }).OS = 'android'; });
+afterAll(() => { (Platform as unknown as { OS: string }).OS = originalOS; });
+```
 
 ## Types
 
