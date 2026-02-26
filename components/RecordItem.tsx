@@ -12,10 +12,25 @@ interface RecordItemProps {
 }
 
 export function RecordItem({ record, onEdit, onDelete }: RecordItemProps) {
-  const progress =
-    record.totalHours > 0
-      ? Math.min(record.completedHours / record.totalHours, 1)
-      : 0;
+  const progress = (() => {
+    if (record.periodType === 'mensal') {
+      const marked = record.monthlyDays.filter(Boolean).length;
+      return record.monthlyDays.length > 0 ? marked / record.monthlyDays.length : 0;
+    }
+    const totalDays = record.annualMonths.reduce((s, m) => s + m.totalDays, 0);
+    const doneDays = record.annualMonths.reduce((s, m) => s + m.completedDays, 0);
+    return totalDays > 0 ? doneDays / totalDays : 0;
+  })();
+
+  const progressLabel = (() => {
+    if (record.periodType === 'mensal') {
+      const marked = record.monthlyDays.filter(Boolean).length;
+      return `${marked}/${record.monthlyDays.length} dias`;
+    }
+    const doneDays = record.annualMonths.reduce((s, m) => s + m.completedDays, 0);
+    const totalDays = record.annualMonths.reduce((s, m) => s + m.totalDays, 0);
+    return `${doneDays}/${totalDays} dias`;
+  })();
 
   function handleDelete() {
     Alert.alert(
@@ -58,7 +73,7 @@ export function RecordItem({ record, onEdit, onDelete }: RecordItemProps) {
         />
       </View>
       <Text className="text-sm text-brand-muted mt-1">
-        {Math.round(progress * 100)}% ({record.completedHours}/{record.totalHours} h)
+        {Math.round(progress * 100)}% ({progressLabel})
       </Text>
     </View>
   );

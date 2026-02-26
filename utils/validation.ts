@@ -44,7 +44,6 @@ export function validateReminder(fields: ReminderFields): ValidationResult {
 interface AproveitamentoFields {
   eventName: string;
   totalHours: string;
-  completedHours: string;
 }
 
 export function validateAproveitamento(
@@ -59,15 +58,6 @@ export function validateAproveitamento(
   const total = Number(fields.totalHours);
   if (!fields.totalHours || isNaN(total) || total <= 0) {
     errors.totalHours = 'Carga horária deve ser maior que 0';
-  }
-
-  const done = Number(fields.completedHours);
-  if (fields.completedHours !== '' && (isNaN(done) || done < 0)) {
-    errors.completedHours = 'Horas concluídas inválidas';
-  }
-
-  if (!isNaN(total) && !isNaN(done) && done > total) {
-    errors.completedHours = 'Horas concluídas não podem exceder a carga total';
   }
 
   return { valid: Object.keys(errors).length === 0, errors };

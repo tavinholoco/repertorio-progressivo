@@ -25,8 +25,6 @@ export default function Aproveitamento() {
     handleEventoChange,
     cargaHoraria,
     handleCargaHorariaChange,
-    horasConcluidas,
-    handleHorasConcluidasChange,
     tempo,
     setTempo,
     referencePeriod,
@@ -38,9 +36,8 @@ export default function Aproveitamento() {
     daysInMonth,
     diasMarcados,
     percentualDias,
-    totalHours,
-    doneHours,
     cargaProgress,
+    progressLabel,
     navigatePeriod,
     toggleDia,
     adjustMonth,
@@ -86,19 +83,6 @@ export default function Aproveitamento() {
             />
             {errors.totalHours ? (
               <Text className="text-priority-red text-sm -mt-2 mb-2">{errors.totalHours}</Text>
-            ) : null}
-
-            <Text className="text-brand-dark mb-2 font-semibold">Horas concluídas</Text>
-            <TextInput
-              value={horasConcluidas}
-              onChangeText={handleHorasConcluidasChange}
-              placeholder="Ex: 12"
-              keyboardType="numeric"
-              placeholderTextColor={AppColors.muted}
-              className="bg-white p-3 rounded-2xl border border-brand-border"
-            />
-            {errors.completedHours ? (
-              <Text className="text-priority-red text-sm mt-1">{errors.completedHours}</Text>
             ) : null}
           </View>
 
@@ -161,7 +145,7 @@ export default function Aproveitamento() {
                 />
               </View>
               <Text className="text-sm text-brand-muted mb-3">
-                {Math.round(cargaProgress * 100)}% ({doneHours}/{totalHours} h)
+                {Math.round(cargaProgress * 100)}% ({progressLabel})
               </Text>
               {tempo === 'mensal' && (
                 <Text className="text-sm text-brand-muted">

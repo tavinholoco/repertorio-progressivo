@@ -29,7 +29,6 @@ export interface AproveitamentoRecord {
   id: string;
   eventName: string;
   totalHours: number;
-  completedHours: number;
   periodType: PeriodType;
   /** Array de booleanos com tamanho igual aos dias reais do mês */
   monthlyDays: boolean[];

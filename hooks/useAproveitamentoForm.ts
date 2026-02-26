@@ -17,7 +17,6 @@ export function useAproveitamentoForm() {
   // Formulário
   const [evento, setEvento] = useState('');
   const [cargaHoraria, setCargaHoraria] = useState('');
-  const [horasConcluidas, setHorasConcluidas] = useState('');
   const [tempo, setTempo] = useState<PeriodType>('mensal');
   const [referencePeriod, setReferencePeriod] = useState(currentPeriod);
 
@@ -44,7 +43,6 @@ export function useAproveitamentoForm() {
     if (existing) {
       setEvento(existing.eventName);
       setCargaHoraria(String(existing.totalHours));
-      setHorasConcluidas(String(existing.completedHours));
       setDias(existing.monthlyDays);
       setAnnualMonths(existing.annualMonths);
       setEditingId(existing.id);
@@ -100,8 +98,22 @@ export function useAproveitamentoForm() {
     [diasMarcados, daysInMonth, tempo],
   );
   const totalHours = Number(cargaHoraria) || 0;
-  const doneHours = Number(horasConcluidas) || 0;
-  const cargaProgress = totalHours > 0 ? Math.min(doneHours / totalHours, 1) : 0;
+  const cargaProgress = useMemo(() => {
+    if (tempo === 'mensal') {
+      return daysInMonth > 0 ? diasMarcados / daysInMonth : 0;
+    }
+    const totalDays = annualMonths.reduce((s, m) => s + m.totalDays, 0);
+    const doneDays = annualMonths.reduce((s, m) => s + m.completedDays, 0);
+    return totalDays > 0 ? doneDays / totalDays : 0;
+  }, [tempo, diasMarcados, daysInMonth, annualMonths]);
+  const progressLabel = useMemo(() => {
+    if (tempo === 'mensal') {
+      return `${diasMarcados}/${daysInMonth} dias`;
+    }
+    const doneDays = annualMonths.reduce((s, m) => s + m.completedDays, 0);
+    const totalDays = annualMonths.reduce((s, m) => s + m.totalDays, 0);
+    return `${doneDays}/${totalDays} dias`;
+  }, [tempo, diasMarcados, daysInMonth, annualMonths]);
 
   // ─── Handlers de campo ─────────────────────────────────────────────────────
   function handleEventoChange(v: string) {
@@ -114,17 +126,11 @@ export function useAproveitamentoForm() {
     setErrors((p) => ({ ...p, totalHours: '' }));
   }
 
-  function handleHorasConcluidasChange(v: string) {
-    setHorasConcluidas(v);
-    setErrors((p) => ({ ...p, completedHours: '' }));
-  }
-
   // ─── Salvar ────────────────────────────────────────────────────────────────
   async function handleSave() {
     const validation = validateAproveitamento({
       eventName: evento,
       totalHours: cargaHoraria,
-      completedHours: horasConcluidas,
     });
 
     if (!validation.valid) {
@@ -137,7 +143,6 @@ export function useAproveitamentoForm() {
       const payload: Omit<AproveitamentoRecord, 'id' | 'createdAt' | 'updatedAt'> = {
         eventName: evento.trim(),
         totalHours,
-        completedHours: doneHours,
         periodType: tempo,
         monthlyDays: dias,
         annualMonths,
@@ -164,7 +169,6 @@ export function useAproveitamentoForm() {
   function populateFormFromRecord(record: AproveitamentoRecord) {
     setEvento(record.eventName);
     setCargaHoraria(String(record.totalHours));
-    setHorasConcluidas(String(record.completedHours));
     setTempo(record.periodType);
     setReferencePeriod(record.referencePeriod);
     setDias(record.monthlyDays);
@@ -182,8 +186,6 @@ export function useAproveitamentoForm() {
     handleEventoChange,
     cargaHoraria,
     handleCargaHorariaChange,
-    horasConcluidas,
-    handleHorasConcluidasChange,
     tempo,
     setTempo,
     referencePeriod,
@@ -197,8 +199,8 @@ export function useAproveitamentoForm() {
     diasMarcados,
     percentualDias,
     totalHours,
-    doneHours,
     cargaProgress,
+    progressLabel,
     // Ações
     navigatePeriod,
     toggleDia,

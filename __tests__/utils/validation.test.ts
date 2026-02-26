@@ -81,16 +81,10 @@ describe('validateAproveitamento', () => {
   const valid = {
     eventName: 'Álgebra',
     totalHours: '40',
-    completedHours: '10',
   };
 
   it('retorna valid:true para campos corretos', () => {
     expect(validateAproveitamento(valid).valid).toBe(true);
-  });
-
-  it('aceita horas concluídas vazio (campo opcional)', () => {
-    const result = validateAproveitamento({ ...valid, completedHours: '' });
-    expect(result.valid).toBe(true);
   });
 
   it('exige nome do evento', () => {
@@ -113,26 +107,4 @@ describe('validateAproveitamento', () => {
     expect(errors.totalHours).toBe('Carga horária deve ser maior que 0');
   });
 
-  it('rejeita horas concluídas maiores que a carga total', () => {
-    const { errors } = validateAproveitamento({
-      ...valid,
-      totalHours: '10',
-      completedHours: '15',
-    });
-    expect(errors.completedHours).toBe('Horas concluídas não podem exceder a carga total');
-  });
-
-  it('rejeita horas concluídas negativas', () => {
-    const { errors } = validateAproveitamento({ ...valid, completedHours: '-1' });
-    expect(errors.completedHours).toBe('Horas concluídas inválidas');
-  });
-
-  it('aceita horas concluídas igual à carga total', () => {
-    const result = validateAproveitamento({
-      ...valid,
-      totalHours: '10',
-      completedHours: '10',
-    });
-    expect(result.valid).toBe(true);
-  });
 });

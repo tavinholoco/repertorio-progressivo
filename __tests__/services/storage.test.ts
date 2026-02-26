@@ -38,7 +38,6 @@ const makeRecord = (overrides: Partial<AproveitamentoRecord> = {}): Aproveitamen
   id: '1',
   eventName: 'Álgebra',
   totalHours: 40,
-  completedHours: 10,
   periodType: 'mensal',
   monthlyDays: Array.from({ length: 31 }, () => false), // Março tem 31 dias
   annualMonths: makeAnnualMonths(2025),
@@ -139,12 +138,12 @@ describe('Aproveitamento', () => {
   });
 
   it('faz upsert quando id já existe', async () => {
-    await saveAproveitamento(makeRecord({ completedHours: 5 }));
-    await saveAproveitamento(makeRecord({ completedHours: 20 }));
+    await saveAproveitamento(makeRecord({ totalHours: 5 }));
+    await saveAproveitamento(makeRecord({ totalHours: 20 }));
 
     const result = await getAproveitamentos();
     expect(result).toHaveLength(1);
-    expect(result[0].completedHours).toBe(20);
+    expect(result[0].totalHours).toBe(20);
   });
 
   it('deleta o registro correto', async () => {

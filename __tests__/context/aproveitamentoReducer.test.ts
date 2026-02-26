@@ -23,7 +23,6 @@ const makeRecord = (overrides: Partial<AproveitamentoRecord> = {}): Aproveitamen
   id: '1',
   eventName: 'Álgebra',
   totalHours: 40,
-  completedHours: 10,
   periodType: 'mensal',
   monthlyDays: Array.from({ length: 31 }, () => false),
   annualMonths: makeMonths(),
@@ -154,12 +153,12 @@ describe('aproveitamentoReducer', () => {
       expect(next.records[0].id).toBe('1');
     });
 
-    it('atualiza completedHours corretamente', () => {
-      const original = makeRecord({ completedHours: 5 });
+    it('atualiza totalHours corretamente', () => {
+      const original = makeRecord({ totalHours: 5 });
       const state = { ...initialState, records: [original] };
-      const updated = makeRecord({ completedHours: 20 });
+      const updated = makeRecord({ totalHours: 20 });
       const next = reducer(state, { type: 'UPDATE', payload: updated });
-      expect(next.records[0].completedHours).toBe(20);
+      expect(next.records[0].totalHours).toBe(20);
     });
   });
 
