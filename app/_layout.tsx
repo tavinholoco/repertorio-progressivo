@@ -14,14 +14,17 @@ export default function Layout() {
             <Tabs
               screenOptions={{
                 headerShown: false,
-                tabBarShowLabel: false,
+                tabBarShowLabel: true,
+                tabBarLabelStyle: { fontSize: 11, fontWeight: '600' },
+                tabBarActiveTintColor: AppColors.accent,
+                tabBarInactiveTintColor: AppColors.muted,
 
                 tabBarStyle: {
                   position: 'absolute',
                   bottom: 20,
                   left: 20,
                   right: 20,
-                  height: 70,
+                  height: 80,
                   backgroundColor: AppColors.white,
                   borderRadius: 30,
                   elevation: 8,
@@ -38,7 +41,7 @@ export default function Layout() {
                 options={{
                   title: 'Agenda',
                   tabBarIcon: ({ color }) => (
-                    <Ionicons name="calendar-outline" color={color} size={28} />
+                    <Ionicons name="calendar-outline" color={color} size={26} />
                   ),
                 }}
               />
@@ -48,7 +51,7 @@ export default function Layout() {
                 options={{
                   title: 'Aproveitamento',
                   tabBarIcon: ({ color }) => (
-                    <Ionicons name="bar-chart-outline" color={color} size={28} />
+                    <Ionicons name="bar-chart-outline" color={color} size={26} />
                   ),
                 }}
               />

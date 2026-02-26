@@ -51,9 +51,16 @@ export default function Aproveitamento() {
       contentContainerStyle={{ padding: 24, paddingTop: 56, paddingBottom: 160 }}
       ListHeaderComponent={
         <>
-          <Text className="text-3xl font-extrabold text-brand-primary mb-6 text-center">
-            Aproveitamento
-          </Text>
+          {/* ── Hero Card ── */}
+          <View className="bg-brand-accent rounded-3xl p-5 mb-6 items-center">
+            <Text className="text-white text-xl font-bold mb-1">Aproveitamento</Text>
+            <Text className="text-white text-sm mb-4" style={{ opacity: 0.8 }}>
+              {formatPeriodLabel(referencePeriod)}
+            </Text>
+            <ProgressDonut
+              percentage={tempo === 'mensal' ? percentualDias : Math.round(cargaProgress * 100)}
+            />
+          </View>
 
           {/* ── Nome do evento ── */}
           <View className="mb-4">
@@ -63,7 +70,7 @@ export default function Aproveitamento() {
               onChangeText={handleEventoChange}
               placeholder="Ex: Revisão - Álgebra"
               placeholderTextColor={AppColors.muted}
-              className="bg-white p-3 rounded-2xl border border-brand-border"
+              className="bg-white p-4 rounded-2xl border border-brand-border"
             />
             {errors.eventName ? (
               <Text className="text-priority-red text-sm mt-1">{errors.eventName}</Text>
@@ -79,7 +86,7 @@ export default function Aproveitamento() {
               placeholder="Ex: 40"
               keyboardType="numeric"
               placeholderTextColor={AppColors.muted}
-              className="bg-white p-3 rounded-2xl border border-brand-border mb-3"
+              className="bg-white p-4 rounded-2xl border border-brand-border mb-3"
             />
             {errors.totalHours ? (
               <Text className="text-priority-red text-sm -mt-2 mb-2">{errors.totalHours}</Text>
@@ -93,7 +100,7 @@ export default function Aproveitamento() {
               <TouchableOpacity
                 key={t}
                 onPress={() => setTempo(t)}
-                className={`flex-1 p-3 rounded-2xl ${i === 0 ? 'mr-2' : ''} ${
+                className={`flex-1 p-4 rounded-2xl ${i === 0 ? 'mr-2' : ''} ${
                   tempo === t ? 'bg-brand-accent' : 'bg-white border border-brand-border'
                 }`}
               >
@@ -108,7 +115,7 @@ export default function Aproveitamento() {
             ))}
           </View>
 
-          {/* ── Navegação de mês ── */}
+          {/* ── Navegação de período ── */}
           <View className="flex-row items-center justify-between mb-5">
             <TouchableOpacity
               onPress={() => navigatePeriod(-1)}
@@ -129,32 +136,28 @@ export default function Aproveitamento() {
             </TouchableOpacity>
           </View>
 
-          {/* ── Indicador de progresso ── */}
-          <View className="flex-row items-center justify-between mb-6">
-            <ProgressDonut percentage={tempo === 'mensal' ? percentualDias : 0} />
-
-            <View className="flex-1 ml-4">
-              <Text className="text-brand-dark font-semibold mb-2">Progresso da carga</Text>
-              <View className="w-full h-4 bg-brand-yellow rounded-full overflow-hidden mb-1">
-                <View
-                  style={{
-                    width: `${Math.round(cargaProgress * 100)}%`,
-                    height: '100%',
-                    backgroundColor: AppColors.accent,
-                  }}
-                />
-              </View>
-              <Text className="text-sm text-brand-muted mb-3">
-                {Math.round(cargaProgress * 100)}% ({progressLabel})
-              </Text>
-              {tempo === 'mensal' && (
-                <Text className="text-sm text-brand-muted">
-                  Dias marcados:{' '}
-                  <Text className="font-semibold text-brand-primary">{diasMarcados}</Text>
-                  {' '}/ {daysInMonth}
-                </Text>
-              )}
+          {/* ── Progresso da carga ── */}
+          <View className="mb-6">
+            <Text className="text-brand-dark font-semibold mb-2">Progresso da carga</Text>
+            <View className="w-full h-3 bg-brand-yellow rounded-full overflow-hidden mb-1">
+              <View
+                style={{
+                  width: `${Math.round(cargaProgress * 100)}%`,
+                  height: '100%',
+                  backgroundColor: AppColors.accent,
+                }}
+              />
             </View>
+            <Text className="text-sm text-brand-muted mb-3">
+              {Math.round(cargaProgress * 100)}% ({progressLabel})
+            </Text>
+            {tempo === 'mensal' && (
+              <Text className="text-sm text-brand-muted">
+                Dias marcados:{' '}
+                <Text className="font-semibold text-brand-primary">{diasMarcados}</Text>
+                {' '}/ {daysInMonth}
+              </Text>
+            )}
           </View>
 
           {/* ── Grid de dias (mensal) ── */}

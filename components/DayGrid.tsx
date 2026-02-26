@@ -1,7 +1,4 @@
 import { Text, TouchableOpacity, View } from 'react-native';
-import { MaterialIcons } from '@expo/vector-icons';
-
-import { AppColors } from '@/constants/theme';
 
 interface DayGridProps {
   days: boolean[];
@@ -17,14 +14,19 @@ export function DayGrid({ days, onToggle }: DayGridProps) {
           <TouchableOpacity
             key={index}
             onPress={() => onToggle(index)}
-            className="w-[30%] bg-white rounded-2xl p-4 m-1 border border-brand-border flex-row items-center justify-between"
+            className={`w-[30%] rounded-2xl p-4 m-1 items-center justify-center active:opacity-75 ${
+              marcado
+                ? 'bg-brand-accent'
+                : 'bg-white border border-brand-border'
+            }`}
           >
-            <Text className="text-brand-dark font-semibold">{index + 1}</Text>
-            <MaterialIcons
-              name={marcado ? 'check-box' : 'check-box-outline-blank'}
-              size={26}
-              color={marcado ? AppColors.accent : AppColors.muted}
-            />
+            <Text
+              className={`font-bold text-base ${
+                marcado ? 'text-white' : 'text-brand-dark'
+              }`}
+            >
+              {index + 1}
+            </Text>
           </TouchableOpacity>
         ))}
       </View>

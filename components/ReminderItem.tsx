@@ -32,16 +32,18 @@ export function ReminderItem({ reminder, onEdit, onDelete }: ReminderItemProps) 
 
   return (
     <View
-      style={{ borderLeftColor: color, borderLeftWidth: 4 }}
-      className="flex-row items-center bg-white rounded-2xl p-4 mb-3 border border-brand-border"
+      style={{ borderLeftColor: color, borderLeftWidth: 5, elevation: 2 }}
+      className="flex-row items-center bg-white rounded-2xl p-4 mb-3 shadow-sm"
     >
       <View className="flex-1">
         <Text className="text-brand-dark font-semibold text-base" numberOfLines={1}>
           {reminder.name}
         </Text>
-        <Text className="text-brand-muted text-sm mt-1">
-          {formatDisplayDate(reminder.date)} às {formatDisplayTime(reminder.time)}
-        </Text>
+        <View className="bg-brand-yellow rounded-full px-2 py-0.5 self-start mt-1">
+          <Text className="text-brand-primary text-xs font-semibold">
+            {formatDisplayDate(reminder.date)} às {formatDisplayTime(reminder.time)}
+          </Text>
+        </View>
       </View>
 
       <TouchableOpacity onPress={() => onEdit(reminder)} className="p-2 mr-1">

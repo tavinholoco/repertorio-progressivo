@@ -48,15 +48,22 @@ export function RecordItem({ record, onEdit, onDelete }: RecordItemProps) {
   }
 
   return (
-    <View className="bg-white rounded-2xl p-4 mb-3 border border-brand-border">
+    <View className="bg-white rounded-2xl p-4 mb-3 shadow-sm" style={{ elevation: 2 }}>
       <View className="flex-row items-center justify-between mb-2">
         <View className="flex-1">
           <Text className="text-brand-dark font-semibold text-base" numberOfLines={1}>
             {record.eventName}
           </Text>
-          <Text className="text-brand-muted text-sm">
-            {formatPeriodLabel(record.referencePeriod)} · {record.periodType}
-          </Text>
+          <View className="flex-row mt-1">
+            <View className="bg-brand-yellow rounded-full px-2 py-0.5 mr-1">
+              <Text className="text-brand-primary text-xs font-bold">
+                {formatPeriodLabel(record.referencePeriod)}
+              </Text>
+            </View>
+            <View className="bg-brand-light border border-brand-border rounded-full px-2 py-0.5">
+              <Text className="text-brand-muted text-xs">{record.periodType}</Text>
+            </View>
+          </View>
         </View>
 
         <TouchableOpacity onPress={() => onEdit(record)} className="p-2 mr-1">

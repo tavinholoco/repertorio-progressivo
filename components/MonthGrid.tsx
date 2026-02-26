@@ -36,21 +36,21 @@ export function MonthGrid({ months, onAdjust }: MonthGridProps) {
                   }}
                 />
               </View>
-              <Text className="text-xs text-brand-muted mt-1 mb-1">
-                {month.completedDays}/{month.totalDays}d
+              <Text className="text-xs text-brand-muted mt-1 mb-2">
+                {month.completedDays}/{month.totalDays} dias
               </Text>
               <View className="flex-row gap-2">
                 <TouchableOpacity
                   onPress={() => onAdjust(month.monthIndex, -1)}
-                  className="bg-brand-light rounded-lg px-2 py-1"
+                  className="bg-brand-light border border-brand-border rounded-lg px-3 py-1 active:opacity-75"
                 >
                   <Text className="text-brand-primary font-bold">−</Text>
                 </TouchableOpacity>
                 <TouchableOpacity
                   onPress={() => onAdjust(month.monthIndex, 1)}
-                  className="bg-brand-light rounded-lg px-2 py-1"
+                  className="bg-brand-accent rounded-lg px-3 py-1 active:opacity-75"
                 >
-                  <Text className="text-brand-primary font-bold">+</Text>
+                  <Text className="text-white font-bold">+</Text>
                 </TouchableOpacity>
               </View>
             </View>

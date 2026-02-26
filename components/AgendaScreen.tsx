@@ -43,16 +43,24 @@ export default function AgendaScreen() {
   return (
     <FlatList
       className="flex-1 bg-brand-light"
-      contentContainerStyle={{ padding: 20, paddingTop: 56, paddingBottom: 160 }}
+      contentContainerStyle={{ padding: 24, paddingTop: 56, paddingBottom: 160 }}
       ListHeaderComponent={
         <>
-          <Text className="text-3xl font-extrabold text-brand-primary mb-6 text-center">
-            Agenda de Lembretes
-          </Text>
+          {/* ── Hero Card ── */}
+          <View className="bg-brand-accent rounded-3xl p-5 mb-6">
+            <Text className="text-white text-xl font-bold text-center">Agenda</Text>
+            <Text className="text-white text-sm text-center mt-1" style={{ opacity: 0.8 }}>
+              {new Date().toLocaleDateString('pt-BR', {
+                weekday: 'long',
+                day: 'numeric',
+                month: 'long',
+              })}
+            </Text>
+          </View>
 
           {/* ── Nome ── */}
           <View className="mb-5">
-            <Text className="text-brand-dark text-base mb-2 font-medium">Nome do lembrete</Text>
+            <Text className="text-brand-dark text-base mb-2 font-semibold">Nome do lembrete</Text>
             <TextInput
               value={name}
               onChangeText={handleNameChange}
@@ -67,7 +75,7 @@ export default function AgendaScreen() {
 
           {/* ── Data ── */}
           <View className="mb-5">
-            <Text className="text-brand-dark text-base mb-2 font-medium">Data do lembrete</Text>
+            <Text className="text-brand-dark text-base mb-2 font-semibold">Data do lembrete</Text>
             <TouchableOpacity
               onPress={() => setShowDatePicker(true)}
               className="bg-white p-4 rounded-2xl border border-brand-border active:opacity-90"
@@ -89,7 +97,7 @@ export default function AgendaScreen() {
 
           {/* ── Horário ── */}
           <View className="mb-5">
-            <Text className="text-brand-dark text-base mb-2 font-medium">Horário</Text>
+            <Text className="text-brand-dark text-base mb-2 font-semibold">Horário</Text>
             <TouchableOpacity
               onPress={() => setShowTimePicker(true)}
               className="bg-white p-4 rounded-2xl border border-brand-border active:opacity-90"
