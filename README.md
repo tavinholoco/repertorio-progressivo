@@ -17,11 +17,23 @@ O **Repertório Progressivo** é um app Android desenvolvido com React Native e 
 
 ## Screenshots
 
+### Aba Agenda
+
 <div align="center">
 
 | Formulário de lembrete | Calendário e lembretes salvos |
 |:---:|:---:|
 | <img src="docs/screenshots/agenda-form.png" width="220" alt="Formulário de criação de lembrete"> | <img src="docs/screenshots/agenda-calendar.png" width="220" alt="Calendário e lembretes salvos"> |
+
+</div>
+
+### Aba Aproveitamento
+
+<div align="center">
+
+| Formulário | Seletor de período e grid | Registros salvos |
+|:---:|:---:|:---:|
+| <img src="docs/screenshots/Aproveitamento-form.png" width="180" alt="Formulário de aproveitamento"> | <img src="docs/screenshots/Aproveitamento-Mensal-Anual.png" width="180" alt="Seletor mensal/anual e grid de dias"> | <img src="docs/screenshots/Aproveitamento-Atualizar.png" width="180" alt="Botão de atualizar e registros salvos"> |
 
 </div>
 
