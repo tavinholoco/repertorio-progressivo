@@ -1,5 +1,7 @@
 # Repertório Progressivo
 
+![CI](https://github.com/tavinholoco/repertorio-progressivo/actions/workflows/test.yml/badge.svg?branch=dev)
+
 Aplicativo mobile para organizar e acompanhar o aprendizado progressivo — gerencie seus lembretes de estudo e registre seu aproveitamento diário, mensal e anual.
 
 ---
@@ -22,11 +24,11 @@ O **Repertório Progressivo** é um app Android desenvolvido com React Native e 
 - Editar e excluir lembretes existentes
 
 ### Aproveitamento
-- Registrar eventos de estudo com carga horária total e horas concluídas
+- Registrar eventos de estudo com carga horária total
 - **Modo mensal**: grid de dias do mês para marcar quais dias você estudou
 - **Modo anual**: resumo dos 12 meses com dias completados e total
 - Gráfico em donut com percentual de aproveitamento
-- Barra de progresso da carga horária
+- Barra de progresso calculada automaticamente pelos dias/meses marcados
 - Navegar entre períodos anteriores e posteriores
 
 ---
@@ -44,7 +46,7 @@ O **Repertório Progressivo** é um app Android desenvolvido com React Native e 
 | expo-notifications | 0.32.16 | Notificações push |
 | react-native-calendars | 1.1313.0 | Componente de calendário |
 | react-native-reanimated | 4.1.1 | Animações (New Architecture) |
-| Jest + jest-expo | 30.2.0 / 54.0.17 | Testes automatizados (103 testes) |
+| Jest + jest-expo | 30.2.0 / 54.0.17 | Testes automatizados (99 testes) |
 
 > React Compiler habilitado (`experiments.reactCompiler: true` no `app.json`) — não adicionar `useMemo`/`useCallback` manualmente.
 
@@ -140,7 +142,7 @@ npm start
 | `npm run ios` | Build nativo + executa no simulador iOS |
 | `npm start` | Inicia dev server via Expo Go (sem notificações) |
 | `npm run web` | Inicia servidor web (React Native Web) |
-| `npm test` | Executa os 103 testes automatizados |
+| `npm test` | Executa os 99 testes automatizados |
 | `npm run test:watch` | Testes em modo watch |
 | `npm run lint` | Executa ESLint |
 | `npx tsc --noEmit` | Verificação de tipos sem compilar |
@@ -149,16 +151,16 @@ npm start
 
 ## Testes
 
-O projeto possui 103 testes automatizados distribuídos em 6 suites:
+O projeto possui 99 testes automatizados distribuídos em 6 suites:
 
 | Suite | Testes | Descrição |
 |-------|--------|-----------|
-| `utils/validation.test.ts` | 20 | Validação de lembretes e aproveitamento |
-| `utils/dateHelpers.test.ts` | 30 | Funções puras de data e período |
-| `services/storage.test.ts` | 12 | Camada AsyncStorage com mocks |
-| `services/notifications.test.ts` | 10 | expo-notifications com mocks |
-| `context/remindersReducer.test.ts` | 20 | Reducer de lembretes |
-| `context/aproveitamentoReducer.test.ts` | 24 | Reducer de aproveitamento |
+| `utils/validation.test.ts` | 16 | Validação de lembretes e aproveitamento |
+| `utils/dateHelpers.test.ts` | 27 | Funções puras de data e período |
+| `services/storage.test.ts` | 13 | Camada AsyncStorage com mocks |
+| `services/notifications.test.ts` | 11 | expo-notifications com mocks |
+| `context/remindersReducer.test.ts` | 15 | Reducer de lembretes |
+| `context/aproveitamentoReducer.test.ts` | 17 | Reducer de aproveitamento |
 
 Para executar:
 
