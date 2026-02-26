@@ -1,5 +1,6 @@
-import { useRef } from 'react';
+import { useEffect, useRef } from 'react';
 import { Modal, Text, TouchableOpacity, View } from 'react-native';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import ColorPicker, { HueSlider, Panel1 } from 'reanimated-color-picker';
 
 import { AppColors } from '@/constants/theme';
@@ -19,6 +20,10 @@ export function ColorPickerModal({
 }: ColorPickerModalProps) {
   const pickedColor = useRef(selectedColor ?? '#6C2DC7');
 
+  useEffect(() => {
+    pickedColor.current = selectedColor ?? '#6C2DC7';
+  }, [selectedColor]);
+
   return (
     <Modal
       visible={visible}
@@ -26,6 +31,7 @@ export function ColorPickerModal({
       animationType="fade"
       onRequestClose={onClose}
     >
+      <GestureHandlerRootView style={{ flex: 1 }}>
       <View
         style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.5)', justifyContent: 'center', alignItems: 'center', padding: 24 }}
       >
@@ -40,7 +46,7 @@ export function ColorPickerModal({
 
           <ColorPicker
             value={selectedColor ?? '#6C2DC7'}
-            onComplete={({ hex }) => { pickedColor.current = hex; }}
+            onCompleteJS={({ hex }) => { pickedColor.current = hex; }}
           >
             <Panel1 style={{ borderRadius: 12, marginBottom: 16 }} />
             <HueSlider style={{ borderRadius: 8 }} />
@@ -76,6 +82,7 @@ export function ColorPickerModal({
           </View>
         </View>
       </View>
+      </GestureHandlerRootView>
     </Modal>
   );
 }

@@ -1,5 +1,6 @@
 import { Tabs } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 import { AproveitamentoProvider } from '@/context/AproveitamentoContext';
 import { RemindersProvider } from '@/context/RemindersContext';
@@ -8,6 +9,7 @@ import { ErrorBoundary } from '@/components/ErrorBoundary';
 
 export default function Layout() {
   return (
+    <GestureHandlerRootView style={{ flex: 1 }}>
     <ErrorBoundary>
       <RemindersProvider>
           <AproveitamentoProvider>
@@ -59,5 +61,6 @@ export default function Layout() {
           </AproveitamentoProvider>
       </RemindersProvider>
     </ErrorBoundary>
+    </GestureHandlerRootView>
   );
 }
