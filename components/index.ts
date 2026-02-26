@@ -1,4 +1,5 @@
 export { default as AgendaScreen } from './AgendaScreen';
+export { ColorPickerModal } from './ColorPickerModal';
 export { ErrorBoundary } from './ErrorBoundary';
 export { DayGrid } from './DayGrid';
 export { MonthGrid } from './MonthGrid';

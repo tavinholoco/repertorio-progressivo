@@ -13,9 +13,17 @@ interface PriorityPickerProps {
   selectedColor: string | null;
   onSelect: (color: string) => void;
   error?: string;
+  customColor?: string | null;
+  onOpenColorPicker: () => void;
 }
 
-export function PriorityPicker({ selectedColor, onSelect, error }: PriorityPickerProps) {
+export function PriorityPicker({
+  selectedColor,
+  onSelect,
+  error,
+  customColor,
+  onOpenColorPicker,
+}: PriorityPickerProps) {
   return (
     <>
       <Text className="text-brand-dark text-base mb-3 font-medium">Prioridade</Text>
@@ -32,6 +40,17 @@ export function PriorityPicker({ selectedColor, onSelect, error }: PriorityPicke
             <MaterialIcons name={icon} size={40} color={AppColors.white} />
           </TouchableOpacity>
         ))}
+
+        {/* Botão de cor personalizada */}
+        <TouchableOpacity
+          onPress={onOpenColorPicker}
+          className={`items-center justify-center w-20 h-20 rounded-2xl shadow-md border-4 ${
+            selectedColor === 'custom' ? 'border-brand-primary' : 'border-transparent'
+          }`}
+          style={{ backgroundColor: customColor ?? '#CCCCCC' }}
+        >
+          <MaterialIcons name="palette" size={40} color={AppColors.white} />
+        </TouchableOpacity>
       </View>
       {error ? (
         <Text className="text-priority-red text-sm mb-4">{error}</Text>

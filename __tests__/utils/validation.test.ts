@@ -63,6 +63,25 @@ describe('validateReminder', () => {
     expect(validateReminder({ ...valid, priority: 'red' }).valid).toBe(true);
   });
 
+  it('aceita prioridade custom com hex válido', () => {
+    expect(validateReminder({ ...valid, priority: 'custom', customColor: '#A855F7' }).valid).toBe(true);
+  });
+
+  it('rejeita custom sem customColor', () => {
+    const { errors } = validateReminder({ ...valid, priority: 'custom', customColor: null });
+    expect(errors.priority).toBe('Selecione uma cor personalizada');
+  });
+
+  it('rejeita custom com hex malformado', () => {
+    const { errors } = validateReminder({ ...valid, priority: 'custom', customColor: 'roxo' });
+    expect(errors.priority).toBe('Selecione uma cor personalizada');
+  });
+
+  it('rejeita custom com hex de 3 dígitos', () => {
+    const { errors } = validateReminder({ ...valid, priority: 'custom', customColor: '#A8F' });
+    expect(errors.priority).toBe('Selecione uma cor personalizada');
+  });
+
   it('retorna múltiplos erros ao mesmo tempo', () => {
     const { valid: isValid, errors } = validateReminder({
       name: '',

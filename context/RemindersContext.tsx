@@ -64,6 +64,7 @@ interface ReminderInput {
   date: string;
   time: string;
   priority: Priority;
+  customColor?: string;
 }
 
 interface ContextValue {

@@ -2,7 +2,7 @@ import { Alert, Text, TouchableOpacity, View } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 
 import { AppColors } from '@/constants/theme';
-import { PRIORITY_COLORS } from '@/hooks/useAgendaForm';
+import { resolveColor } from '@/hooks/useAgendaForm';
 import { formatDisplayDate, formatDisplayTime } from '@/utils/dateHelpers';
 import type { Reminder } from '@/types';
 
@@ -13,7 +13,7 @@ interface ReminderItemProps {
 }
 
 export function ReminderItem({ reminder, onEdit, onDelete }: ReminderItemProps) {
-  const color = PRIORITY_COLORS[reminder.priority];
+  const color = resolveColor(reminder);
 
   function handleDelete() {
     Alert.alert(

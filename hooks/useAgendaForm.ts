@@ -14,6 +14,7 @@ export const PRIORITY_COLORS: Record<Priority, string> = {
   green: AppColors.priority.green,
   yellow: AppColors.priority.yellow,
   red: AppColors.priority.red,
+  custom: '#888888',
 };
 
 export const COLOR_TO_PRIORITY: Record<string, Priority> = {
@@ -21,6 +22,12 @@ export const COLOR_TO_PRIORITY: Record<string, Priority> = {
   [AppColors.priority.yellow]: 'yellow',
   [AppColors.priority.red]: 'red',
 };
+
+/** Retorna o hex correto para qualquer Reminder, incluindo prioridade customizada. */
+export function resolveColor(reminder: Pick<Reminder, 'priority' | 'customColor'>): string {
+  if (reminder.priority === 'custom') return reminder.customColor ?? '#888888';
+  return PRIORITY_COLORS[reminder.priority];
+}
 
 // ─── Hook ────────────────────────────────────────────────────────────────────
 
@@ -35,6 +42,10 @@ export function useAgendaForm() {
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [showTimePicker, setShowTimePicker] = useState(false);
 
+  // Cor personalizada
+  const [customColor, setCustomColor] = useState<string | null>(null);
+  const [showColorModal, setShowColorModal] = useState(false);
+
   // Estado de edição e submissão
   const [editingReminder, setEditingReminder] = useState<Reminder | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -47,7 +58,7 @@ export function useAgendaForm() {
     >((acc, r) => {
       acc[r.date] = {
         selected: true,
-        selectedColor: PRIORITY_COLORS[r.priority],
+        selectedColor: resolveColor(r),
       };
       return acc;
     }, {});
@@ -68,7 +79,14 @@ export function useAgendaForm() {
 
   function populateForm(reminder: Reminder) {
     setName(reminder.name);
-    setSelectedColor(PRIORITY_COLORS[reminder.priority]);
+
+    if (reminder.priority === 'custom') {
+      setSelectedColor('custom');
+      setCustomColor(reminder.customColor ?? null);
+    } else {
+      setSelectedColor(PRIORITY_COLORS[reminder.priority]);
+      setCustomColor(null);
+    }
 
     const [y, m, d] = reminder.date.split('-').map(Number);
     const [h, min] = reminder.time.split(':').map(Number);
@@ -81,6 +99,7 @@ export function useAgendaForm() {
   function resetForm() {
     setName('');
     setSelectedColor(null);
+    setCustomColor(null);
     setDate(new Date());
     setTime(new Date());
     setEditingReminder(null);
@@ -88,11 +107,19 @@ export function useAgendaForm() {
   }
 
   async function handleSave() {
+    const isCustom = selectedColor === 'custom';
+    const priority: Priority | null = isCustom
+      ? 'custom'
+      : selectedColor
+        ? (COLOR_TO_PRIORITY[selectedColor] ?? null)
+        : null;
+
     const validation = validateReminder({
       name,
       date: toDateString(date),
       time: toTimeString(time),
-      priority: selectedColor ? COLOR_TO_PRIORITY[selectedColor] ?? null : null,
+      priority,
+      customColor: isCustom ? customColor : undefined,
     });
 
     if (!validation.valid) {
@@ -102,23 +129,18 @@ export function useAgendaForm() {
 
     setIsSubmitting(true);
     try {
-      const priority = COLOR_TO_PRIORITY[selectedColor!];
+      const reminderPatch = {
+        name: name.trim(),
+        date: toDateString(date),
+        time: toTimeString(time),
+        priority: priority as Priority,
+        ...(isCustom ? { customColor: customColor! } : { customColor: undefined }),
+      };
 
       if (editingReminder) {
-        await updateReminder({
-          ...editingReminder,
-          name: name.trim(),
-          date: toDateString(date),
-          time: toTimeString(time),
-          priority,
-        });
+        await updateReminder({ ...editingReminder, ...reminderPatch });
       } else {
-        await addReminder({
-          name: name.trim(),
-          date: toDateString(date),
-          time: toTimeString(time),
-          priority,
-        });
+        await addReminder(reminderPatch);
       }
 
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
@@ -150,6 +172,11 @@ export function useAgendaForm() {
     isSubmitting,
     errors,
     setErrors,
+    // Cor personalizada
+    customColor,
+    setCustomColor,
+    showColorModal,
+    setShowColorModal,
     // Derivados
     markedDates,
     // Ações

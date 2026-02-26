@@ -1,6 +1,6 @@
 // Tipos compartilhados por toda a aplicação
 
-export type Priority = 'green' | 'yellow' | 'red';
+export type Priority = 'green' | 'yellow' | 'red' | 'custom';
 
 export interface Reminder {
   id: string;
@@ -10,6 +10,8 @@ export interface Reminder {
   /** Formato "HH:MM" 24h */
   time: string;
   priority: Priority;
+  /** Hex '#RRGGBB' — presente apenas quando priority === 'custom' */
+  customColor?: string;
   /** ID retornado pelo expo-notifications ao agendar; undefined se permissão negada */
   notificationId?: string;
   createdAt: string;

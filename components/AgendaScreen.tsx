@@ -12,6 +12,7 @@ import { Calendar } from 'react-native-calendars';
 
 import { AppColors, calendarTheme } from '@/constants/theme';
 import { useAgendaForm } from '@/hooks/useAgendaForm';
+import { ColorPickerModal } from '@/components/ColorPickerModal';
 import { ReminderItem } from '@/components/ReminderItem';
 import { PriorityPicker } from '@/components/PriorityPicker';
 
@@ -38,6 +39,10 @@ export default function AgendaScreen() {
     populateForm,
     resetForm,
     handleSave,
+    customColor,
+    setCustomColor,
+    showColorModal,
+    setShowColorModal,
   } = useAgendaForm();
 
   return (
@@ -124,6 +129,20 @@ export default function AgendaScreen() {
             selectedColor={selectedColor}
             onSelect={handleSelectColor}
             error={errors.priority}
+            customColor={customColor}
+            onOpenColorPicker={() => setShowColorModal(true)}
+          />
+
+          {/* ── Seletor de cor personalizada ── */}
+          <ColorPickerModal
+            visible={showColorModal}
+            selectedColor={customColor}
+            onSelect={(hex) => {
+              setCustomColor(hex);
+              handleSelectColor('custom');
+              setShowColorModal(false);
+            }}
+            onClose={() => setShowColorModal(false)}
           />
 
           {/* ── Botão salvar ── */}

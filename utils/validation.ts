@@ -6,11 +6,17 @@ export interface ValidationResult {
 
 // ─── Lembrete ─────────────────────────────────────────────────────────────────
 
+function isValidHex(color: string | null | undefined): boolean {
+  if (!color) return false;
+  return /^#[0-9A-Fa-f]{6}$/.test(color);
+}
+
 interface ReminderFields {
   name: string;
   date: string;
   time: string;
   priority: string | null;
+  customColor?: string | null;
 }
 
 export function validateReminder(fields: ReminderFields): ValidationResult {
@@ -32,8 +38,10 @@ export function validateReminder(fields: ReminderFields): ValidationResult {
 
   if (!fields.priority) {
     errors.priority = 'Selecione uma prioridade';
-  } else if (!['green', 'yellow', 'red'].includes(fields.priority)) {
+  } else if (!['green', 'yellow', 'red', 'custom'].includes(fields.priority)) {
     errors.priority = 'Prioridade inválida';
+  } else if (fields.priority === 'custom' && !isValidHex(fields.customColor)) {
+    errors.priority = 'Selecione uma cor personalizada';
   }
 
   return { valid: Object.keys(errors).length === 0, errors };
