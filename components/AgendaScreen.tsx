@@ -3,16 +3,19 @@ import {
   FlatList,
   Platform,
   Text,
-  TextInput,
   TouchableOpacity,
   View,
 } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { Calendar } from 'react-native-calendars';
+import { LinearGradient } from 'expo-linear-gradient';
 
-import { AppColors, calendarTheme } from '@/constants/theme';
+import { AppColors, calendarTheme, FontFamily, Gradients } from '@/constants/theme';
 import { useAgendaForm } from '@/hooks/useAgendaForm';
+import { AnimatedTextInput } from '@/components/AnimatedTextInput';
 import { ColorPickerModal } from '@/components/ColorPickerModal';
+import { EmptyState } from '@/components/EmptyState';
 import { ReminderItem } from '@/components/ReminderItem';
 import { PriorityPicker } from '@/components/PriorityPicker';
 
@@ -52,26 +55,32 @@ export default function AgendaScreen() {
       ListHeaderComponent={
         <>
           {/* ── Hero Card ── */}
-          <View className="bg-brand-accent rounded-3xl p-5 mb-6">
-            <Text className="text-white text-xl font-bold text-center">Agenda</Text>
-            <Text className="text-white text-sm text-center mt-1" style={{ opacity: 0.8 }}>
+          <LinearGradient
+            colors={Gradients.hero}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 1 }}
+            style={{ borderRadius: 24, padding: 20, marginBottom: 24 }}
+          >
+            <Text style={{ color: '#fff', fontSize: 20, fontFamily: FontFamily.bold, textAlign: 'center' }}>
+              Agenda
+            </Text>
+            <Text style={{ color: '#fff', fontSize: 14, textAlign: 'center', marginTop: 4, opacity: 0.85, fontFamily: FontFamily.regular }}>
               {new Date().toLocaleDateString('pt-BR', {
                 weekday: 'long',
                 day: 'numeric',
                 month: 'long',
               })}
             </Text>
-          </View>
+          </LinearGradient>
 
           {/* ── Nome ── */}
           <View className="mb-5">
             <Text className="text-brand-dark text-base mb-2 font-semibold">Nome do lembrete</Text>
-            <TextInput
+            <AnimatedTextInput
               value={name}
               onChangeText={handleNameChange}
               placeholder="Ex: Reunião de projeto"
               placeholderTextColor={AppColors.muted}
-              className="bg-white p-4 rounded-2xl border border-brand-border text-brand-dark"
             />
             {errors.name ? (
               <Text className="text-priority-red text-sm mt-1">{errors.name}</Text>
@@ -79,13 +88,39 @@ export default function AgendaScreen() {
           </View>
 
           {/* ── Data ── */}
-          <View className="mb-5">
-            <Text className="text-brand-dark text-base mb-2 font-semibold">Data do lembrete</Text>
+          <View style={{ marginBottom: 20 }}>
+            <Text style={{ fontFamily: FontFamily.semiBold, fontSize: 14, color: AppColors.dark, marginBottom: 8 }}>
+              Data do lembrete
+            </Text>
             <TouchableOpacity
               onPress={() => setShowDatePicker(true)}
-              className="bg-white p-4 rounded-2xl border border-brand-border active:opacity-90"
+              style={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                backgroundColor: '#fff',
+                padding: 14,
+                borderRadius: 16,
+                borderWidth: 1,
+                borderColor: AppColors.border,
+              }}
             >
-              <Text className="text-brand-dark">{date.toLocaleDateString('pt-BR')}</Text>
+              <View
+                style={{
+                  width: 36,
+                  height: 36,
+                  borderRadius: 12,
+                  backgroundColor: '#EDE9FE',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  marginRight: 12,
+                }}
+              >
+                <Ionicons name="calendar-outline" size={18} color="#6C2DC7" />
+              </View>
+              <Text style={{ flex: 1, fontFamily: FontFamily.medium, fontSize: 14, color: AppColors.dark }}>
+                {date.toLocaleDateString('pt-BR')}
+              </Text>
+              <Ionicons name="chevron-forward" size={18} color={AppColors.muted} />
             </TouchableOpacity>
             {showDatePicker && (
               <DateTimePicker
@@ -101,15 +136,39 @@ export default function AgendaScreen() {
           </View>
 
           {/* ── Horário ── */}
-          <View className="mb-5">
-            <Text className="text-brand-dark text-base mb-2 font-semibold">Horário</Text>
+          <View style={{ marginBottom: 20 }}>
+            <Text style={{ fontFamily: FontFamily.semiBold, fontSize: 14, color: AppColors.dark, marginBottom: 8 }}>
+              Horário
+            </Text>
             <TouchableOpacity
               onPress={() => setShowTimePicker(true)}
-              className="bg-white p-4 rounded-2xl border border-brand-border active:opacity-90"
+              style={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                backgroundColor: '#fff',
+                padding: 14,
+                borderRadius: 16,
+                borderWidth: 1,
+                borderColor: AppColors.border,
+              }}
             >
-              <Text className="text-brand-dark">
+              <View
+                style={{
+                  width: 36,
+                  height: 36,
+                  borderRadius: 12,
+                  backgroundColor: '#EDE9FE',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  marginRight: 12,
+                }}
+              >
+                <Ionicons name="time-outline" size={18} color="#6C2DC7" />
+              </View>
+              <Text style={{ flex: 1, fontFamily: FontFamily.medium, fontSize: 14, color: AppColors.dark }}>
                 {time.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}
               </Text>
+              <Ionicons name="chevron-forward" size={18} color={AppColors.muted} />
             </TouchableOpacity>
             {showTimePicker && (
               <DateTimePicker
@@ -147,17 +206,33 @@ export default function AgendaScreen() {
 
           {/* ── Botão salvar ── */}
           <TouchableOpacity
-            className="bg-brand-accent py-4 rounded-2xl shadow-md mb-2 active:opacity-90"
             onPress={handleSave}
             disabled={isSubmitting}
+            style={{
+              borderRadius: 16,
+              overflow: 'hidden',
+              marginBottom: 8,
+              elevation: 6,
+              shadowColor: '#6C2DC7',
+              shadowOpacity: 0.4,
+              shadowRadius: 12,
+              shadowOffset: { width: 0, height: 4 },
+            }}
           >
-            {isSubmitting ? (
-              <ActivityIndicator color={AppColors.white} />
-            ) : (
-              <Text className="text-white text-center text-lg font-semibold">
-                {editingReminder ? 'Atualizar Lembrete' : 'Confirmar Lembrete'}
-              </Text>
-            )}
+            <LinearGradient
+              colors={Gradients.cta}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 0 }}
+              style={{ paddingVertical: 16, alignItems: 'center' }}
+            >
+              {isSubmitting ? (
+                <ActivityIndicator color={AppColors.white} />
+              ) : (
+                <Text style={{ color: AppColors.white, fontSize: 18, fontFamily: FontFamily.semiBold }}>
+                  {editingReminder ? 'Atualizar Lembrete' : 'Confirmar Lembrete'}
+                </Text>
+              )}
+            </LinearGradient>
           </TouchableOpacity>
 
           {editingReminder && (
@@ -178,9 +253,17 @@ export default function AgendaScreen() {
 
           {/* ── Título da lista ── */}
           {state.reminders.length > 0 && (
-            <Text className="text-brand-dark text-lg font-bold mt-6 mb-3">
-              Lembretes salvos
-            </Text>
+            <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 24, marginBottom: 12 }}>
+              <View style={{ width: 4, height: 20, backgroundColor: '#6C2DC7', borderRadius: 2, marginRight: 10 }} />
+              <Text style={{ flex: 1, fontFamily: FontFamily.bold, fontSize: 16, color: '#1E1E1E' }}>
+                Lembretes salvos
+              </Text>
+              <View style={{ backgroundColor: '#EDE9FE', borderRadius: 12, paddingHorizontal: 8, paddingVertical: 2 }}>
+                <Text style={{ fontSize: 12, fontFamily: FontFamily.semiBold, color: '#6C2DC7' }}>
+                  {state.reminders.length}
+                </Text>
+              </View>
+            </View>
           )}
 
           {state.isLoading && (
@@ -190,18 +273,21 @@ export default function AgendaScreen() {
       }
       data={state.reminders}
       keyExtractor={(item) => item.id}
-      renderItem={({ item }) => (
+      renderItem={({ item, index }) => (
         <ReminderItem
           reminder={item}
+          index={index}
           onEdit={populateForm}
           onDelete={removeReminder}
         />
       )}
       ListEmptyComponent={
         !state.isLoading ? (
-          <Text className="text-brand-muted text-center mt-4">
-            Nenhum lembrete criado ainda.
-          </Text>
+          <EmptyState
+            icon="calendar-outline"
+            title="Nenhum lembrete ainda"
+            subtitle="Crie seu primeiro lembrete acima"
+          />
         ) : null
       }
     />

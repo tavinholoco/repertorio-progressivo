@@ -1,5 +1,7 @@
 export { default as AgendaScreen } from './AgendaScreen';
+export { AnimatedTextInput } from './AnimatedTextInput';
 export { ColorPickerModal } from './ColorPickerModal';
+export { EmptyState } from './EmptyState';
 export { ErrorBoundary } from './ErrorBoundary';
 export { DayGrid } from './DayGrid';
 export { MonthGrid } from './MonthGrid';

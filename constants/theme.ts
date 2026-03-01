@@ -30,12 +30,42 @@ export const AppColors = {
   },
 } as const;
 
+/** Família tipográfica Inter (carregada via useFonts em _layout.tsx) */
+export const FontFamily = {
+  regular:   'Inter-Regular',
+  medium:    'Inter-Medium',
+  semiBold:  'Inter-SemiBold',
+  bold:      'Inter-Bold',
+  extraBold: 'Inter-ExtraBold',
+} as const;
+
+/** Arrays de gradiente prontos para uso com expo-linear-gradient */
+export const Gradients = {
+  /** Hero cards — diagonal roxo escuro → roxo vibrante */
+  hero: ['#3A0CA3', '#7C3AED'] as const,
+  /** Botão CTA primário */
+  cta:  ['#6C2DC7', '#9333EA'] as const,
+} as const;
+
 /** Tema para o componente Calendar do react-native-calendars */
 export const calendarTheme = {
+  backgroundColor: AppColors.background,
+  calendarBackground: AppColors.white,
+  textSectionTitleColor: AppColors.muted,
+  selectedDayBackgroundColor: AppColors.accent,
+  selectedDayTextColor: AppColors.white,
   todayTextColor: AppColors.accent,
+  todayBackgroundColor: '#EDE9FE',
+  dayTextColor: AppColors.dark,
+  textDisabledColor: AppColors.border,
+  dotColor: AppColors.accent,
+  selectedDotColor: AppColors.white,
   arrowColor: AppColors.primary,
   monthTextColor: AppColors.primary,
-  textDayFontSize: 16,
-  textMonthFontSize: 18,
-  textDayHeaderFontSize: 13,
+  textDayFontFamily: FontFamily.medium,
+  textMonthFontFamily: FontFamily.bold,
+  textDayHeaderFontFamily: FontFamily.semiBold,
+  textDayFontSize: 15,
+  textMonthFontSize: 17,
+  textDayHeaderFontSize: 12,
 };

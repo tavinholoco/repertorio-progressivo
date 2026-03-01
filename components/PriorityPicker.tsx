@@ -1,13 +1,83 @@
+import { useEffect } from 'react';
 import { Text, TouchableOpacity, View } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
+import Animated, {
+  useSharedValue,
+  useAnimatedStyle,
+  withSpring,
+} from 'react-native-reanimated';
 
-import { AppColors } from '@/constants/theme';
+import { AppColors, FontFamily } from '@/constants/theme';
 
 const PRIORITY_OPTIONS = [
-  { color: AppColors.priority.green, icon: 'check-circle' as const },
-  { color: AppColors.priority.yellow, icon: 'star' as const },
-  { color: AppColors.priority.red, icon: 'warning' as const },
+  { color: AppColors.priority.green, icon: 'check-circle' as const, label: 'Baixa' },
+  { color: AppColors.priority.yellow, icon: 'star' as const, label: 'Média' },
+  { color: AppColors.priority.red, icon: 'warning' as const, label: 'Alta' },
 ];
+
+function PriorityButton({
+  color,
+  icon,
+  label,
+  isSelected,
+  onPress,
+}: {
+  color: string;
+  icon: 'check-circle' | 'star' | 'warning' | 'palette';
+  label: string;
+  isSelected: boolean;
+  onPress: () => void;
+}) {
+  const scale = useSharedValue(1);
+
+  useEffect(() => {
+    scale.value = withSpring(isSelected ? 1.1 : 1.0, {
+      damping: 12,
+      stiffness: 180,
+    });
+  }, [isSelected, scale]);
+
+  const animatedStyle = useAnimatedStyle(() => ({
+    transform: [{ scale: scale.value }],
+  }));
+
+  return (
+    <View style={{ alignItems: 'center' }}>
+      <Animated.View style={animatedStyle}>
+        <TouchableOpacity
+          onPress={onPress}
+          style={{
+            alignItems: 'center',
+            justifyContent: 'center',
+            width: 72,
+            height: 72,
+            borderRadius: 16,
+            backgroundColor: color,
+            borderWidth: isSelected ? 3 : 0,
+            borderColor: isSelected ? '#fff' : 'transparent',
+            shadowColor: isSelected ? color : 'transparent',
+            shadowOpacity: isSelected ? 0.5 : 0,
+            shadowRadius: 10,
+            shadowOffset: { width: 0, height: 4 },
+            elevation: isSelected ? 8 : 2,
+          }}
+        >
+          <MaterialIcons name={icon} size={36} color={AppColors.white} />
+        </TouchableOpacity>
+      </Animated.View>
+      <Text
+        style={{
+          fontFamily: FontFamily.medium,
+          fontSize: 11,
+          color: isSelected ? AppColors.dark : AppColors.muted,
+          marginTop: 6,
+        }}
+      >
+        {label}
+      </Text>
+    </View>
+  );
+}
 
 interface PriorityPickerProps {
   selectedColor: string | null;
@@ -26,36 +96,35 @@ export function PriorityPicker({
 }: PriorityPickerProps) {
   return (
     <>
-      <Text className="text-brand-dark text-base mb-3 font-medium">Prioridade</Text>
-      <View className="flex-row justify-around mb-2">
-        {PRIORITY_OPTIONS.map(({ color, icon }) => (
-          <TouchableOpacity
+      <Text style={{ fontFamily: FontFamily.medium, fontSize: 16, color: AppColors.dark, marginBottom: 12 }}>
+        Prioridade
+      </Text>
+      <View style={{ flexDirection: 'row', justifyContent: 'space-around', marginBottom: 8 }}>
+        {PRIORITY_OPTIONS.map(({ color, icon, label }) => (
+          <PriorityButton
             key={color}
+            color={color}
+            icon={icon}
+            label={label}
+            isSelected={selectedColor === color}
             onPress={() => onSelect(color)}
-            className={`items-center justify-center w-20 h-20 rounded-2xl shadow-md border-4 ${
-              selectedColor === color ? 'border-brand-primary' : 'border-transparent'
-            }`}
-            style={{ backgroundColor: color }}
-          >
-            <MaterialIcons name={icon} size={40} color={AppColors.white} />
-          </TouchableOpacity>
+          />
         ))}
 
-        {/* Botão de cor personalizada */}
-        <TouchableOpacity
+        <PriorityButton
+          color={customColor ?? '#CCCCCC'}
+          icon="palette"
+          label="Custom"
+          isSelected={selectedColor === 'custom'}
           onPress={onOpenColorPicker}
-          className={`items-center justify-center w-20 h-20 rounded-2xl shadow-md border-4 ${
-            selectedColor === 'custom' ? 'border-brand-primary' : 'border-transparent'
-          }`}
-          style={{ backgroundColor: customColor ?? '#CCCCCC' }}
-        >
-          <MaterialIcons name="palette" size={40} color={AppColors.white} />
-        </TouchableOpacity>
+        />
       </View>
       {error ? (
-        <Text className="text-priority-red text-sm mb-4">{error}</Text>
+        <Text style={{ fontFamily: FontFamily.regular, fontSize: 13, color: AppColors.priority.red, marginBottom: 16 }}>
+          {error}
+        </Text>
       ) : (
-        <View className="mb-4" />
+        <View style={{ marginBottom: 16 }} />
       )}
     </>
   );
