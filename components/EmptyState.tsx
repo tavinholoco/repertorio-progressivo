@@ -2,7 +2,7 @@ import { Text } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import Animated, { FadeIn } from 'react-native-reanimated';
 
-import { FontFamily } from '@/constants/theme';
+import { AppColors, FontFamily } from '@/constants/theme';
 
 interface EmptyStateProps {
   icon: keyof typeof Ionicons.glyphMap;
@@ -21,20 +21,20 @@ export function EmptyState({ icon, title, subtitle }: EmptyStateProps) {
           width: 96,
           height: 96,
           borderRadius: 48,
-          backgroundColor: '#F0EBFF',
+          backgroundColor: AppColors.lightPurple,
           alignItems: 'center',
           justifyContent: 'center',
           marginBottom: 16,
         }}
       >
-        <Ionicons name={icon} size={48} color="#6C2DC7" />
+        <Ionicons name={icon} size={48} color={AppColors.accent} />
       </Animated.View>
 
       <Text
         style={{
           fontFamily: FontFamily.bold,
           fontSize: 16,
-          color: '#1E1E1E',
+          color: AppColors.dark,
           textAlign: 'center',
           marginBottom: 6,
         }}
@@ -47,7 +47,7 @@ export function EmptyState({ icon, title, subtitle }: EmptyStateProps) {
           style={{
             fontFamily: FontFamily.regular,
             fontSize: 14,
-            color: '#999',
+            color: AppColors.muted,
             textAlign: 'center',
             maxWidth: 260,
           }}

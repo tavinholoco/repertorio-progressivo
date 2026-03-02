@@ -3,8 +3,8 @@ import { MaterialIcons, Ionicons } from '@expo/vector-icons';
 import Animated, { FadeInDown, LinearTransition } from 'react-native-reanimated';
 
 import { AppColors, FontFamily } from '@/constants/theme';
-import { resolveColor } from '@/hooks/useAgendaForm';
-import { formatDisplayDate, formatDisplayTime } from '@/utils/dateHelpers';
+import { resolveColor } from '@/hooks';
+import { formatDisplayDate, formatDisplayTime } from '@/utils';
 import type { Reminder } from '@/types';
 
 interface ReminderItemProps {
@@ -61,7 +61,7 @@ export function ReminderItem({ reminder, index, onEdit, onDelete }: ReminderItem
           style={{
             flexDirection: 'row',
             alignItems: 'center',
-            backgroundColor: '#FFF3B0',
+            backgroundColor: AppColors.yellow,
             borderRadius: 12,
             paddingHorizontal: 8,
             paddingVertical: 3,
@@ -76,11 +76,11 @@ export function ReminderItem({ reminder, index, onEdit, onDelete }: ReminderItem
         </View>
       </View>
 
-      <TouchableOpacity onPress={() => onEdit(reminder)} style={{ padding: 8, marginRight: 2 }}>
+      <TouchableOpacity onPress={() => onEdit(reminder)} style={{ padding: 8, marginRight: 2 }} accessibilityLabel="Editar lembrete" accessibilityRole="button">
         <MaterialIcons name="edit" size={22} color={AppColors.accent} />
       </TouchableOpacity>
 
-      <TouchableOpacity onPress={handleDelete} style={{ padding: 8 }}>
+      <TouchableOpacity onPress={handleDelete} style={{ padding: 8 }} accessibilityLabel="Remover lembrete" accessibilityRole="button">
         <MaterialIcons name="delete-outline" size={22} color={AppColors.priority.red} />
       </TouchableOpacity>
     </Animated.View>

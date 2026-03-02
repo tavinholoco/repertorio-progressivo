@@ -1,4 +1,6 @@
 import { TextInput, type TextInputProps } from 'react-native';
+
+import { AppColors } from '@/constants/theme';
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
@@ -23,13 +25,13 @@ export function AnimatedTextInput({
     const borderColor = interpolateColor(
       focus.value,
       [0, 1],
-      ['#E0E0E0', '#6C2DC7'],
+      [AppColors.border, AppColors.accent],
     );
     return {
       borderWidth: 1,
       borderColor,
       borderRadius: 16,
-      backgroundColor: '#fff',
+      backgroundColor: AppColors.white,
     };
   });
 
@@ -44,7 +46,7 @@ export function AnimatedTextInput({
           focus.value = withTiming(0, { duration: 200 });
           onBlur?.(e);
         }}
-        style={[{ padding: 16, fontSize: 14, color: '#1E1E1E' }, style]}
+        style={[{ padding: 16, fontSize: 14, color: AppColors.dark }, style]}
         {...rest}
       />
     </Animated.View>

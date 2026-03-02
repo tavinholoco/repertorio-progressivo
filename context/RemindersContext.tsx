@@ -101,11 +101,15 @@ export function RemindersProvider({ children }: { children: React.ReactNode }) {
       createdAt: new Date().toISOString(),
     };
 
-    const notificationId = await scheduleReminderNotification(reminder);
-    if (notificationId) reminder.notificationId = notificationId;
-
     await saveReminder(reminder);
-    dispatch({ type: 'ADD', payload: reminder });
+
+    const notificationId = await scheduleReminderNotification(reminder);
+    const saved: Reminder = notificationId
+      ? { ...reminder, notificationId }
+      : reminder;
+
+    if (notificationId) await saveReminder(saved);
+    dispatch({ type: 'ADD', payload: saved });
   }
 
   async function updateReminder(reminder: Reminder): Promise<void> {

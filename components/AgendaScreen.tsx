@@ -11,13 +11,15 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 import { Calendar } from 'react-native-calendars';
 import { LinearGradient } from 'expo-linear-gradient';
 
-import { AppColors, calendarTheme, FontFamily, Gradients } from '@/constants/theme';
-import { useAgendaForm } from '@/hooks/useAgendaForm';
-import { AnimatedTextInput } from '@/components/AnimatedTextInput';
-import { ColorPickerModal } from '@/components/ColorPickerModal';
-import { EmptyState } from '@/components/EmptyState';
-import { ReminderItem } from '@/components/ReminderItem';
-import { PriorityPicker } from '@/components/PriorityPicker';
+import { AppColors, calendarTheme, FontFamily, Gradients, Layout } from '@/constants';
+import { useAgendaForm } from '@/hooks';
+import {
+  AnimatedTextInput,
+  ColorPickerModal,
+  EmptyState,
+  ReminderItem,
+  PriorityPicker,
+} from '@/components';
 
 export default function AgendaScreen() {
   const {
@@ -51,7 +53,7 @@ export default function AgendaScreen() {
   return (
     <FlatList
       className="flex-1 bg-brand-light"
-      contentContainerStyle={{ padding: 24, paddingTop: 56, paddingBottom: 160 }}
+      contentContainerStyle={{ padding: Layout.screenPadding, paddingTop: Layout.screenPaddingTop, paddingBottom: Layout.screenPaddingBottom }}
       ListHeaderComponent={
         <>
           {/* ── Hero Card ── */}
@@ -61,10 +63,10 @@ export default function AgendaScreen() {
             end={{ x: 1, y: 1 }}
             style={{ borderRadius: 24, padding: 20, marginBottom: 24 }}
           >
-            <Text style={{ color: '#fff', fontSize: 20, fontFamily: FontFamily.bold, textAlign: 'center' }}>
+            <Text style={{ color: AppColors.white, fontSize: 20, fontFamily: FontFamily.bold, textAlign: 'center' }}>
               Agenda
             </Text>
-            <Text style={{ color: '#fff', fontSize: 14, textAlign: 'center', marginTop: 4, opacity: 0.85, fontFamily: FontFamily.regular }}>
+            <Text style={{ color: AppColors.white, fontSize: 14, textAlign: 'center', marginTop: 4, opacity: 0.85, fontFamily: FontFamily.regular }}>
               {new Date().toLocaleDateString('pt-BR', {
                 weekday: 'long',
                 day: 'numeric',
@@ -94,10 +96,12 @@ export default function AgendaScreen() {
             </Text>
             <TouchableOpacity
               onPress={() => setShowDatePicker(true)}
+              accessibilityLabel="Selecionar data"
+              accessibilityRole="button"
               style={{
                 flexDirection: 'row',
                 alignItems: 'center',
-                backgroundColor: '#fff',
+                backgroundColor: AppColors.white,
                 padding: 14,
                 borderRadius: 16,
                 borderWidth: 1,
@@ -109,13 +113,13 @@ export default function AgendaScreen() {
                   width: 36,
                   height: 36,
                   borderRadius: 12,
-                  backgroundColor: '#EDE9FE',
+                  backgroundColor: AppColors.lightPurple,
                   alignItems: 'center',
                   justifyContent: 'center',
                   marginRight: 12,
                 }}
               >
-                <Ionicons name="calendar-outline" size={18} color="#6C2DC7" />
+                <Ionicons name="calendar-outline" size={18} color={AppColors.accent} />
               </View>
               <Text style={{ flex: 1, fontFamily: FontFamily.medium, fontSize: 14, color: AppColors.dark }}>
                 {date.toLocaleDateString('pt-BR')}
@@ -142,10 +146,12 @@ export default function AgendaScreen() {
             </Text>
             <TouchableOpacity
               onPress={() => setShowTimePicker(true)}
+              accessibilityLabel="Selecionar horário"
+              accessibilityRole="button"
               style={{
                 flexDirection: 'row',
                 alignItems: 'center',
-                backgroundColor: '#fff',
+                backgroundColor: AppColors.white,
                 padding: 14,
                 borderRadius: 16,
                 borderWidth: 1,
@@ -157,13 +163,13 @@ export default function AgendaScreen() {
                   width: 36,
                   height: 36,
                   borderRadius: 12,
-                  backgroundColor: '#EDE9FE',
+                  backgroundColor: AppColors.lightPurple,
                   alignItems: 'center',
                   justifyContent: 'center',
                   marginRight: 12,
                 }}
               >
-                <Ionicons name="time-outline" size={18} color="#6C2DC7" />
+                <Ionicons name="time-outline" size={18} color={AppColors.accent} />
               </View>
               <Text style={{ flex: 1, fontFamily: FontFamily.medium, fontSize: 14, color: AppColors.dark }}>
                 {time.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}
@@ -213,7 +219,7 @@ export default function AgendaScreen() {
               overflow: 'hidden',
               marginBottom: 8,
               elevation: 6,
-              shadowColor: '#6C2DC7',
+              shadowColor: AppColors.accent,
               shadowOpacity: 0.4,
               shadowRadius: 12,
               shadowOffset: { width: 0, height: 4 },
@@ -254,12 +260,12 @@ export default function AgendaScreen() {
           {/* ── Título da lista ── */}
           {state.reminders.length > 0 && (
             <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 24, marginBottom: 12 }}>
-              <View style={{ width: 4, height: 20, backgroundColor: '#6C2DC7', borderRadius: 2, marginRight: 10 }} />
-              <Text style={{ flex: 1, fontFamily: FontFamily.bold, fontSize: 16, color: '#1E1E1E' }}>
+              <View style={{ width: 4, height: 20, backgroundColor: AppColors.accent, borderRadius: 2, marginRight: 10 }} />
+              <Text style={{ flex: 1, fontFamily: FontFamily.bold, fontSize: 16, color: AppColors.dark }}>
                 Lembretes salvos
               </Text>
-              <View style={{ backgroundColor: '#EDE9FE', borderRadius: 12, paddingHorizontal: 8, paddingVertical: 2 }}>
-                <Text style={{ fontSize: 12, fontFamily: FontFamily.semiBold, color: '#6C2DC7' }}>
+              <View style={{ backgroundColor: AppColors.lightPurple, borderRadius: 12, paddingHorizontal: 8, paddingVertical: 2 }}>
+                <Text style={{ fontSize: 12, fontFamily: FontFamily.semiBold, color: AppColors.accent }}>
                   {state.reminders.length}
                 </Text>
               </View>

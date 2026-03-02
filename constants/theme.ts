@@ -22,6 +22,14 @@ export const AppColors = {
   /** Quase-preto — texto primário */
   dark: '#1E1E1E',
   white: '#FFFFFF',
+  /** Roxo muito claro — destaque de hoje no calendário, pills */
+  lightPurple: '#EDE9FE',
+  /** Cinza de fallback para cores desconhecidas */
+  fallbackGray: '#888888',
+  /** Verde muito claro — fundo de itens completos */
+  lightGreen: '#F0FFF4',
+  /** Roxo muito claro (hover/fundo) — usados em MonthGrid */
+  lightAccent: '#F5F3FF',
 
   priority: {
     green: '#4ADE80',
@@ -47,6 +55,33 @@ export const Gradients = {
   cta:  ['#6C2DC7', '#9333EA'] as const,
 } as const;
 
+/** Constantes de layout compartilhadas */
+export const Layout = {
+  /** Padding padrão do conteúdo das telas */
+  screenPadding: 24,
+  /** Padding superior das telas (safe area) */
+  screenPaddingTop: 56,
+  /** Padding inferior para não sobrepor a tab bar */
+  screenPaddingBottom: 160,
+  /** Raio de borda padrão para cards */
+  cardRadius: 16,
+  /** Raio de borda para hero cards */
+  heroRadius: 24,
+  /** Tab bar */
+  tabBar: {
+    offset: 20,
+    height: 80,
+    borderRadius: 30,
+    focusPaddingH: 14,
+    focusPaddingV: 5,
+  },
+  /** Duração de animações (ms) */
+  animation: {
+    progress: 800,
+    focus: 200,
+  },
+} as const;
+
 /** Tema para o componente Calendar do react-native-calendars */
 export const calendarTheme = {
   backgroundColor: AppColors.background,
@@ -55,7 +90,7 @@ export const calendarTheme = {
   selectedDayBackgroundColor: AppColors.accent,
   selectedDayTextColor: AppColors.white,
   todayTextColor: AppColors.accent,
-  todayBackgroundColor: '#EDE9FE',
+  todayBackgroundColor: AppColors.lightPurple,
   dayTextColor: AppColors.dark,
   textDisabledColor: AppColors.border,
   dotColor: AppColors.accent,

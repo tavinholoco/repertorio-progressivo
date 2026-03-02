@@ -13,7 +13,7 @@ import {
 
 import { AproveitamentoProvider } from '@/context/AproveitamentoContext';
 import { RemindersProvider } from '@/context/RemindersContext';
-import { AppColors, FontFamily } from '@/constants/theme';
+import { AppColors, FontFamily, Layout as AppLayout } from '@/constants';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
 
 export default function Layout() {
@@ -42,12 +42,12 @@ export default function Layout() {
 
                 tabBarStyle: {
                   position: 'absolute',
-                  bottom: 20,
-                  left: 20,
-                  right: 20,
-                  height: 80,
+                  bottom: AppLayout.tabBar.offset,
+                  left: AppLayout.tabBar.offset,
+                  right: AppLayout.tabBar.offset,
+                  height: AppLayout.tabBar.height,
                   backgroundColor: AppColors.white,
-                  borderRadius: 30,
+                  borderRadius: AppLayout.tabBar.borderRadius,
                   elevation: 8,
                   shadowColor: '#000',
                   shadowOpacity: 0.12,
@@ -64,9 +64,9 @@ export default function Layout() {
                   tabBarIcon: ({ color, focused }) => (
                     <View
                       style={{
-                        paddingHorizontal: focused ? 14 : 0,
-                        paddingVertical: focused ? 5 : 0,
-                        backgroundColor: focused ? '#EDE9FE' : 'transparent',
+                        paddingHorizontal: focused ? AppLayout.tabBar.focusPaddingH : 0,
+                        paddingVertical: focused ? AppLayout.tabBar.focusPaddingV : 0,
+                        backgroundColor: focused ? AppColors.lightPurple : 'transparent',
                         borderRadius: 20,
                       }}
                     >
@@ -87,9 +87,9 @@ export default function Layout() {
                   tabBarIcon: ({ color, focused }) => (
                     <View
                       style={{
-                        paddingHorizontal: focused ? 14 : 0,
-                        paddingVertical: focused ? 5 : 0,
-                        backgroundColor: focused ? '#EDE9FE' : 'transparent',
+                        paddingHorizontal: focused ? AppLayout.tabBar.focusPaddingH : 0,
+                        paddingVertical: focused ? AppLayout.tabBar.focusPaddingV : 0,
+                        backgroundColor: focused ? AppColors.lightPurple : 'transparent',
                         borderRadius: 20,
                       }}
                     >

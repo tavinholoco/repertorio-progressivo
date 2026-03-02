@@ -19,10 +19,10 @@ export function ColorPickerModal({
   onSelect,
   onClose,
 }: ColorPickerModalProps) {
-  const pickedColor = useRef(selectedColor ?? '#6C2DC7');
+  const pickedColor = useRef(selectedColor ?? AppColors.accent);
 
   useEffect(() => {
-    pickedColor.current = selectedColor ?? '#6C2DC7';
+    pickedColor.current = selectedColor ?? AppColors.accent;
   }, [selectedColor]);
 
   const backdropContent = (
@@ -39,7 +39,7 @@ export function ColorPickerModal({
         </Text>
 
         <ColorPicker
-          value={selectedColor ?? '#6C2DC7'}
+          value={selectedColor ?? AppColors.accent}
           onCompleteJS={({ hex }) => { pickedColor.current = hex; }}
         >
           <Panel1 style={{ borderRadius: 12, marginBottom: 16 }} />

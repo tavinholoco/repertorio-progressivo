@@ -16,15 +16,17 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated';
 
-import { AppColors, FontFamily, Gradients } from '@/constants/theme';
-import { useAproveitamentoForm } from '@/hooks/useAproveitamentoForm';
-import { formatPeriodLabel } from '@/utils/dateHelpers';
-import { AnimatedTextInput } from '@/components/AnimatedTextInput';
-import { EmptyState } from '@/components/EmptyState';
-import { RecordItem } from '@/components/RecordItem';
-import { ProgressDonut } from '@/components/ProgressDonut';
-import { DayGrid } from '@/components/DayGrid';
-import { MonthGrid } from '@/components/MonthGrid';
+import { AppColors, FontFamily, Gradients, Layout } from '@/constants';
+import { useAproveitamentoForm } from '@/hooks';
+import { formatPeriodLabel } from '@/utils';
+import {
+  AnimatedTextInput,
+  EmptyState,
+  RecordItem,
+  ProgressDonut,
+  DayGrid,
+  MonthGrid,
+} from '@/components';
 import type { PeriodType } from '@/types';
 
 /* ── Animated Progress Bar ── */
@@ -32,7 +34,7 @@ function AnimatedProgressBar({ progress }: { progress: number }) {
   const pw = useSharedValue(0);
 
   useEffect(() => {
-    pw.value = withTiming(progress, { duration: 800 });
+    pw.value = withTiming(progress, { duration: Layout.animation.progress });
   }, [progress, pw]);
 
   const fillStyle = useAnimatedStyle(() => ({
@@ -84,7 +86,7 @@ function SegmentedToggle({
       onLayout={handleLayout}
       style={{
         flexDirection: 'row',
-        backgroundColor: '#fff',
+        backgroundColor: AppColors.white,
         borderRadius: 16,
         borderWidth: 1,
         borderColor: AppColors.border,
@@ -147,7 +149,7 @@ export default function Aproveitamento() {
   return (
     <FlatList
       className="flex-1 bg-brand-light"
-      contentContainerStyle={{ padding: 24, paddingTop: 56, paddingBottom: 160 }}
+      contentContainerStyle={{ padding: Layout.screenPadding, paddingTop: Layout.screenPaddingTop, paddingBottom: Layout.screenPaddingBottom }}
       ListHeaderComponent={
         <>
           {/* ── Hero Card ── */}
@@ -157,10 +159,10 @@ export default function Aproveitamento() {
             end={{ x: 1, y: 1 }}
             style={{ borderRadius: 24, padding: 20, marginBottom: 24, alignItems: 'center' }}
           >
-            <Text style={{ color: '#fff', fontSize: 20, fontFamily: FontFamily.bold, marginBottom: 4 }}>
+            <Text style={{ color: AppColors.white, fontSize: 20, fontFamily: FontFamily.bold, marginBottom: 4 }}>
               Aproveitamento
             </Text>
-            <Text style={{ color: '#fff', fontSize: 14, marginBottom: 16, opacity: 0.85, fontFamily: FontFamily.regular }}>
+            <Text style={{ color: AppColors.white, fontSize: 14, marginBottom: 16, opacity: 0.85, fontFamily: FontFamily.regular }}>
               {formatPeriodLabel(referencePeriod)}
             </Text>
             <ProgressDonut
@@ -205,6 +207,8 @@ export default function Aproveitamento() {
           <View className="flex-row items-center justify-between mb-5">
             <TouchableOpacity
               onPress={() => navigatePeriod(-1)}
+              accessibilityLabel="Período anterior"
+              accessibilityRole="button"
               className="bg-white border border-brand-border rounded-xl p-2"
             >
               <MaterialIcons name="chevron-left" size={24} color={AppColors.primary} />
@@ -216,6 +220,8 @@ export default function Aproveitamento() {
 
             <TouchableOpacity
               onPress={() => navigatePeriod(1)}
+              accessibilityLabel="Próximo período"
+              accessibilityRole="button"
               className="bg-white border border-brand-border rounded-xl p-2"
             >
               <MaterialIcons name="chevron-right" size={24} color={AppColors.primary} />
@@ -253,7 +259,7 @@ export default function Aproveitamento() {
               overflow: 'hidden',
               marginTop: 16,
               elevation: 6,
-              shadowColor: '#6C2DC7',
+              shadowColor: AppColors.accent,
               shadowOpacity: 0.4,
               shadowRadius: 12,
               shadowOffset: { width: 0, height: 4 },
@@ -278,12 +284,12 @@ export default function Aproveitamento() {
           {/* ── Título da lista ── */}
           {state.records.length > 0 && (
             <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 32, marginBottom: 12 }}>
-              <View style={{ width: 4, height: 20, backgroundColor: '#6C2DC7', borderRadius: 2, marginRight: 10 }} />
-              <Text style={{ flex: 1, fontFamily: FontFamily.bold, fontSize: 16, color: '#1E1E1E' }}>
+              <View style={{ width: 4, height: 20, backgroundColor: AppColors.accent, borderRadius: 2, marginRight: 10 }} />
+              <Text style={{ flex: 1, fontFamily: FontFamily.bold, fontSize: 16, color: AppColors.dark }}>
                 Registros salvos
               </Text>
-              <View style={{ backgroundColor: '#EDE9FE', borderRadius: 12, paddingHorizontal: 8, paddingVertical: 2 }}>
-                <Text style={{ fontSize: 12, fontFamily: FontFamily.semiBold, color: '#6C2DC7' }}>
+              <View style={{ backgroundColor: AppColors.lightPurple, borderRadius: 12, paddingHorizontal: 8, paddingVertical: 2 }}>
+                <Text style={{ fontSize: 12, fontFamily: FontFamily.semiBold, color: AppColors.accent }}>
                   {state.records.length}
                 </Text>
               </View>

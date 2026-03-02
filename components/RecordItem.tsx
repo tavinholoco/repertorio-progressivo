@@ -71,7 +71,7 @@ export function RecordItem({ record, index, onEdit, onDelete }: RecordItemProps)
               style={{
                 flexDirection: 'row',
                 alignItems: 'center',
-                backgroundColor: '#FFF3B0',
+                backgroundColor: AppColors.yellow,
                 borderRadius: 12,
                 paddingHorizontal: 8,
                 paddingVertical: 3,
@@ -86,12 +86,12 @@ export function RecordItem({ record, index, onEdit, onDelete }: RecordItemProps)
               style={{
                 flexDirection: 'row',
                 alignItems: 'center',
-                backgroundColor: '#F5F3FF',
+                backgroundColor: AppColors.lightAccent,
                 borderRadius: 12,
                 paddingHorizontal: 8,
                 paddingVertical: 3,
                 borderWidth: 1,
-                borderColor: '#EDE9FE',
+                borderColor: AppColors.lightPurple,
               }}
             >
               <Ionicons
@@ -107,17 +107,17 @@ export function RecordItem({ record, index, onEdit, onDelete }: RecordItemProps)
           </View>
         </View>
 
-        <TouchableOpacity onPress={() => onEdit(record)} style={{ padding: 8, marginRight: 2 }}>
+        <TouchableOpacity onPress={() => onEdit(record)} style={{ padding: 8, marginRight: 2 }} accessibilityLabel="Editar registro" accessibilityRole="button">
           <MaterialIcons name="edit" size={22} color={AppColors.accent} />
         </TouchableOpacity>
-        <TouchableOpacity onPress={handleDelete} style={{ padding: 8 }}>
+        <TouchableOpacity onPress={handleDelete} style={{ padding: 8 }} accessibilityLabel="Remover registro" accessibilityRole="button">
           <MaterialIcons name="delete-outline" size={22} color={AppColors.priority.red} />
         </TouchableOpacity>
       </View>
 
       {/* Progress bar h-2 com percentual inline */}
       <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-        <View style={{ flex: 1, height: 8, backgroundColor: '#FFF3B0', borderRadius: 9999, overflow: 'hidden' }}>
+        <View style={{ flex: 1, height: 8, backgroundColor: AppColors.yellow, borderRadius: 9999, overflow: 'hidden' }}>
           <View
             style={{
               width: `${Math.round(progress * 100)}%`,

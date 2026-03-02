@@ -34,16 +34,16 @@ export function MonthGrid({ months, onAdjust }: MonthGridProps) {
                 padding: 12,
                 margin: 4,
                 alignItems: 'center',
-                backgroundColor: isComplete ? '#F0FFF4' : '#fff',
+                backgroundColor: isComplete ? AppColors.lightGreen : AppColors.white,
                 borderWidth: 1,
-                borderColor: isComplete ? '#4ADE80' : isStarted ? '#EDE9FE' : AppColors.border,
+                borderColor: isComplete ? AppColors.priority.green : isStarted ? AppColors.lightPurple : AppColors.border,
                 elevation: isStarted ? 3 : 1,
               }}
             >
               {/* Badge checkmark para 100% */}
               {isComplete && (
                 <View style={{ position: 'absolute', top: 6, right: 6 }}>
-                  <Ionicons name="checkmark-circle" size={16} color="#4ADE80" />
+                  <Ionicons name="checkmark-circle" size={16} color={AppColors.priority.green} />
                 </View>
               )}
 
@@ -51,7 +51,7 @@ export function MonthGrid({ months, onAdjust }: MonthGridProps) {
                 style={{
                   fontFamily: FontFamily.semiBold,
                   fontSize: 13,
-                  color: isComplete ? '#4ADE80' : isStarted ? AppColors.accent : AppColors.muted,
+                  color: isComplete ? AppColors.priority.green : isStarted ? AppColors.accent : AppColors.muted,
                 }}
               >
                 {MONTH_NAMES[month.monthIndex]}
@@ -60,7 +60,7 @@ export function MonthGrid({ months, onAdjust }: MonthGridProps) {
                 style={{
                   width: '100%',
                   height: 6,
-                  backgroundColor: '#FFF3B0',
+                  backgroundColor: AppColors.yellow,
                   borderRadius: 9999,
                   marginTop: 8,
                   overflow: 'hidden',
@@ -70,7 +70,7 @@ export function MonthGrid({ months, onAdjust }: MonthGridProps) {
                   style={{
                     width: `${pct}%`,
                     height: '100%',
-                    backgroundColor: isComplete ? '#4ADE80' : AppColors.accent,
+                    backgroundColor: isComplete ? AppColors.priority.green : AppColors.accent,
                     borderRadius: 9999,
                   }}
                 />
@@ -81,8 +81,10 @@ export function MonthGrid({ months, onAdjust }: MonthGridProps) {
               <View style={{ flexDirection: 'row', gap: 8 }}>
                 <TouchableOpacity
                   onPress={() => onAdjust(month.monthIndex, -1)}
+                  accessibilityLabel={`Diminuir dias de ${MONTH_NAMES[month.monthIndex]}`}
+                  accessibilityRole="button"
                   style={{
-                    backgroundColor: '#F5F3FF',
+                    backgroundColor: AppColors.lightAccent,
                     borderWidth: 1,
                     borderColor: AppColors.border,
                     borderRadius: 8,
@@ -94,6 +96,8 @@ export function MonthGrid({ months, onAdjust }: MonthGridProps) {
                 </TouchableOpacity>
                 <TouchableOpacity
                   onPress={() => onAdjust(month.monthIndex, 1)}
+                  accessibilityLabel={`Aumentar dias de ${MONTH_NAMES[month.monthIndex]}`}
+                  accessibilityRole="button"
                   style={{
                     backgroundColor: AppColors.accent,
                     borderRadius: 8,
@@ -101,7 +105,7 @@ export function MonthGrid({ months, onAdjust }: MonthGridProps) {
                     paddingVertical: 4,
                   }}
                 >
-                  <Text style={{ fontFamily: FontFamily.bold, color: '#fff' }}>+</Text>
+                  <Text style={{ fontFamily: FontFamily.bold, color: AppColors.white }}>+</Text>
                 </TouchableOpacity>
               </View>
             </View>

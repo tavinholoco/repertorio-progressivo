@@ -1,6 +1,7 @@
+import { View } from 'react-native';
 import Svg, { Circle, Text as SvgText } from 'react-native-svg';
 
-import { FontFamily } from '@/constants/theme';
+import { AppColors, FontFamily } from '@/constants/theme';
 
 interface ProgressDonutProps {
   percentage: number;
@@ -12,9 +13,9 @@ const RADIUS = (SIZE - STROKE_WIDTH) / 2;
 const CIRCUMFERENCE = 2 * Math.PI * RADIUS;
 
 function arcColor(pct: number): string {
-  if (pct < 40) return '#4ADE80';
-  if (pct < 70) return '#F5C518';
-  return '#6C2DC7';
+  if (pct < 40) return AppColors.priority.green;
+  if (pct < 70) return AppColors.priority.yellow;
+  return AppColors.accent;
 }
 
 export function ProgressDonut({ percentage }: ProgressDonutProps) {
@@ -23,13 +24,14 @@ export function ProgressDonut({ percentage }: ProgressDonutProps) {
   const center = SIZE / 2;
 
   return (
+    <View accessible accessibilityLabel={`Progresso: ${clamped}% dos dias`} accessibilityRole="image">
     <Svg width={SIZE} height={SIZE}>
       {/* Trilha de fundo */}
       <Circle
         cx={center}
         cy={center}
         r={RADIUS}
-        stroke="#FFF3B0"
+        stroke={AppColors.yellow}
         strokeWidth={STROKE_WIDTH}
         fill="transparent"
       />
@@ -54,7 +56,7 @@ export function ProgressDonut({ percentage }: ProgressDonutProps) {
         fontSize="24"
         fontWeight="700"
         fontFamily={FontFamily.bold}
-        fill="#3A0CA3"
+        fill={AppColors.primary}
       >
         {clamped}%
       </SvgText>
@@ -65,10 +67,11 @@ export function ProgressDonut({ percentage }: ProgressDonutProps) {
         textAnchor="middle"
         fontSize="11"
         fontFamily={FontFamily.regular}
-        fill="#5C5C5C"
+        fill={AppColors.muted}
       >
         dos dias
       </SvgText>
     </Svg>
+    </View>
   );
 }

@@ -112,7 +112,7 @@ export function PriorityPicker({
         ))}
 
         <PriorityButton
-          color={customColor ?? '#CCCCCC'}
+          color={customColor ?? AppColors.border}
           icon="palette"
           label="Custom"
           isSelected={selectedColor === 'custom'}

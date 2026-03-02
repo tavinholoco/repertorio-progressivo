@@ -14,7 +14,7 @@ export const PRIORITY_COLORS: Record<Priority, string> = {
   green: AppColors.priority.green,
   yellow: AppColors.priority.yellow,
   red: AppColors.priority.red,
-  custom: '#888888',
+  custom: AppColors.fallbackGray,
 };
 
 export const COLOR_TO_PRIORITY: Record<string, Priority> = {
@@ -25,7 +25,7 @@ export const COLOR_TO_PRIORITY: Record<string, Priority> = {
 
 /** Retorna o hex correto para qualquer Reminder, incluindo prioridade customizada. */
 export function resolveColor(reminder: Pick<Reminder, 'priority' | 'customColor'>): string {
-  if (reminder.priority === 'custom') return reminder.customColor ?? '#888888';
+  if (reminder.priority === 'custom') return reminder.customColor ?? AppColors.fallbackGray;
   return PRIORITY_COLORS[reminder.priority];
 }
 
