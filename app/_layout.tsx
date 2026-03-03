@@ -18,6 +18,7 @@ import { ErrorBoundary } from '@/components/ErrorBoundary';
 
 export default function Layout() {
   const [fontsLoaded] = useFonts({
+    ...Ionicons.font,
     'Inter-Regular':   Inter_400Regular,
     'Inter-Medium':    Inter_500Medium,
     'Inter-SemiBold':  Inter_600SemiBold,
@@ -68,9 +69,12 @@ export default function Layout() {
                         paddingVertical: focused ? AppLayout.tabBar.focusPaddingV : 0,
                         backgroundColor: focused ? AppColors.lightPurple : 'transparent',
                         borderRadius: 20,
+                        alignItems: 'center',
+                        justifyContent: 'center',
                       }}
                     >
                       <Ionicons
+                        key={focused ? 'calendar' : 'calendar-outline'}
                         name={focused ? 'calendar' : 'calendar-outline'}
                         color={color}
                         size={24}
@@ -91,9 +95,12 @@ export default function Layout() {
                         paddingVertical: focused ? AppLayout.tabBar.focusPaddingV : 0,
                         backgroundColor: focused ? AppColors.lightPurple : 'transparent',
                         borderRadius: 20,
+                        alignItems: 'center',
+                        justifyContent: 'center',
                       }}
                     >
                       <Ionicons
+                        key={focused ? 'bar-chart' : 'bar-chart-outline'}
                         name={focused ? 'bar-chart' : 'bar-chart-outline'}
                         color={color}
                         size={24}
