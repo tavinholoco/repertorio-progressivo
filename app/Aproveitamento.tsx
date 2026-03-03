@@ -23,7 +23,6 @@ import {
   AnimatedTextInput,
   EmptyState,
   RecordItem,
-  ProgressDonut,
   DayGrid,
   MonthGrid,
 } from '@/components';
@@ -136,7 +135,6 @@ export default function Aproveitamento() {
     errors,
     daysInMonth,
     diasMarcados,
-    percentualDias,
     cargaProgress,
     progressLabel,
     navigatePeriod,
@@ -162,12 +160,9 @@ export default function Aproveitamento() {
             <Text style={{ color: AppColors.white, fontSize: 20, fontFamily: FontFamily.bold, marginBottom: 4 }}>
               Aproveitamento
             </Text>
-            <Text style={{ color: AppColors.white, fontSize: 14, marginBottom: 16, opacity: 0.85, fontFamily: FontFamily.regular }}>
+            <Text style={{ color: AppColors.white, fontSize: 14, opacity: 0.85, fontFamily: FontFamily.regular }}>
               {formatPeriodLabel(referencePeriod)}
             </Text>
-            <ProgressDonut
-              percentage={tempo === 'mensal' ? percentualDias : Math.round(cargaProgress * 100)}
-            />
           </LinearGradient>
 
           {/* ── Nome do evento ── */}

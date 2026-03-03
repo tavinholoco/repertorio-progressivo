@@ -62,18 +62,19 @@ export const Layout = {
   /** Padding superior das telas (safe area) */
   screenPaddingTop: 56,
   /** Padding inferior para não sobrepor a tab bar */
-  screenPaddingBottom: 160,
+  screenPaddingBottom: 140,
   /** Raio de borda padrão para cards */
   cardRadius: 16,
   /** Raio de borda para hero cards */
   heroRadius: 24,
   /** Tab bar */
   tabBar: {
-    offset: 20,
-    height: 80,
+    offset: 16,
+    height: 64,
+    width: 168,
     borderRadius: 30,
-    focusPaddingH: 14,
-    focusPaddingV: 5,
+    focusPaddingH: 12,
+    focusPaddingV: 4,
   },
   /** Duração de animações (ms) */
   animation: {

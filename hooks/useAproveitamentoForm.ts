@@ -108,10 +108,6 @@ export function useAproveitamentoForm() {
 
   // ─── Computados ────────────────────────────────────────────────────────────
   const diasMarcados = useMemo(() => dias.filter(Boolean).length, [dias]);
-  const percentualDias = useMemo(
-    () => (tempo === 'mensal' ? (diasMarcados / daysInMonth) * 100 : 0),
-    [diasMarcados, daysInMonth, tempo],
-  );
   const totalHours = Number(cargaHoraria) || 0;
   const cargaProgress = useMemo(() => {
     if (tempo === 'mensal') {
@@ -213,7 +209,6 @@ export function useAproveitamentoForm() {
     // Derivados
     daysInMonth,
     diasMarcados,
-    percentualDias,
     totalHours,
     cargaProgress,
     progressLabel,

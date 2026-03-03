@@ -1,4 +1,4 @@
-import { View } from 'react-native';
+import { Dimensions, View } from 'react-native';
 import { Tabs } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
@@ -11,11 +11,15 @@ import {
   Inter_800ExtraBold,
 } from '@expo-google-fonts/inter';
 
+import { LinearGradient } from 'expo-linear-gradient';
+
 import { AproveitamentoProvider } from '@/context/AproveitamentoContext';
 import { RemindersProvider } from '@/context/RemindersContext';
-import { AppColors, FontFamily, Layout as AppLayout } from '@/constants';
+import { AppColors, Gradients, Layout as AppLayout } from '@/constants';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
 import { TabBarIcon } from '@/components/TabBarIcon';
+
+const { width: screenWidth } = Dimensions.get('window');
 
 export default function Layout() {
   const [fontsLoaded] = useFonts({
@@ -37,24 +41,23 @@ export default function Layout() {
             <Tabs
               screenOptions={{
                 headerShown: false,
-                tabBarShowLabel: true,
-                tabBarLabelStyle: { fontSize: 11, fontFamily: FontFamily.semiBold },
-                tabBarActiveTintColor: AppColors.accent,
+                tabBarShowLabel: false,
+                tabBarActiveTintColor: AppColors.white,
                 tabBarInactiveTintColor: AppColors.muted,
 
                 tabBarStyle: {
                   position: 'absolute',
                   bottom: AppLayout.tabBar.offset,
-                  left: AppLayout.tabBar.offset,
-                  right: AppLayout.tabBar.offset,
+                  left: Math.round((screenWidth - AppLayout.tabBar.width) / 2),
+                  width: AppLayout.tabBar.width,
                   height: AppLayout.tabBar.height,
                   backgroundColor: AppColors.white,
                   borderRadius: AppLayout.tabBar.borderRadius,
-                  elevation: 8,
-                  shadowColor: '#000',
-                  shadowOpacity: 0.12,
-                  shadowRadius: 8,
-                  shadowOffset: { width: 0, height: 4 },
+                  elevation: 12,
+                  shadowColor: AppColors.accent,
+                  shadowOpacity: 0.25,
+                  shadowRadius: 16,
+                  shadowOffset: { width: 0, height: 6 },
                   borderTopWidth: 0,
                 },
               }}
@@ -63,24 +66,27 @@ export default function Layout() {
                 name="index"
                 options={{
                   title: 'Agenda',
-                  tabBarIcon: ({ color, focused }) => (
-                    <View
-                      style={{
-                        paddingHorizontal: focused ? AppLayout.tabBar.focusPaddingH : 0,
-                        paddingVertical: focused ? AppLayout.tabBar.focusPaddingV : 0,
-                        backgroundColor: focused ? AppColors.lightPurple : 'transparent',
-                        borderRadius: 20,
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                      }}
-                    >
-                      <TabBarIcon
-                        name={focused ? 'calendar' : 'calendar-outline'}
-                        color={color}
-                        size={24}
-                      />
-                    </View>
-                  ),
+                  tabBarIcon: ({ color, focused }) =>
+                    focused ? (
+                      <LinearGradient
+                        colors={Gradients.hero}
+                        start={{ x: 0, y: 0 }}
+                        end={{ x: 1, y: 0 }}
+                        style={{
+                          paddingHorizontal: AppLayout.tabBar.focusPaddingH,
+                          paddingVertical: AppLayout.tabBar.focusPaddingV,
+                          borderRadius: 20,
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                        }}
+                      >
+                        <TabBarIcon name="calendar" color={color} size={24} />
+                      </LinearGradient>
+                    ) : (
+                      <View style={{ alignItems: 'center', justifyContent: 'center' }}>
+                        <TabBarIcon name="calendar-outline" color={color} size={24} />
+                      </View>
+                    ),
                 }}
               />
 
@@ -88,24 +94,27 @@ export default function Layout() {
                 name="Aproveitamento"
                 options={{
                   title: 'Aproveitamento',
-                  tabBarIcon: ({ color, focused }) => (
-                    <View
-                      style={{
-                        paddingHorizontal: focused ? AppLayout.tabBar.focusPaddingH : 0,
-                        paddingVertical: focused ? AppLayout.tabBar.focusPaddingV : 0,
-                        backgroundColor: focused ? AppColors.lightPurple : 'transparent',
-                        borderRadius: 20,
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                      }}
-                    >
-                      <TabBarIcon
-                        name={focused ? 'bar-chart' : 'bar-chart-outline'}
-                        color={color}
-                        size={24}
-                      />
-                    </View>
-                  ),
+                  tabBarIcon: ({ color, focused }) =>
+                    focused ? (
+                      <LinearGradient
+                        colors={Gradients.hero}
+                        start={{ x: 0, y: 0 }}
+                        end={{ x: 1, y: 0 }}
+                        style={{
+                          paddingHorizontal: AppLayout.tabBar.focusPaddingH,
+                          paddingVertical: AppLayout.tabBar.focusPaddingV,
+                          borderRadius: 20,
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                        }}
+                      >
+                        <TabBarIcon name="bar-chart" color={color} size={24} />
+                      </LinearGradient>
+                    ) : (
+                      <View style={{ alignItems: 'center', justifyContent: 'center' }}>
+                        <TabBarIcon name="bar-chart-outline" color={color} size={24} />
+                      </View>
+                    ),
                 }}
               />
             </Tabs>
