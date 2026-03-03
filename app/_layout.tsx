@@ -15,6 +15,7 @@ import { AproveitamentoProvider } from '@/context/AproveitamentoContext';
 import { RemindersProvider } from '@/context/RemindersContext';
 import { AppColors, FontFamily, Layout as AppLayout } from '@/constants';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
+import { TabBarIcon } from '@/components/TabBarIcon';
 
 export default function Layout() {
   const [fontsLoaded] = useFonts({
@@ -73,8 +74,7 @@ export default function Layout() {
                         justifyContent: 'center',
                       }}
                     >
-                      <Ionicons
-                        key={focused ? 'calendar' : 'calendar-outline'}
+                      <TabBarIcon
                         name={focused ? 'calendar' : 'calendar-outline'}
                         color={color}
                         size={24}
@@ -99,8 +99,7 @@ export default function Layout() {
                         justifyContent: 'center',
                       }}
                     >
-                      <Ionicons
-                        key={focused ? 'bar-chart' : 'bar-chart-outline'}
+                      <TabBarIcon
                         name={focused ? 'bar-chart' : 'bar-chart-outline'}
                         color={color}
                         size={24}
