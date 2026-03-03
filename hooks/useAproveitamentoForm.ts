@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { Alert } from 'react-native';
 import * as Haptics from 'expo-haptics';
 
@@ -30,6 +30,7 @@ export function useAproveitamentoForm() {
   );
 
   // Edição e submissão
+  const skipNextHydrationRef = useRef(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -41,13 +42,27 @@ export function useAproveitamentoForm() {
     );
 
     if (existing) {
-      setEvento(existing.eventName);
-      setCargaHoraria(String(existing.totalHours));
-      setDias(existing.monthlyDays);
-      setAnnualMonths(existing.annualMonths);
-      setEditingId(existing.id);
+      if (skipNextHydrationRef.current) {
+        // Acabou de salvar novo registro — limpar formulário
+        skipNextHydrationRef.current = false;
+        const [y] = referencePeriod.split('-').map(Number);
+        setEvento('');
+        setCargaHoraria('');
+        setDias(Array.from({ length: getDaysInMonth(referencePeriod) }, () => false));
+        setAnnualMonths(buildAnnualMonths(y));
+        setEditingId(null);
+      } else {
+        // Navegação normal para período com registro → modo edição
+        setEvento(existing.eventName);
+        setCargaHoraria(String(existing.totalHours));
+        setDias(existing.monthlyDays);
+        setAnnualMonths(existing.annualMonths);
+        setEditingId(existing.id);
+      }
     } else {
       const [y] = referencePeriod.split('-').map(Number);
+      setEvento('');
+      setCargaHoraria('');
       setDias(Array.from({ length: getDaysInMonth(referencePeriod) }, () => false));
       setAnnualMonths(buildAnnualMonths(y));
       setEditingId(null);
@@ -155,6 +170,7 @@ export function useAproveitamentoForm() {
         await updateRecord({ ...existing, ...payload });
       } else {
         await addRecord(payload);
+        skipNextHydrationRef.current = true;
       }
 
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);

@@ -13,13 +13,11 @@ import { LinearGradient } from 'expo-linear-gradient';
 
 import { AppColors, calendarTheme, FontFamily, Gradients, Layout } from '@/constants';
 import { useAgendaForm } from '@/hooks';
-import {
-  AnimatedTextInput,
-  ColorPickerModal,
-  EmptyState,
-  ReminderItem,
-  PriorityPicker,
-} from '@/components';
+import { AnimatedTextInput } from './AnimatedTextInput';
+import { ColorPickerModal } from './ColorPickerModal';
+import { EmptyState } from './EmptyState';
+import { ReminderItem } from './ReminderItem';
+import { PriorityPicker } from './PriorityPicker';
 
 export default function AgendaScreen() {
   const {

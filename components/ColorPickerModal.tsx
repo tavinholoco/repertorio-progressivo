@@ -49,6 +49,8 @@ export function ColorPickerModal({
         <View style={{ flexDirection: 'row', marginTop: 24, gap: 12 }}>
           <TouchableOpacity
             onPress={onClose}
+            accessibilityRole="button"
+            accessibilityLabel="Cancelar seleção de cor"
             style={{
               flex: 1,
               paddingVertical: 14,
@@ -63,6 +65,8 @@ export function ColorPickerModal({
 
           <TouchableOpacity
             onPress={() => onSelect(pickedColor.current)}
+            accessibilityRole="button"
+            accessibilityLabel="Confirmar cor selecionada"
             style={{
               flex: 1,
               paddingVertical: 14,
@@ -84,6 +88,7 @@ export function ColorPickerModal({
       transparent
       animationType="fade"
       onRequestClose={onClose}
+      accessibilityViewIsModal
     >
       <GestureHandlerRootView style={{ flex: 1 }}>
         {Platform.OS === 'ios' ? (
