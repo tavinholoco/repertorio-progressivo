@@ -8,6 +8,17 @@ import type { AproveitamentoRecord } from '@/types';
 import { Badge } from './Badge';
 import { ProgressBar } from './ProgressBar';
 
+function computeProgress(record: AproveitamentoRecord): { value: number; label: string } {
+  if (record.periodType === 'mensal') {
+    const marked = record.monthlyDays.filter(Boolean).length;
+    const total = record.monthlyDays.length;
+    return { value: total > 0 ? marked / total : 0, label: `${marked}/${total} dias` };
+  }
+  const totalDays = record.annualMonths.reduce((s, m) => s + m.totalDays, 0);
+  const doneDays = record.annualMonths.reduce((s, m) => s + m.completedDays, 0);
+  return { value: totalDays > 0 ? doneDays / totalDays : 0, label: `${doneDays}/${totalDays} dias` };
+}
+
 interface RecordItemProps {
   record: AproveitamentoRecord;
   index: number;
@@ -16,25 +27,7 @@ interface RecordItemProps {
 }
 
 export function RecordItem({ record, index, onEdit, onDelete }: RecordItemProps) {
-  const progress = (() => {
-    if (record.periodType === 'mensal') {
-      const marked = record.monthlyDays.filter(Boolean).length;
-      return record.monthlyDays.length > 0 ? marked / record.monthlyDays.length : 0;
-    }
-    const totalDays = record.annualMonths.reduce((s, m) => s + m.totalDays, 0);
-    const doneDays = record.annualMonths.reduce((s, m) => s + m.completedDays, 0);
-    return totalDays > 0 ? doneDays / totalDays : 0;
-  })();
-
-  const progressLabel = (() => {
-    if (record.periodType === 'mensal') {
-      const marked = record.monthlyDays.filter(Boolean).length;
-      return `${marked}/${record.monthlyDays.length} dias`;
-    }
-    const doneDays = record.annualMonths.reduce((s, m) => s + m.completedDays, 0);
-    const totalDays = record.annualMonths.reduce((s, m) => s + m.totalDays, 0);
-    return `${doneDays}/${totalDays} dias`;
-  })();
+  const { value: progress, label: progressLabel } = computeProgress(record);
 
   const typeIcon = record.periodType === 'mensal' ? 'calendar-outline' : 'stats-chart-outline';
 
@@ -98,10 +91,10 @@ export function RecordItem({ record, index, onEdit, onDelete }: RecordItemProps)
           </View>
         </View>
 
-        <TouchableOpacity onPress={() => onEdit(record)} style={{ padding: 8, marginRight: 2 }} accessibilityLabel="Editar registro" accessibilityRole="button">
+        <TouchableOpacity onPress={() => onEdit(record)} style={{ minWidth: 44, minHeight: 44, alignItems: 'center', justifyContent: 'center', marginRight: 2 }} accessibilityLabel="Editar registro" accessibilityRole="button">
           <MaterialIcons name="edit" size={22} color={AppColors.accent} />
         </TouchableOpacity>
-        <TouchableOpacity onPress={handleDelete} style={{ padding: 8 }} accessibilityLabel="Remover registro" accessibilityRole="button">
+        <TouchableOpacity onPress={handleDelete} style={{ minWidth: 44, minHeight: 44, alignItems: 'center', justifyContent: 'center' }} accessibilityLabel="Remover registro" accessibilityRole="button">
           <MaterialIcons name="delete-outline" size={22} color={AppColors.priority.red} />
         </TouchableOpacity>
       </View>

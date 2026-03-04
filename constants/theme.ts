@@ -73,6 +73,10 @@ export const Layout = {
     height: 64,
     width: 200,
     borderRadius: 32,
+    /** Raio da pílula do item ativo (menor que borderRadius do container) */
+    pillRadius: 22,
+    /** Padding do botão inativo */
+    inactivePadding: 8,
     focusPaddingH: 18,
     focusPaddingV: 12,
   },
@@ -90,7 +94,13 @@ export const Layout = {
   animation: {
     progress: 800,
     focus: 200,
+    /** Entrada de telas e itens de lista */
+    enter: 600,
   },
+  /** Barra decorativa vertical de seção (ex: "Lembretes", "Registros salvos") */
+  sectionBar: { width: 4, height: 20, borderRadius: 2 },
+  /** Raio máximo para pills totalmente arredondadas */
+  infiniteRadius: 9999,
 } as const;
 
 /** Tema para o componente Calendar do react-native-calendars */

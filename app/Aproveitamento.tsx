@@ -13,6 +13,7 @@ import { useAproveitamentoForm } from '@/hooks';
 import { formatPeriodLabel } from '@/utils';
 import {
   AnimatedTextInput,
+  Badge,
   EmptyState,
   ProgressBar,
   RecordItem,
@@ -95,7 +96,7 @@ export default function Aproveitamento() {
               placeholderTextColor={AppColors.muted}
             />
             {errors.totalHours ? (
-              <Text className="text-priority-red text-sm -mt-2 mb-2">{errors.totalHours}</Text>
+              <Text className="text-priority-red text-sm mt-1">{errors.totalHours}</Text>
             ) : null}
           </View>
 
@@ -186,14 +187,16 @@ export default function Aproveitamento() {
           {/* ── Título da lista ── */}
           {state.records.length > 0 && (
             <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 32, marginBottom: 12 }}>
-              <View style={{ width: 4, height: 20, backgroundColor: AppColors.accent, borderRadius: 2, marginRight: 10 }} />
+              <View style={{ ...Layout.sectionBar, backgroundColor: AppColors.accent, marginRight: 10 }} />
               <Text style={{ flex: 1, fontFamily: FontFamily.bold, fontSize: 16, color: AppColors.dark }}>
                 Registros salvos
               </Text>
-              <View style={{ backgroundColor: AppColors.lightPurple, borderRadius: 12, paddingHorizontal: 8, paddingVertical: 2 }}>
-                <Text style={{ fontSize: 12, fontFamily: FontFamily.semiBold, color: AppColors.accent }}>
-                  {state.records.length}
-                </Text>
+              <View accessibilityLiveRegion="polite">
+                <Badge
+                  label={String(state.records.length)}
+                  backgroundColor={AppColors.lightPurple}
+                  textColor={AppColors.accent}
+                />
               </View>
             </View>
           )}

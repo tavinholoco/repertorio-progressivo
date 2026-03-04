@@ -14,6 +14,8 @@ interface SegmentedToggleProps {
   onSelect: (t: PeriodType) => void;
 }
 
+const capitalize = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
+
 export function SegmentedToggle({ tempo, onSelect }: SegmentedToggleProps) {
   const [containerWidth, setContainerWidth] = useState(0);
   const halfWidth = containerWidth / 2;
@@ -25,7 +27,7 @@ export function SegmentedToggle({ tempo, onSelect }: SegmentedToggleProps) {
   }, [tempo, halfWidth, indicatorX]);
 
   const pillStyle = useAnimatedStyle(() => ({
-    position: 'absolute' as const,
+    position: 'absolute',
     left: indicatorX.value,
     width: halfWidth,
     height: '100%',
@@ -59,7 +61,7 @@ export function SegmentedToggle({ tempo, onSelect }: SegmentedToggleProps) {
           onPress={() => onSelect(t)}
           accessibilityRole="radio"
           accessibilityState={{ selected: t === tempo }}
-          accessibilityLabel={t.charAt(0).toUpperCase() + t.slice(1)}
+          accessibilityLabel={capitalize(t)}
           style={{ flex: 1, paddingVertical: Layout.buttonPaddingV, zIndex: 1 }}
         >
           <Text
@@ -70,7 +72,7 @@ export function SegmentedToggle({ tempo, onSelect }: SegmentedToggleProps) {
               color: tempo === t ? AppColors.white : AppColors.dark,
             }}
           >
-            {t.charAt(0).toUpperCase() + t.slice(1)}
+            {capitalize(t)}
           </Text>
         </TouchableOpacity>
       ))}

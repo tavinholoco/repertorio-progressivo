@@ -17,7 +17,77 @@ import { AnimatedTextInput } from './AnimatedTextInput';
 import { ColorPickerModal } from './ColorPickerModal';
 import { EmptyState } from './EmptyState';
 import { ReminderItem } from './ReminderItem';
+import { Badge } from './Badge';
 import { PriorityPicker } from './PriorityPicker';
+
+// ─── Sub-componente local: campo de data ou hora ─────────────────────────────
+
+interface DateTimeFieldProps {
+  label: string;
+  icon: keyof typeof Ionicons.glyphMap;
+  displayValue: string;
+  value: Date;
+  mode: 'date' | 'time';
+  show: boolean;
+  onPress: () => void;
+  onSetShow: (show: boolean) => void;
+  onValueChange: (date: Date) => void;
+}
+
+function DateTimeField({ label, icon, displayValue, value, mode, show, onPress, onSetShow, onValueChange }: DateTimeFieldProps) {
+  return (
+    <View style={{ marginBottom: 20 }}>
+      <Text style={{ fontFamily: FontFamily.semiBold, fontSize: 14, color: AppColors.dark, marginBottom: 8 }}>
+        {label}
+      </Text>
+      <TouchableOpacity
+        onPress={onPress}
+        accessibilityLabel={`Selecionar ${label}`}
+        accessibilityRole="button"
+        style={{
+          flexDirection: 'row',
+          alignItems: 'center',
+          backgroundColor: AppColors.white,
+          padding: Layout.inputPadding,
+          borderRadius: Layout.cardRadius,
+          borderWidth: 1,
+          borderColor: AppColors.border,
+        }}
+      >
+        <View
+          style={{
+            width: 36,
+            height: 36,
+            borderRadius: 12,
+            backgroundColor: AppColors.lightPurple,
+            alignItems: 'center',
+            justifyContent: 'center',
+            marginRight: 12,
+          }}
+        >
+          <Ionicons name={icon} size={18} color={AppColors.accent} />
+        </View>
+        <Text style={{ flex: 1, fontFamily: FontFamily.medium, fontSize: 14, color: AppColors.dark }}>
+          {displayValue}
+        </Text>
+        <Ionicons name="chevron-forward" size={18} color={AppColors.muted} />
+      </TouchableOpacity>
+      {show && (
+        <DateTimePicker
+          value={value}
+          mode={mode}
+          display={Platform.OS === 'ios' ? 'spinner' : 'default'}
+          onChange={(_, selected) => {
+            onSetShow(Platform.OS === 'ios');
+            if (selected) onValueChange(selected);
+          }}
+        />
+      )}
+    </View>
+  );
+}
+
+// ─── Tela principal ───────────────────────────────────────────────────────────
 
 export default function AgendaScreen() {
   const {
@@ -88,104 +158,30 @@ export default function AgendaScreen() {
           </View>
 
           {/* ── Data ── */}
-          <View style={{ marginBottom: 20 }}>
-            <Text style={{ fontFamily: FontFamily.semiBold, fontSize: 14, color: AppColors.dark, marginBottom: 8 }}>
-              Data do lembrete
-            </Text>
-            <TouchableOpacity
-              onPress={() => setShowDatePicker(true)}
-              accessibilityLabel="Selecionar data"
-              accessibilityRole="button"
-              style={{
-                flexDirection: 'row',
-                alignItems: 'center',
-                backgroundColor: AppColors.white,
-                padding: 14,
-                borderRadius: 16,
-                borderWidth: 1,
-                borderColor: AppColors.border,
-              }}
-            >
-              <View
-                style={{
-                  width: 36,
-                  height: 36,
-                  borderRadius: 12,
-                  backgroundColor: AppColors.lightPurple,
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  marginRight: 12,
-                }}
-              >
-                <Ionicons name="calendar-outline" size={18} color={AppColors.accent} />
-              </View>
-              <Text style={{ flex: 1, fontFamily: FontFamily.medium, fontSize: 14, color: AppColors.dark }}>
-                {date.toLocaleDateString('pt-BR')}
-              </Text>
-              <Ionicons name="chevron-forward" size={18} color={AppColors.muted} />
-            </TouchableOpacity>
-            {showDatePicker && (
-              <DateTimePicker
-                value={date}
-                mode="date"
-                display={Platform.OS === 'ios' ? 'spinner' : 'default'}
-                onChange={(_, selected) => {
-                  setShowDatePicker(Platform.OS === 'ios');
-                  if (selected) setDate(selected);
-                }}
-              />
-            )}
-          </View>
+          <DateTimeField
+            label="Data do lembrete"
+            icon="calendar-outline"
+            displayValue={date.toLocaleDateString('pt-BR')}
+            value={date}
+            mode="date"
+            show={showDatePicker}
+            onPress={() => setShowDatePicker(true)}
+            onSetShow={setShowDatePicker}
+            onValueChange={setDate}
+          />
 
           {/* ── Horário ── */}
-          <View style={{ marginBottom: 20 }}>
-            <Text style={{ fontFamily: FontFamily.semiBold, fontSize: 14, color: AppColors.dark, marginBottom: 8 }}>
-              Horário
-            </Text>
-            <TouchableOpacity
-              onPress={() => setShowTimePicker(true)}
-              accessibilityLabel="Selecionar horário"
-              accessibilityRole="button"
-              style={{
-                flexDirection: 'row',
-                alignItems: 'center',
-                backgroundColor: AppColors.white,
-                padding: 14,
-                borderRadius: 16,
-                borderWidth: 1,
-                borderColor: AppColors.border,
-              }}
-            >
-              <View
-                style={{
-                  width: 36,
-                  height: 36,
-                  borderRadius: 12,
-                  backgroundColor: AppColors.lightPurple,
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  marginRight: 12,
-                }}
-              >
-                <Ionicons name="time-outline" size={18} color={AppColors.accent} />
-              </View>
-              <Text style={{ flex: 1, fontFamily: FontFamily.medium, fontSize: 14, color: AppColors.dark }}>
-                {time.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}
-              </Text>
-              <Ionicons name="chevron-forward" size={18} color={AppColors.muted} />
-            </TouchableOpacity>
-            {showTimePicker && (
-              <DateTimePicker
-                value={time}
-                mode="time"
-                display={Platform.OS === 'ios' ? 'spinner' : 'default'}
-                onChange={(_, selected) => {
-                  setShowTimePicker(Platform.OS === 'ios');
-                  if (selected) setTime(selected);
-                }}
-              />
-            )}
-          </View>
+          <DateTimeField
+            label="Horário"
+            icon="time-outline"
+            displayValue={time.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}
+            value={time}
+            mode="time"
+            show={showTimePicker}
+            onPress={() => setShowTimePicker(true)}
+            onSetShow={setShowTimePicker}
+            onValueChange={setTime}
+          />
 
           {/* ── Prioridade ── */}
           <PriorityPicker
@@ -262,15 +258,15 @@ export default function AgendaScreen() {
           {/* ── Título da lista ── */}
           {state.reminders.length > 0 && (
             <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 24, marginBottom: 12 }}>
-              <View style={{ width: 4, height: 20, backgroundColor: AppColors.accent, borderRadius: 2, marginRight: 10 }} />
+              <View style={{ ...Layout.sectionBar, backgroundColor: AppColors.accent, marginRight: 10 }} />
               <Text style={{ flex: 1, fontFamily: FontFamily.bold, fontSize: 16, color: AppColors.dark }}>
                 Lembretes salvos
               </Text>
-              <View style={{ backgroundColor: AppColors.lightPurple, borderRadius: 12, paddingHorizontal: 8, paddingVertical: 2 }}>
-                <Text style={{ fontSize: 12, fontFamily: FontFamily.semiBold, color: AppColors.accent }}>
-                  {state.reminders.length}
-                </Text>
-              </View>
+              <Badge
+                label={String(state.reminders.length)}
+                backgroundColor={AppColors.lightPurple}
+                textColor={AppColors.accent}
+              />
             </View>
           )}
 

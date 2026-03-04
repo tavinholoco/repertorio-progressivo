@@ -1,7 +1,7 @@
 import { View, Pressable, useWindowDimensions, StyleSheet } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import type { BottomTabBarProps } from '@react-navigation/bottom-tabs';
-import { TabBarIcon } from './TabBarIcon';
+import { TabBarIcon } from '@/components';
 import { AppColors, Gradients, Layout } from '@/constants';
 
 type IconName = 'calendar' | 'calendar-outline' | 'bar-chart' | 'bar-chart-outline';
@@ -87,13 +87,13 @@ const styles = StyleSheet.create({
   activePill: {
     paddingHorizontal: Layout.tabBar.focusPaddingH,
     paddingVertical: Layout.tabBar.focusPaddingV,
-    borderRadius: 22,
+    borderRadius: Layout.tabBar.pillRadius,
     alignItems: 'center',
     justifyContent: 'center',
   },
   inactiveWrap: {
     alignItems: 'center',
     justifyContent: 'center',
-    padding: 8,
+    padding: Layout.tabBar.inactivePadding,
   },
 });

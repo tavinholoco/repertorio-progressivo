@@ -65,7 +65,7 @@ export function DayGrid({ days, onToggle }: DayGridProps) {
       <View className="flex-row flex-wrap justify-between mb-4">
         {days.map((marcado, index) => (
           <DayCell
-            key={index}
+            key={`day-${index}`}
             index={index}
             marcado={marcado}
             onToggle={onToggle}
