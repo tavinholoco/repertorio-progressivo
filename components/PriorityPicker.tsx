@@ -54,7 +54,7 @@ function PriorityButton({
             justifyContent: 'center',
             width: 72,
             height: 72,
-            borderRadius: 16,
+            borderRadius: Layout.cardRadius,
             backgroundColor: color,
             borderWidth: isSelected ? 3 : 0,
             borderColor: isSelected ? AppColors.white : 'transparent',

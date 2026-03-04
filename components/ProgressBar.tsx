@@ -21,7 +21,7 @@ export function ProgressBar({ progress, style }: ProgressBarProps) {
     width: `${pw.value * 100}%`,
     height: '100%',
     backgroundColor: AppColors.accent,
-    borderRadius: 9999,
+    borderRadius: Layout.infiniteRadius,
   }));
 
   return (
@@ -31,7 +31,7 @@ export function ProgressBar({ progress, style }: ProgressBarProps) {
           width: '100%',
           height: Layout.progressHeight,
           backgroundColor: AppColors.yellow,
-          borderRadius: 9999,
+          borderRadius: Layout.infiniteRadius,
           overflow: 'hidden',
         },
         style,

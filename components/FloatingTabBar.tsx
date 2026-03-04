@@ -1,7 +1,7 @@
 import { View, Pressable, useWindowDimensions, StyleSheet } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import type { BottomTabBarProps } from '@react-navigation/bottom-tabs';
-import { TabBarIcon } from '@/components';
+import { TabBarIcon } from './TabBarIcon';
 import { AppColors, Gradients, Layout } from '@/constants';
 
 type IconName = 'calendar' | 'calendar-outline' | 'bar-chart' | 'bar-chart-outline';
