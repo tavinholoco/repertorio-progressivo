@@ -172,5 +172,8 @@ function renderIcon(name: TabBarIconName, color: string) {
           />
         </>
       );
+
+    default:
+      return null;
   }
 }

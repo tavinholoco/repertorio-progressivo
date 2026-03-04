@@ -67,11 +67,11 @@ export function ReminderItem({ reminder, index, onEdit, onDelete }: ReminderItem
         </View>
       </View>
 
-      <TouchableOpacity onPress={() => onEdit(reminder)} style={{ padding: 8, marginRight: 2 }} accessibilityLabel="Editar lembrete" accessibilityRole="button">
+      <TouchableOpacity onPress={() => onEdit(reminder)} style={{ minWidth: 44, minHeight: 44, alignItems: 'center', justifyContent: 'center', marginRight: 2 }} accessibilityLabel="Editar lembrete" accessibilityRole="button">
         <MaterialIcons name="edit" size={22} color={AppColors.accent} />
       </TouchableOpacity>
 
-      <TouchableOpacity onPress={handleDelete} style={{ padding: 8 }} accessibilityLabel="Remover lembrete" accessibilityRole="button">
+      <TouchableOpacity onPress={handleDelete} style={{ minWidth: 44, minHeight: 44, alignItems: 'center', justifyContent: 'center' }} accessibilityLabel="Remover lembrete" accessibilityRole="button">
         <MaterialIcons name="delete-outline" size={22} color={AppColors.priority.red} />
       </TouchableOpacity>
     </Animated.View>

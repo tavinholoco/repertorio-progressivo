@@ -102,7 +102,7 @@ export function PriorityPicker({
       <Text style={{ fontFamily: FontFamily.medium, fontSize: 16, color: AppColors.dark, marginBottom: 12 }}>
         Prioridade
       </Text>
-      <View style={{ flexDirection: 'row', justifyContent: 'space-around', marginBottom: 8 }}>
+      <View accessibilityRole="radiogroup" accessibilityLabel="Prioridade" style={{ flexDirection: 'row', justifyContent: 'space-around', marginBottom: 8 }}>
         {PRIORITY_OPTIONS.map(({ color, icon, label }) => (
           <PriorityButton
             key={color}
@@ -115,7 +115,7 @@ export function PriorityPicker({
         ))}
 
         <PriorityButton
-          color={customColor ?? AppColors.border}
+          color={customColor ?? AppColors.lightPurple}
           icon="palette"
           label="Custom"
           isSelected={selectedColor === 'custom'}

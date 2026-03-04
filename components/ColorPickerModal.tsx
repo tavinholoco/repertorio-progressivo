@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useState } from 'react';
 import { Modal, Platform, Text, TouchableOpacity, View } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { BlurView } from 'expo-blur';
@@ -19,11 +19,7 @@ export function ColorPickerModal({
   onSelect,
   onClose,
 }: ColorPickerModalProps) {
-  const pickedColor = useRef(selectedColor ?? AppColors.accent);
-
-  useEffect(() => {
-    pickedColor.current = selectedColor ?? AppColors.accent;
-  }, [selectedColor]);
+  const [stagedColor, setStagedColor] = useState(selectedColor ?? AppColors.accent);
 
   const backdropContent = (
     <View
@@ -40,7 +36,7 @@ export function ColorPickerModal({
 
         <ColorPicker
           value={selectedColor ?? AppColors.accent}
-          onCompleteJS={({ hex }) => { pickedColor.current = hex; }}
+          onCompleteJS={({ hex }) => setStagedColor(hex)}
         >
           <Panel1 style={{ borderRadius: 12, marginBottom: 16 }} />
           <HueSlider style={{ borderRadius: 8 }} />
@@ -64,7 +60,7 @@ export function ColorPickerModal({
           </TouchableOpacity>
 
           <TouchableOpacity
-            onPress={() => onSelect(pickedColor.current)}
+            onPress={() => onSelect(stagedColor)}
             accessibilityRole="button"
             accessibilityLabel="Confirmar cor selecionada"
             style={{

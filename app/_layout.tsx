@@ -1,5 +1,5 @@
 import { Tabs } from 'expo-router';
-import { Ionicons } from '@expo/vector-icons';
+import { Ionicons } from '@expo/vector-icons'; // apenas para carregar a fonte via useFonts
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { useFonts } from 'expo-font';
 import {
@@ -16,7 +16,7 @@ import { ErrorBoundary } from '@/components/ErrorBoundary';
 import { FloatingTabBar } from '@/components/FloatingTabBar';
 
 export default function Layout() {
-  const [fontsLoaded] = useFonts({
+  const [fontsLoaded, fontError] = useFonts({
     ...Ionicons.font,
     'Inter-Regular':   Inter_400Regular,
     'Inter-Medium':    Inter_500Medium,
@@ -25,6 +25,7 @@ export default function Layout() {
     'Inter-ExtraBold': Inter_800ExtraBold,
   });
 
+  if (fontError) throw fontError;
   if (!fontsLoaded) return null;
 
   return (
@@ -36,8 +37,8 @@ export default function Layout() {
               tabBar={(props) => <FloatingTabBar {...props} />}
               screenOptions={{ headerShown: false }}
             >
-              <Tabs.Screen name="index" options={{ title: 'Agenda' }} />
-              <Tabs.Screen name="Aproveitamento" options={{ title: 'Aproveitamento' }} />
+              <Tabs.Screen name="index" options={{ title: 'Agenda', tabBarAccessibilityLabel: 'Aba Agenda' }} />
+              <Tabs.Screen name="Aproveitamento" options={{ title: 'Aproveitamento', tabBarAccessibilityLabel: 'Aba Aproveitamento' }} />
             </Tabs>
           </AproveitamentoProvider>
         </RemindersProvider>

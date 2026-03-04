@@ -1,7 +1,7 @@
 import React from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
-import { AppColors } from '@/constants/theme';
+import { AppColors, Layout } from '@/constants/theme';
 
 interface Props {
   children: React.ReactNode;
@@ -48,7 +48,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: AppColors.background,
-    padding: 32,
+    padding: Layout.screenPadding,
     gap: 16,
   },
   title: {
@@ -67,7 +67,7 @@ const styles = StyleSheet.create({
     backgroundColor: AppColors.accent,
     paddingHorizontal: 24,
     paddingVertical: 12,
-    borderRadius: 12,
+    borderRadius: Layout.cardRadius,
   },
   buttonText: {
     color: AppColors.white,

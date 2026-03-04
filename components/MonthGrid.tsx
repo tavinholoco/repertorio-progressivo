@@ -1,7 +1,7 @@
 import { Text, TouchableOpacity, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 
-import { AppColors, FontFamily } from '@/constants/theme';
+import { AppColors, FontFamily, Layout } from '@/constants/theme';
 import { MONTH_NAMES } from '@/utils/dateHelpers';
 import type { MonthRecord } from '@/types';
 
@@ -57,11 +57,14 @@ export function MonthGrid({ months, onAdjust }: MonthGridProps) {
                 {MONTH_NAMES[month.monthIndex]}
               </Text>
               <View
+                accessibilityRole="progressbar"
+                accessibilityValue={{ now: pct, min: 0, max: 100 }}
+                accessibilityLabel={`Progresso de ${MONTH_NAMES[month.monthIndex]}: ${pct}%`}
                 style={{
                   width: '100%',
-                  height: 6,
+                  height: 6, // intencionalmente menor que progressHeight para o card compacto
                   backgroundColor: AppColors.yellow,
-                  borderRadius: 9999,
+                  borderRadius: Layout.infiniteRadius,
                   marginTop: 8,
                   overflow: 'hidden',
                 }}
@@ -71,7 +74,7 @@ export function MonthGrid({ months, onAdjust }: MonthGridProps) {
                     width: `${pct}%`,
                     height: '100%',
                     backgroundColor: isComplete ? AppColors.priority.green : AppColors.accent,
-                    borderRadius: 9999,
+                    borderRadius: Layout.infiniteRadius,
                   }}
                 />
               </View>
