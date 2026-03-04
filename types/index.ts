@@ -15,6 +15,8 @@ export interface Reminder {
   /** ID retornado pelo expo-notifications ao agendar; undefined se permissão negada */
   notificationId?: string;
   createdAt: string;
+  /** Setado em cada updateReminder; undefined em registros antigos */
+  updatedAt?: string;
 }
 
 export type PeriodType = 'mensal' | 'anual';
