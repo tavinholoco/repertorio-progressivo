@@ -17,23 +17,47 @@ O **Repertório Progressivo** é um app Android desenvolvido com React Native e 
 
 ## Screenshots
 
-### Aba Agenda
+### Aba Agenda (v2)
+
+<div align="center">
+
+| Formulário de lembrete | Seletor de cor personalizada | Calendário e lembretes salvos |
+|:---:|:---:|:---:|
+| <img src="docs/screenshots/V2/Agenda-form.png" width="200" alt="Formulário de criação de lembrete"> | <img src="docs/screenshots/V2/Agenda-cor.png" width="200" alt="Seletor de cor personalizada"> | <img src="docs/screenshots/V2/Agenda-lembretes.png" width="200" alt="Calendário e lembretes salvos"> |
+
+</div>
+
+### Aba Aproveitamento (v2)
+
+<div align="center">
+
+| Formulário e dias (mensal) | Formulário e meses (anual) | Registros salvos |
+|:---:|:---:|:---:|
+| <img src="docs/screenshots/V2/Aproveitamento-mes.png" width="200" alt="Formulário e grid de dias do mês"> | <img src="docs/screenshots/V2/Aproveitamento-anual.png" width="200" alt="Formulário e grid de meses do ano"> | <img src="docs/screenshots/V2/Aproveitamento-registros.png" width="200" alt="Registros salvos de aproveitamento"> |
+
+</div>
+
+---
+
+### Versão anterior (v1)
+
+#### Aba Agenda (v1)
 
 <div align="center">
 
 | Formulário de lembrete | Calendário e lembretes salvos |
 |:---:|:---:|
-| <img src="docs/screenshots/agenda-form.png" width="220" alt="Formulário de criação de lembrete"> | <img src="docs/screenshots/agenda-calendar.png" width="220" alt="Calendário e lembretes salvos"> |
+| <img src="docs/screenshots/V1/agenda-form.png" width="220" alt="Formulário de criação de lembrete (v1)"> | <img src="docs/screenshots/V1/agenda-calendar.png" width="220" alt="Calendário e lembretes salvos (v1)"> |
 
 </div>
 
-### Aba Aproveitamento
+#### Aba Aproveitamento (v1)
 
 <div align="center">
 
 | Formulário | Seletor de período e grid | Registros salvos |
 |:---:|:---:|:---:|
-| <img src="docs/screenshots/Aproveitamento-form.png" width="180" alt="Formulário de aproveitamento"> | <img src="docs/screenshots/Aproveitamento-Mensal-Anual.png" width="180" alt="Seletor mensal/anual e grid de dias"> | <img src="docs/screenshots/Aproveitamento-Atualizar.png" width="180" alt="Botão de atualizar e registros salvos"> |
+| <img src="docs/screenshots/V1/Aproveitamento-form.png" width="180" alt="Formulário de aproveitamento (v1)"> | <img src="docs/screenshots/V1/Aproveitamento-Mensal-Anual.png" width="180" alt="Seletor mensal/anual e grid de dias (v1)"> | <img src="docs/screenshots/V1/Aproveitamento-Atualizar.png" width="180" alt="Botão de atualizar e registros salvos (v1)"> |
 
 </div>
 
