@@ -37,6 +37,9 @@ function DayCell({
     <Animated.View style={[{ width: '30%', margin: 4 }, animatedStyle]}>
       <TouchableOpacity
         onPress={handlePress}
+        accessibilityRole="checkbox"
+        accessibilityState={{ checked: marcado }}
+        accessibilityLabel={`Dia ${index + 1}, ${marcado ? 'marcado' : 'não marcado'}`}
         className={`rounded-2xl p-4 items-center justify-center ${
           marcado
             ? 'bg-brand-accent'

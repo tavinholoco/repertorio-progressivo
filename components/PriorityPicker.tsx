@@ -7,7 +7,7 @@ import Animated, {
   withSpring,
 } from 'react-native-reanimated';
 
-import { AppColors, FontFamily } from '@/constants/theme';
+import { AppColors, FontFamily, Layout } from '@/constants/theme';
 
 const PRIORITY_OPTIONS = [
   { color: AppColors.priority.green, icon: 'check-circle' as const, label: 'Baixa' },
@@ -46,6 +46,9 @@ function PriorityButton({
       <Animated.View style={animatedStyle}>
         <TouchableOpacity
           onPress={onPress}
+          accessibilityRole="radio"
+          accessibilityState={{ selected: isSelected }}
+          accessibilityLabel={`Prioridade ${label}`}
           style={{
             alignItems: 'center',
             justifyContent: 'center',
@@ -54,7 +57,7 @@ function PriorityButton({
             borderRadius: 16,
             backgroundColor: color,
             borderWidth: isSelected ? 3 : 0,
-            borderColor: isSelected ? '#fff' : 'transparent',
+            borderColor: isSelected ? AppColors.white : 'transparent',
             shadowColor: isSelected ? color : 'transparent',
             shadowOpacity: isSelected ? 0.5 : 0,
             shadowRadius: 10,

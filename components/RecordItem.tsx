@@ -2,9 +2,11 @@ import { Alert, Text, TouchableOpacity, View } from 'react-native';
 import { MaterialIcons, Ionicons } from '@expo/vector-icons';
 import Animated, { FadeInDown, LinearTransition } from 'react-native-reanimated';
 
-import { AppColors, FontFamily } from '@/constants/theme';
+import { AppColors, FontFamily, Layout } from '@/constants/theme';
 import { formatPeriodLabel } from '@/utils/dateHelpers';
 import type { AproveitamentoRecord } from '@/types';
+import { Badge } from './Badge';
+import { ProgressBar } from './ProgressBar';
 
 interface RecordItemProps {
   record: AproveitamentoRecord;
@@ -66,30 +68,19 @@ export function RecordItem({ record, index, onEdit, onDelete }: RecordItemProps)
           >
             {record.eventName}
           </Text>
-          <View style={{ flexDirection: 'row', marginTop: 6 }}>
-            <View
-              style={{
-                flexDirection: 'row',
-                alignItems: 'center',
-                backgroundColor: AppColors.yellow,
-                borderRadius: 12,
-                paddingHorizontal: 8,
-                paddingVertical: 3,
-                marginRight: 6,
-              }}
-            >
-              <Text style={{ fontFamily: FontFamily.bold, fontSize: 12, color: AppColors.primary }}>
-                {formatPeriodLabel(record.referencePeriod)}
-              </Text>
-            </View>
+          <View style={{ flexDirection: 'row', marginTop: 6, gap: 6 }}>
+            <Badge
+              label={formatPeriodLabel(record.referencePeriod)}
+              backgroundColor={AppColors.yellow}
+            />
             <View
               style={{
                 flexDirection: 'row',
                 alignItems: 'center',
                 backgroundColor: AppColors.lightAccent,
-                borderRadius: 12,
-                paddingHorizontal: 8,
-                paddingVertical: 3,
+                borderRadius: Layout.badge.borderRadius,
+                paddingHorizontal: Layout.badge.paddingH,
+                paddingVertical: Layout.badge.paddingV,
                 borderWidth: 1,
                 borderColor: AppColors.lightPurple,
               }}
@@ -115,18 +106,9 @@ export function RecordItem({ record, index, onEdit, onDelete }: RecordItemProps)
         </TouchableOpacity>
       </View>
 
-      {/* Progress bar h-2 com percentual inline */}
+      {/* Progress bar com percentual inline */}
       <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-        <View style={{ flex: 1, height: 8, backgroundColor: AppColors.yellow, borderRadius: 9999, overflow: 'hidden' }}>
-          <View
-            style={{
-              width: `${Math.round(progress * 100)}%`,
-              height: '100%',
-              backgroundColor: AppColors.accent,
-              borderRadius: 9999,
-            }}
-          />
-        </View>
+        <ProgressBar progress={progress} style={{ flex: 1 }} />
         <Text style={{ fontFamily: FontFamily.semiBold, fontSize: 12, color: AppColors.muted, marginLeft: 10 }}>
           {Math.round(progress * 100)}%
         </Text>

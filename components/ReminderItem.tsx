@@ -1,11 +1,12 @@
 import { Alert, Text, TouchableOpacity, View } from 'react-native';
-import { MaterialIcons, Ionicons } from '@expo/vector-icons';
+import { MaterialIcons } from '@expo/vector-icons';
 import Animated, { FadeInDown, LinearTransition } from 'react-native-reanimated';
 
 import { AppColors, FontFamily } from '@/constants/theme';
 import { resolveColor } from '@/hooks';
 import { formatDisplayDate, formatDisplayTime } from '@/utils';
 import type { Reminder } from '@/types';
+import { Badge } from './Badge';
 
 interface ReminderItemProps {
   reminder: Reminder;
@@ -41,6 +42,7 @@ export function ReminderItem({ reminder, index, onEdit, onDelete }: ReminderItem
     >
       {/* Faixa lateral refinada */}
       <View
+        importantForAccessibility="no"
         style={{
           width: 4,
           borderRadius: 4,
@@ -57,22 +59,11 @@ export function ReminderItem({ reminder, index, onEdit, onDelete }: ReminderItem
         >
           {reminder.name}
         </Text>
-        <View
-          style={{
-            flexDirection: 'row',
-            alignItems: 'center',
-            backgroundColor: AppColors.yellow,
-            borderRadius: 12,
-            paddingHorizontal: 8,
-            paddingVertical: 3,
-            alignSelf: 'flex-start',
-            marginTop: 6,
-          }}
-        >
-          <Ionicons name="time-outline" size={10} color={AppColors.primary} style={{ marginRight: 4 }} />
-          <Text style={{ fontFamily: FontFamily.semiBold, fontSize: 12, color: AppColors.primary }}>
-            {formatDisplayDate(reminder.date)} às {formatDisplayTime(reminder.time)}
-          </Text>
+        <View style={{ marginTop: 6 }}>
+          <Badge
+            label={`${formatDisplayDate(reminder.date)} às ${formatDisplayTime(reminder.time)}`}
+            backgroundColor={AppColors.yellow}
+          />
         </View>
       </View>
 

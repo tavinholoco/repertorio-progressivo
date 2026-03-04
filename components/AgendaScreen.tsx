@@ -59,7 +59,7 @@ export default function AgendaScreen() {
             colors={Gradients.hero}
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 1 }}
-            style={{ borderRadius: 24, padding: 20, marginBottom: 24 }}
+            style={{ borderRadius: Layout.heroRadius, padding: Layout.screenPadding, marginBottom: 24 }}
           >
             <Text style={{ color: AppColors.white, fontSize: 20, fontFamily: FontFamily.bold, textAlign: 'center' }}>
               Agenda
@@ -212,8 +212,10 @@ export default function AgendaScreen() {
           <TouchableOpacity
             onPress={handleSave}
             disabled={isSubmitting}
+            accessibilityRole="button"
+            accessibilityLabel={editingReminder ? 'Atualizar lembrete' : 'Confirmar lembrete'}
             style={{
-              borderRadius: 16,
+              borderRadius: Layout.cardRadius,
               overflow: 'hidden',
               marginBottom: 8,
               elevation: 6,
@@ -227,7 +229,7 @@ export default function AgendaScreen() {
               colors={Gradients.cta}
               start={{ x: 0, y: 0 }}
               end={{ x: 1, y: 0 }}
-              style={{ paddingVertical: 16, alignItems: 'center' }}
+              style={{ paddingVertical: Layout.buttonPaddingV, alignItems: 'center' }}
             >
               {isSubmitting ? (
                 <ActivityIndicator color={AppColors.white} />
@@ -242,6 +244,8 @@ export default function AgendaScreen() {
           {editingReminder && (
             <TouchableOpacity
               onPress={resetForm}
+              accessibilityRole="button"
+              accessibilityLabel="Cancelar edição"
               className="py-3 rounded-2xl mb-6 border border-brand-border active:opacity-90"
             >
               <Text className="text-brand-muted text-center font-medium">Cancelar edição</Text>

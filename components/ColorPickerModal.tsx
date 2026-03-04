@@ -4,7 +4,7 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { BlurView } from 'expo-blur';
 import ColorPicker, { HueSlider, Panel1 } from 'reanimated-color-picker';
 
-import { AppColors, FontFamily } from '@/constants/theme';
+import { AppColors, FontFamily, Layout } from '@/constants/theme';
 
 interface ColorPickerModalProps {
   visible: boolean;
@@ -30,7 +30,7 @@ export function ColorPickerModal({
       style={{ flex: 1, justifyContent: 'center', alignItems: 'center', padding: 24 }}
     >
       <View
-        style={{ backgroundColor: AppColors.white, borderRadius: 24, padding: 24, width: '100%', elevation: 8 }}
+        style={{ backgroundColor: AppColors.white, borderRadius: Layout.heroRadius, padding: Layout.screenPadding, width: '100%', elevation: 8 }}
       >
         <Text
           style={{ fontFamily: FontFamily.bold, color: AppColors.dark, fontSize: 18, textAlign: 'center', marginBottom: 20 }}
@@ -53,8 +53,8 @@ export function ColorPickerModal({
             accessibilityLabel="Cancelar seleção de cor"
             style={{
               flex: 1,
-              paddingVertical: 14,
-              borderRadius: 16,
+              paddingVertical: Layout.buttonPaddingV,
+              borderRadius: Layout.cardRadius,
               borderWidth: 1,
               borderColor: AppColors.border,
               alignItems: 'center',
@@ -69,8 +69,8 @@ export function ColorPickerModal({
             accessibilityLabel="Confirmar cor selecionada"
             style={{
               flex: 1,
-              paddingVertical: 14,
-              borderRadius: 16,
+              paddingVertical: Layout.buttonPaddingV,
+              borderRadius: Layout.cardRadius,
               backgroundColor: AppColors.accent,
               alignItems: 'center',
             }}

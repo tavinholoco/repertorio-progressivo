@@ -31,7 +31,7 @@ export class ErrorBoundary extends React.Component<Props, State> {
         <View style={styles.container}>
           <Text style={styles.title}>Algo deu errado</Text>
           <Text style={styles.message}>{this.state.message}</Text>
-          <TouchableOpacity style={styles.button} onPress={this.handleRetry}>
+          <TouchableOpacity style={styles.button} onPress={this.handleRetry} accessibilityRole="button" accessibilityLabel="Tentar novamente">
             <Text style={styles.buttonText}>Tentar novamente</Text>
           </TouchableOpacity>
         </View>

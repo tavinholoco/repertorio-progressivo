@@ -89,7 +89,10 @@ export function MonthGrid({ months, onAdjust }: MonthGridProps) {
                     borderColor: AppColors.border,
                     borderRadius: 8,
                     paddingHorizontal: 12,
-                    paddingVertical: 4,
+                    paddingVertical: 10,
+                    minHeight: 44,
+                    alignItems: 'center',
+                    justifyContent: 'center',
                   }}
                 >
                   <Text style={{ fontFamily: FontFamily.bold, color: AppColors.primary }}>−</Text>
@@ -102,7 +105,10 @@ export function MonthGrid({ months, onAdjust }: MonthGridProps) {
                     backgroundColor: AppColors.accent,
                     borderRadius: 8,
                     paddingHorizontal: 12,
-                    paddingVertical: 4,
+                    paddingVertical: 10,
+                    minHeight: 44,
+                    alignItems: 'center',
+                    justifyContent: 'center',
                   }}
                 >
                   <Text style={{ fontFamily: FontFamily.bold, color: AppColors.white }}>+</Text>

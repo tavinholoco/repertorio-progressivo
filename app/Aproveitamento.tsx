@@ -1,20 +1,12 @@
-import { useEffect, useState } from 'react';
 import {
   ActivityIndicator,
   FlatList,
-  LayoutChangeEvent,
   Text,
   TouchableOpacity,
   View,
 } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
-import Animated, {
-  useSharedValue,
-  useAnimatedStyle,
-  withSpring,
-  withTiming,
-} from 'react-native-reanimated';
 
 import { AppColors, FontFamily, Gradients, Layout } from '@/constants';
 import { useAproveitamentoForm } from '@/hooks';
@@ -22,100 +14,13 @@ import { formatPeriodLabel } from '@/utils';
 import {
   AnimatedTextInput,
   EmptyState,
+  ProgressBar,
   RecordItem,
+  SegmentedToggle,
   DayGrid,
   MonthGrid,
 } from '@/components';
-import type { PeriodType } from '@/types';
 
-/* ── Animated Progress Bar ── */
-function AnimatedProgressBar({ progress }: { progress: number }) {
-  const pw = useSharedValue(0);
-
-  useEffect(() => {
-    pw.value = withTiming(progress, { duration: Layout.animation.progress });
-  }, [progress, pw]);
-
-  const fillStyle = useAnimatedStyle(() => ({
-    width: `${pw.value * 100}%`,
-    height: '100%',
-    backgroundColor: AppColors.accent,
-    borderRadius: 9999,
-  }));
-
-  return (
-    <View className="w-full h-3 bg-brand-yellow rounded-full overflow-hidden mb-1">
-      <Animated.View style={fillStyle} />
-    </View>
-  );
-}
-
-/* ── Segmented Toggle (mensal / anual) ── */
-function SegmentedToggle({
-  tempo,
-  onSelect,
-}: {
-  tempo: PeriodType;
-  onSelect: (t: PeriodType) => void;
-}) {
-  const [containerWidth, setContainerWidth] = useState(0);
-  const halfWidth = containerWidth / 2;
-  const indicatorX = useSharedValue(0);
-
-  useEffect(() => {
-    if (halfWidth === 0) return;
-    indicatorX.value = withSpring(tempo === 'mensal' ? 0 : halfWidth, { damping: 20 });
-  }, [tempo, halfWidth, indicatorX]);
-
-  const pillStyle = useAnimatedStyle(() => ({
-    position: 'absolute' as const,
-    left: indicatorX.value,
-    width: halfWidth,
-    height: '100%',
-    backgroundColor: AppColors.accent,
-    borderRadius: 16,
-  }));
-
-  const handleLayout = (e: LayoutChangeEvent) => {
-    setContainerWidth(e.nativeEvent.layout.width);
-  };
-
-  return (
-    <View
-      onLayout={handleLayout}
-      style={{
-        flexDirection: 'row',
-        backgroundColor: AppColors.white,
-        borderRadius: 16,
-        borderWidth: 1,
-        borderColor: AppColors.border,
-        marginBottom: 20,
-        overflow: 'hidden',
-        position: 'relative',
-      }}
-    >
-      <Animated.View style={pillStyle} />
-      {(['mensal', 'anual'] as PeriodType[]).map((t) => (
-        <TouchableOpacity
-          key={t}
-          onPress={() => onSelect(t)}
-          style={{ flex: 1, paddingVertical: 14, zIndex: 1 }}
-        >
-          <Text
-            style={{
-              textAlign: 'center',
-              fontFamily: FontFamily.semiBold,
-              fontSize: 14,
-              color: tempo === t ? '#fff' : AppColors.dark,
-            }}
-          >
-            {t.charAt(0).toUpperCase() + t.slice(1)}
-          </Text>
-        </TouchableOpacity>
-      ))}
-    </View>
-  );
-}
 
 export default function Aproveitamento() {
   const {
@@ -155,7 +60,7 @@ export default function Aproveitamento() {
             colors={Gradients.hero}
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 1 }}
-            style={{ borderRadius: 24, padding: 20, marginBottom: 24, alignItems: 'center' }}
+            style={{ borderRadius: Layout.heroRadius, padding: Layout.screenPadding, marginBottom: 24, alignItems: 'center' }}
           >
             <Text style={{ color: AppColors.white, fontSize: 20, fontFamily: FontFamily.bold, marginBottom: 4 }}>
               Aproveitamento
@@ -226,7 +131,7 @@ export default function Aproveitamento() {
           {/* ── Progresso da carga ── */}
           <View className="mb-6">
             <Text className="text-brand-dark font-semibold mb-2">Progresso da carga</Text>
-            <AnimatedProgressBar progress={cargaProgress} />
+            <ProgressBar progress={cargaProgress} style={{ marginBottom: 4 }} />
             <Text className="text-sm text-brand-muted mb-3">
               {Math.round(cargaProgress * 100)}% ({progressLabel})
             </Text>
@@ -249,8 +154,10 @@ export default function Aproveitamento() {
           <TouchableOpacity
             onPress={handleSave}
             disabled={isSubmitting}
+            accessibilityRole="button"
+            accessibilityLabel={editingId ? 'Atualizar aproveitamento' : 'Salvar aproveitamento'}
             style={{
-              borderRadius: 16,
+              borderRadius: Layout.cardRadius,
               overflow: 'hidden',
               marginTop: 16,
               elevation: 6,
@@ -264,7 +171,7 @@ export default function Aproveitamento() {
               colors={Gradients.cta}
               start={{ x: 0, y: 0 }}
               end={{ x: 1, y: 0 }}
-              style={{ paddingVertical: 16, alignItems: 'center' }}
+              style={{ paddingVertical: Layout.buttonPaddingV, alignItems: 'center' }}
             >
               {isSubmitting ? (
                 <ActivityIndicator color={AppColors.white} />

@@ -76,6 +76,16 @@ export const Layout = {
     focusPaddingH: 18,
     focusPaddingV: 12,
   },
+  /** Padding vertical de botões de ação (salvar, cancelar) */
+  buttonPaddingV: 16,
+  /** Padding horizontal de botões de ação */
+  buttonPaddingH: 24,
+  /** Padding interno de inputs */
+  inputPadding: 16,
+  /** Altura da barra de progresso */
+  progressHeight: 8,
+  /** Pill de badge (prioridade, tipo de período) */
+  badge: { paddingH: 8, paddingV: 3, borderRadius: 12 },
   /** Duração de animações (ms) */
   animation: {
     progress: 800,
