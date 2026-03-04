@@ -4,7 +4,17 @@
 ![Versão](https://img.shields.io/badge/vers%C3%A3o-2.0-6C2DC7)
 ![Testes](https://img.shields.io/badge/testes-144%20passing-brightgreen)
 
+[![Download APK](https://img.shields.io/badge/Download-APK%20v2.0-6C2DC7?style=for-the-badge&logo=android&logoColor=white)](https://github.com/tavinholoco/repertorio-progressivo/releases/latest)
+
 Aplicativo mobile para organizar e acompanhar o aprendizado progressivo — gerencie seus lembretes de estudo e registre seu aproveitamento diário, mensal e anual.
+
+---
+
+## Download
+
+**[Baixar APK mais recente](https://github.com/tavinholoco/repertorio-progressivo/releases/latest)**
+
+> Para instalar, habilite "Instalar de fontes desconhecidas" nas configurações do Android.
 
 ---
 
