@@ -69,12 +69,12 @@ export const Layout = {
   heroRadius: 24,
   /** Tab bar */
   tabBar: {
-    offset: 16,
+    offset: 24,
     height: 64,
-    width: 168,
-    borderRadius: 30,
-    focusPaddingH: 12,
-    focusPaddingV: 4,
+    width: 200,
+    borderRadius: 32,
+    focusPaddingH: 18,
+    focusPaddingV: 12,
   },
   /** Duração de animações (ms) */
   animation: {

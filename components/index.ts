@@ -3,6 +3,7 @@ export { AnimatedTextInput } from './AnimatedTextInput';
 export { ColorPickerModal } from './ColorPickerModal';
 export { EmptyState } from './EmptyState';
 export { ErrorBoundary } from './ErrorBoundary';
+export { FloatingTabBar } from './FloatingTabBar';
 export { DayGrid } from './DayGrid';
 export { MonthGrid } from './MonthGrid';
 export { PriorityPicker } from './PriorityPicker';
