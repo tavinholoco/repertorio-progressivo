@@ -88,10 +88,14 @@ export function useAgendaForm() {
       setCustomColor(null);
     }
 
-    const [y, m, d] = reminder.date.split('-').map(Number);
-    const [h, min] = reminder.time.split(':').map(Number);
-    setDate(new Date(y, m - 1, d));
-    setTime(new Date(0, 0, 0, h, min));
+    const dateParts = reminder.date.split('-').map(Number);
+    const timeParts = reminder.time.split(':').map(Number);
+    if (dateParts.length === 3 && !dateParts.some(isNaN)) {
+      setDate(new Date(dateParts[0], dateParts[1] - 1, dateParts[2]));
+    }
+    if (timeParts.length === 2 && !timeParts.some(isNaN)) {
+      setTime(new Date(0, 0, 0, timeParts[0], timeParts[1]));
+    }
     setEditingReminder(reminder);
     setErrors({});
   }

@@ -26,6 +26,8 @@ export function validateReminder(fields: ReminderFields): ValidationResult {
     errors.name = 'Nome do lembrete é obrigatório';
   } else if (fields.name.trim().length < 2) {
     errors.name = 'Nome deve ter pelo menos 2 caracteres';
+  } else if (fields.name.trim().length > 100) {
+    errors.name = 'Nome deve ter no máximo 100 caracteres';
   }
 
   if (!fields.date) {
@@ -61,11 +63,15 @@ export function validateAproveitamento(
 
   if (!fields.eventName.trim()) {
     errors.eventName = 'Nome do evento é obrigatório';
+  } else if (fields.eventName.trim().length > 100) {
+    errors.eventName = 'Nome deve ter no máximo 100 caracteres';
   }
 
   const total = Number(fields.totalHours);
   if (!fields.totalHours || isNaN(total) || total <= 0) {
     errors.totalHours = 'Carga horária deve ser maior que 0';
+  } else if (total > 9999) {
+    errors.totalHours = 'Carga horária máxima é 9999h';
   }
 
   return { valid: Object.keys(errors).length === 0, errors };
