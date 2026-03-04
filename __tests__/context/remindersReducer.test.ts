@@ -135,6 +135,14 @@ describe('remindersReducer', () => {
       expect(next.reminders).toHaveLength(1);
       expect(next.reminders[0].id).toBe('1');
     });
+
+    it('preserva updatedAt no payload quando presente', () => {
+      const original = makeReminder({ id: '1' });
+      const state = { ...initialState, reminders: [original] };
+      const updated = makeReminder({ id: '1', updatedAt: '2025-06-01T00:00:00.000Z' });
+      const next = reducer(state, { type: 'UPDATE', payload: updated });
+      expect(next.reminders[0].updatedAt).toBe('2025-06-01T00:00:00.000Z');
+    });
   });
 
   describe('DELETE', () => {

@@ -92,6 +92,15 @@ describe('validateReminder', () => {
     expect(isValid).toBe(false);
     expect(Object.keys(errors).length).toBeGreaterThan(1);
   });
+
+  it('rejeita name com mais de 100 caracteres', () => {
+    const { errors } = validateReminder({ ...valid, name: 'a'.repeat(101) });
+    expect(errors.name).toBe('Nome deve ter no máximo 100 caracteres');
+  });
+
+  it('aceita name com exatamente 100 caracteres', () => {
+    expect(validateReminder({ ...valid, name: 'a'.repeat(100) }).valid).toBe(true);
+  });
 });
 
 // ─── validateAproveitamento ───────────────────────────────────────────────────
@@ -126,4 +135,20 @@ describe('validateAproveitamento', () => {
     expect(errors.totalHours).toBe('Carga horária deve ser maior que 0');
   });
 
+  it('rejeita eventName com mais de 100 caracteres', () => {
+    const { errors } = validateAproveitamento({
+      ...valid,
+      eventName: 'a'.repeat(101),
+    });
+    expect(errors.eventName).toBe('Nome deve ter no máximo 100 caracteres');
+  });
+
+  it('rejeita carga horária maior que 9999', () => {
+    const { errors } = validateAproveitamento({ ...valid, totalHours: '10000' });
+    expect(errors.totalHours).toBe('Carga horária máxima é 9999h');
+  });
+
+  it('aceita carga horária de exatamente 9999', () => {
+    expect(validateAproveitamento({ ...valid, totalHours: '9999' }).valid).toBe(true);
+  });
 });

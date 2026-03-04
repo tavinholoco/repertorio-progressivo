@@ -136,6 +136,38 @@ describe('formatPeriodLabel', () => {
   it('formata "2025-12" como "Dez/2025"', () => {
     expect(formatPeriodLabel('2025-12')).toBe('Dez/2025');
   });
+
+  it('retorna fallback para mês fora do range (13)', () => {
+    const result = formatPeriodLabel('2025-13');
+    expect(result).not.toContain('undefined');
+  });
+
+  it('retorna fallback para mês fora do range (0)', () => {
+    const result = formatPeriodLabel('2025-00');
+    expect(result).not.toContain('undefined');
+  });
+});
+
+describe('getDaysInMonth', () => {
+  it('retorna 31 para janeiro (2025-01)', () => {
+    expect(getDaysInMonth('2025-01')).toBe(31);
+  });
+
+  it('retorna 28 para fevereiro 2025 (não bissexto)', () => {
+    expect(getDaysInMonth('2025-02')).toBe(28);
+  });
+
+  it('retorna 29 para fevereiro 2024 (bissexto)', () => {
+    expect(getDaysInMonth('2024-02')).toBe(29);
+  });
+
+  it('retorna 30 como fallback para string inválida', () => {
+    expect(getDaysInMonth('invalid')).toBe(30);
+  });
+
+  it('retorna 30 como fallback para string vazia', () => {
+    expect(getDaysInMonth('')).toBe(30);
+  });
 });
 
 describe('MONTH_NAMES', () => {
