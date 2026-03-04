@@ -62,5 +62,9 @@ export async function scheduleReminderNotification(
 
 /** Cancela uma notificação agendada pelo seu ID. */
 export async function cancelNotification(notificationId: string): Promise<void> {
-  await Notifications.cancelScheduledNotificationAsync(notificationId);
+  try {
+    await Notifications.cancelScheduledNotificationAsync(notificationId);
+  } catch (err) {
+    console.error('[notifications] Falha ao cancelar notificação:', err);
+  }
 }

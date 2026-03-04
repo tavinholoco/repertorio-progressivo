@@ -15,6 +15,7 @@ import {
   saveReminder,
 } from '@/services/storage';
 import type { Priority, Reminder } from '@/types';
+import { generateId, getIsoNow } from '@/utils/id';
 
 // ─── State & Actions ──────────────────────────────────────────────────────────
 
@@ -54,6 +55,8 @@ export function reducer(state: State, action: Action): State {
         ...state,
         reminders: state.reminders.filter((r) => r.id !== action.payload),
       };
+    default:
+      return state;
   }
 }
 
@@ -64,6 +67,7 @@ interface ReminderInput {
   date: string;
   time: string;
   priority: Priority;
+  customColor?: string;
 }
 
 interface ContextValue {
@@ -96,30 +100,31 @@ export function RemindersProvider({ children }: { children: React.ReactNode }) {
   async function addReminder(input: ReminderInput): Promise<void> {
     const reminder: Reminder = {
       ...input,
-      id: Date.now().toString(36) + Math.random().toString(36).slice(2),
-      createdAt: new Date().toISOString(),
+      id: generateId(),
+      createdAt: getIsoNow(),
     };
 
-    const notificationId = await scheduleReminderNotification(reminder);
-    if (notificationId) reminder.notificationId = notificationId;
-
     await saveReminder(reminder);
-    dispatch({ type: 'ADD', payload: reminder });
+
+    const notificationId = await scheduleReminderNotification(reminder);
+    const saved: Reminder = notificationId
+      ? { ...reminder, notificationId }
+      : reminder;
+
+    if (notificationId) await saveReminder(saved);
+    dispatch({ type: 'ADD', payload: saved });
   }
 
   async function updateReminder(reminder: Reminder): Promise<void> {
     if (reminder.notificationId) {
-      try {
-        await cancelNotification(reminder.notificationId);
-      } catch (err) {
-        console.error('[RemindersContext] Falha ao cancelar notificação antiga:', err);
-      }
+      await cancelNotification(reminder.notificationId);
     }
 
     const notificationId = await scheduleReminderNotification(reminder);
     const updated: Reminder = {
       ...reminder,
       notificationId: notificationId ?? undefined,
+      updatedAt: getIsoNow(),
     };
 
     await saveReminder(updated);
@@ -129,11 +134,7 @@ export function RemindersProvider({ children }: { children: React.ReactNode }) {
   async function removeReminder(id: string): Promise<void> {
     const target = state.reminders.find((r) => r.id === id);
     if (target?.notificationId) {
-      try {
-        await cancelNotification(target.notificationId);
-      } catch (err) {
-        console.error('[RemindersContext] Falha ao cancelar notificação:', err);
-      }
+      await cancelNotification(target.notificationId);
     }
 
     await deleteReminder(id);

@@ -1,4 +1,4 @@
-import AgendaScreen from '@/components/AgendaScreen';
+import { AgendaScreen } from '@/components';
 
 export default function Index() {
   return <AgendaScreen />;

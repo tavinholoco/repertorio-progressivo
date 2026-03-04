@@ -5,6 +5,7 @@ import {
   formatDisplayTime,
   getDaysInMonth,
   buildAnnualMonths,
+  currentPeriod,
   formatPeriodLabel,
   MONTH_NAMES,
 } from '@/utils/dateHelpers';
@@ -84,6 +85,14 @@ describe('getDaysInMonth', () => {
   it('retorna 31 para dezembro (2025-12)', () => {
     expect(getDaysInMonth('2025-12')).toBe(31);
   });
+
+  it('retorna 30 como fallback para string inválida', () => {
+    expect(getDaysInMonth('invalid')).toBe(30);
+  });
+
+  it('retorna 30 como fallback para string vazia', () => {
+    expect(getDaysInMonth('')).toBe(30);
+  });
 });
 
 describe('buildAnnualMonths', () => {
@@ -135,6 +144,44 @@ describe('formatPeriodLabel', () => {
 
   it('formata "2025-12" como "Dez/2025"', () => {
     expect(formatPeriodLabel('2025-12')).toBe('Dez/2025');
+  });
+
+  it('retorna fallback para mês fora do range (13)', () => {
+    const result = formatPeriodLabel('2025-13');
+    expect(result).not.toContain('undefined');
+  });
+
+  it('retorna fallback para mês fora do range (0)', () => {
+    const result = formatPeriodLabel('2025-00');
+    expect(result).not.toContain('undefined');
+  });
+
+  it('retorna fallback para string vazia', () => {
+    expect(formatPeriodLabel('')).not.toContain('undefined');
+  });
+
+  it('retorna fallback para string sem separador', () => {
+    expect(formatPeriodLabel('202503')).not.toContain('undefined');
+  });
+});
+
+describe('currentPeriod', () => {
+  it('retorna o período do mês atual no formato YYYY-MM', () => {
+    jest.useFakeTimers().setSystemTime(new Date(2025, 2, 15)); // março, local
+    expect(currentPeriod()).toBe('2025-03');
+    jest.useRealTimers();
+  });
+
+  it('padeia mês com zero à esquerda (janeiro = 01)', () => {
+    jest.useFakeTimers().setSystemTime(new Date(2025, 0, 1)); // janeiro, local
+    expect(currentPeriod()).toBe('2025-01');
+    jest.useRealTimers();
+  });
+
+  it('funciona em dezembro', () => {
+    jest.useFakeTimers().setSystemTime(new Date(2025, 11, 31)); // dezembro, local
+    expect(currentPeriod()).toBe('2025-12');
+    jest.useRealTimers();
   });
 });
 

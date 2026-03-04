@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { Alert } from 'react-native';
 import * as Haptics from 'expo-haptics';
 
@@ -17,7 +17,6 @@ export function useAproveitamentoForm() {
   // Formulário
   const [evento, setEvento] = useState('');
   const [cargaHoraria, setCargaHoraria] = useState('');
-  const [horasConcluidas, setHorasConcluidas] = useState('');
   const [tempo, setTempo] = useState<PeriodType>('mensal');
   const [referencePeriod, setReferencePeriod] = useState(currentPeriod);
 
@@ -31,6 +30,7 @@ export function useAproveitamentoForm() {
   );
 
   // Edição e submissão
+  const skipNextHydrationRef = useRef(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -42,14 +42,27 @@ export function useAproveitamentoForm() {
     );
 
     if (existing) {
-      setEvento(existing.eventName);
-      setCargaHoraria(String(existing.totalHours));
-      setHorasConcluidas(String(existing.completedHours));
-      setDias(existing.monthlyDays);
-      setAnnualMonths(existing.annualMonths);
-      setEditingId(existing.id);
+      if (skipNextHydrationRef.current) {
+        // Acabou de salvar novo registro — limpar formulário
+        skipNextHydrationRef.current = false;
+        const [y] = referencePeriod.split('-').map(Number);
+        setEvento('');
+        setCargaHoraria('');
+        setDias(Array.from({ length: getDaysInMonth(referencePeriod) }, () => false));
+        setAnnualMonths(buildAnnualMonths(y));
+        setEditingId(null);
+      } else {
+        // Navegação normal para período com registro → modo edição
+        setEvento(existing.eventName);
+        setCargaHoraria(String(existing.totalHours));
+        setDias(existing.monthlyDays);
+        setAnnualMonths(existing.annualMonths);
+        setEditingId(existing.id);
+      }
     } else {
       const [y] = referencePeriod.split('-').map(Number);
+      setEvento('');
+      setCargaHoraria('');
       setDias(Array.from({ length: getDaysInMonth(referencePeriod) }, () => false));
       setAnnualMonths(buildAnnualMonths(y));
       setEditingId(null);
@@ -95,13 +108,23 @@ export function useAproveitamentoForm() {
 
   // ─── Computados ────────────────────────────────────────────────────────────
   const diasMarcados = useMemo(() => dias.filter(Boolean).length, [dias]);
-  const percentualDias = useMemo(
-    () => (tempo === 'mensal' ? (diasMarcados / daysInMonth) * 100 : 0),
-    [diasMarcados, daysInMonth, tempo],
-  );
   const totalHours = Number(cargaHoraria) || 0;
-  const doneHours = Number(horasConcluidas) || 0;
-  const cargaProgress = totalHours > 0 ? Math.min(doneHours / totalHours, 1) : 0;
+  const cargaProgress = useMemo(() => {
+    if (tempo === 'mensal') {
+      return daysInMonth > 0 ? diasMarcados / daysInMonth : 0;
+    }
+    const totalDays = annualMonths.reduce((s, m) => s + m.totalDays, 0);
+    const doneDays = annualMonths.reduce((s, m) => s + m.completedDays, 0);
+    return totalDays > 0 ? doneDays / totalDays : 0;
+  }, [tempo, diasMarcados, daysInMonth, annualMonths]);
+  const progressLabel = useMemo(() => {
+    if (tempo === 'mensal') {
+      return `${diasMarcados}/${daysInMonth} dias`;
+    }
+    const doneDays = annualMonths.reduce((s, m) => s + m.completedDays, 0);
+    const totalDays = annualMonths.reduce((s, m) => s + m.totalDays, 0);
+    return `${doneDays}/${totalDays} dias`;
+  }, [tempo, diasMarcados, daysInMonth, annualMonths]);
 
   // ─── Handlers de campo ─────────────────────────────────────────────────────
   function handleEventoChange(v: string) {
@@ -114,17 +137,11 @@ export function useAproveitamentoForm() {
     setErrors((p) => ({ ...p, totalHours: '' }));
   }
 
-  function handleHorasConcluidasChange(v: string) {
-    setHorasConcluidas(v);
-    setErrors((p) => ({ ...p, completedHours: '' }));
-  }
-
   // ─── Salvar ────────────────────────────────────────────────────────────────
   async function handleSave() {
     const validation = validateAproveitamento({
       eventName: evento,
       totalHours: cargaHoraria,
-      completedHours: horasConcluidas,
     });
 
     if (!validation.valid) {
@@ -137,7 +154,6 @@ export function useAproveitamentoForm() {
       const payload: Omit<AproveitamentoRecord, 'id' | 'createdAt' | 'updatedAt'> = {
         eventName: evento.trim(),
         totalHours,
-        completedHours: doneHours,
         periodType: tempo,
         monthlyDays: dias,
         annualMonths,
@@ -150,6 +166,7 @@ export function useAproveitamentoForm() {
         await updateRecord({ ...existing, ...payload });
       } else {
         await addRecord(payload);
+        skipNextHydrationRef.current = true;
       }
 
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
@@ -164,7 +181,6 @@ export function useAproveitamentoForm() {
   function populateFormFromRecord(record: AproveitamentoRecord) {
     setEvento(record.eventName);
     setCargaHoraria(String(record.totalHours));
-    setHorasConcluidas(String(record.completedHours));
     setTempo(record.periodType);
     setReferencePeriod(record.referencePeriod);
     setDias(record.monthlyDays);
@@ -182,8 +198,6 @@ export function useAproveitamentoForm() {
     handleEventoChange,
     cargaHoraria,
     handleCargaHorariaChange,
-    horasConcluidas,
-    handleHorasConcluidasChange,
     tempo,
     setTempo,
     referencePeriod,
@@ -195,10 +209,9 @@ export function useAproveitamentoForm() {
     // Derivados
     daysInMonth,
     diasMarcados,
-    percentualDias,
     totalHours,
-    doneHours,
     cargaProgress,
+    progressLabel,
     // Ações
     navigatePeriod,
     toggleDia,

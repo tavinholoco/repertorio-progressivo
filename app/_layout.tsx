@@ -1,60 +1,48 @@
 import { Tabs } from 'expo-router';
-import { Ionicons } from '@expo/vector-icons';
+import { Ionicons } from '@expo/vector-icons'; // apenas para carregar a fonte via useFonts
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { useFonts } from 'expo-font';
+import {
+  Inter_400Regular,
+  Inter_500Medium,
+  Inter_600SemiBold,
+  Inter_700Bold,
+  Inter_800ExtraBold,
+} from '@expo-google-fonts/inter';
 
 import { AproveitamentoProvider } from '@/context/AproveitamentoContext';
 import { RemindersProvider } from '@/context/RemindersContext';
-import { AppColors } from '@/constants/theme';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
+import { FloatingTabBar } from '@/components/FloatingTabBar';
 
 export default function Layout() {
+  const [fontsLoaded, fontError] = useFonts({
+    ...Ionicons.font,
+    'Inter-Regular':   Inter_400Regular,
+    'Inter-Medium':    Inter_500Medium,
+    'Inter-SemiBold':  Inter_600SemiBold,
+    'Inter-Bold':      Inter_700Bold,
+    'Inter-ExtraBold': Inter_800ExtraBold,
+  });
+
+  if (fontError) throw fontError;
+  if (!fontsLoaded) return null;
+
   return (
-    <ErrorBoundary>
-      <RemindersProvider>
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <ErrorBoundary>
+        <RemindersProvider>
           <AproveitamentoProvider>
             <Tabs
-              screenOptions={{
-                headerShown: false,
-                tabBarShowLabel: false,
-
-                tabBarStyle: {
-                  position: 'absolute',
-                  bottom: 20,
-                  left: 20,
-                  right: 20,
-                  height: 70,
-                  backgroundColor: AppColors.white,
-                  borderRadius: 30,
-                  elevation: 8,
-                  shadowColor: '#000',
-                  shadowOpacity: 0.12,
-                  shadowRadius: 8,
-                  shadowOffset: { width: 0, height: 4 },
-                  borderTopWidth: 0,
-                },
-              }}
+              tabBar={(props) => <FloatingTabBar {...props} />}
+              screenOptions={{ headerShown: false }}
             >
-              <Tabs.Screen
-                name="index"
-                options={{
-                  title: 'Agenda',
-                  tabBarIcon: ({ color }) => (
-                    <Ionicons name="calendar-outline" color={color} size={28} />
-                  ),
-                }}
-              />
-
-              <Tabs.Screen
-                name="Aproveitamento"
-                options={{
-                  title: 'Aproveitamento',
-                  tabBarIcon: ({ color }) => (
-                    <Ionicons name="bar-chart-outline" color={color} size={28} />
-                  ),
-                }}
-              />
+              <Tabs.Screen name="index" options={{ title: 'Agenda', tabBarAccessibilityLabel: 'Aba Agenda' }} />
+              <Tabs.Screen name="Aproveitamento" options={{ title: 'Aproveitamento', tabBarAccessibilityLabel: 'Aba Aproveitamento' }} />
             </Tabs>
           </AproveitamentoProvider>
-      </RemindersProvider>
-    </ErrorBoundary>
+        </RemindersProvider>
+      </ErrorBoundary>
+    </GestureHandlerRootView>
   );
 }

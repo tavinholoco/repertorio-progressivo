@@ -6,11 +6,17 @@ export interface ValidationResult {
 
 // ─── Lembrete ─────────────────────────────────────────────────────────────────
 
+function isValidHex(color: string | null | undefined): boolean {
+  if (!color) return false;
+  return /^#[0-9A-Fa-f]{6}$/.test(color);
+}
+
 interface ReminderFields {
   name: string;
   date: string;
   time: string;
   priority: string | null;
+  customColor?: string | null;
 }
 
 export function validateReminder(fields: ReminderFields): ValidationResult {
@@ -20,6 +26,8 @@ export function validateReminder(fields: ReminderFields): ValidationResult {
     errors.name = 'Nome do lembrete é obrigatório';
   } else if (fields.name.trim().length < 2) {
     errors.name = 'Nome deve ter pelo menos 2 caracteres';
+  } else if (fields.name.trim().length > 100) {
+    errors.name = 'Nome deve ter no máximo 100 caracteres';
   }
 
   if (!fields.date) {
@@ -32,8 +40,10 @@ export function validateReminder(fields: ReminderFields): ValidationResult {
 
   if (!fields.priority) {
     errors.priority = 'Selecione uma prioridade';
-  } else if (!['green', 'yellow', 'red'].includes(fields.priority)) {
+  } else if (!['green', 'yellow', 'red', 'custom'].includes(fields.priority)) {
     errors.priority = 'Prioridade inválida';
+  } else if (fields.priority === 'custom' && !isValidHex(fields.customColor)) {
+    errors.priority = 'Selecione uma cor personalizada';
   }
 
   return { valid: Object.keys(errors).length === 0, errors };
@@ -44,7 +54,6 @@ export function validateReminder(fields: ReminderFields): ValidationResult {
 interface AproveitamentoFields {
   eventName: string;
   totalHours: string;
-  completedHours: string;
 }
 
 export function validateAproveitamento(
@@ -54,20 +63,15 @@ export function validateAproveitamento(
 
   if (!fields.eventName.trim()) {
     errors.eventName = 'Nome do evento é obrigatório';
+  } else if (fields.eventName.trim().length > 100) {
+    errors.eventName = 'Nome deve ter no máximo 100 caracteres';
   }
 
   const total = Number(fields.totalHours);
   if (!fields.totalHours || isNaN(total) || total <= 0) {
     errors.totalHours = 'Carga horária deve ser maior que 0';
-  }
-
-  const done = Number(fields.completedHours);
-  if (fields.completedHours !== '' && (isNaN(done) || done < 0)) {
-    errors.completedHours = 'Horas concluídas inválidas';
-  }
-
-  if (!isNaN(total) && !isNaN(done) && done > total) {
-    errors.completedHours = 'Horas concluídas não podem exceder a carga total';
+  } else if (total > 9999) {
+    errors.totalHours = 'Carga horária máxima é 9999h';
   }
 
   return { valid: Object.keys(errors).length === 0, errors };

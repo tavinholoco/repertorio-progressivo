@@ -11,6 +11,7 @@ import {
   saveAproveitamento,
 } from '@/services/storage';
 import type { AproveitamentoRecord } from '@/types';
+import { generateId, getIsoNow } from '@/utils/id';
 
 // ─── State & Actions ──────────────────────────────────────────────────────────
 
@@ -50,6 +51,8 @@ export function reducer(state: State, action: Action): State {
         ...state,
         records: state.records.filter((r) => r.id !== action.payload),
       };
+    default:
+      return state;
   }
 }
 
@@ -85,10 +88,10 @@ export function AproveitamentoProvider({ children }: { children: React.ReactNode
   async function addRecord(
     input: Omit<AproveitamentoRecord, 'id' | 'createdAt' | 'updatedAt'>,
   ): Promise<void> {
-    const now = new Date().toISOString();
+    const now = getIsoNow();
     const record: AproveitamentoRecord = {
       ...input,
-      id: Date.now().toString(36) + Math.random().toString(36).slice(2),
+      id: generateId(),
       createdAt: now,
       updatedAt: now,
     };
@@ -100,7 +103,7 @@ export function AproveitamentoProvider({ children }: { children: React.ReactNode
   async function updateRecord(record: AproveitamentoRecord): Promise<void> {
     const updated: AproveitamentoRecord = {
       ...record,
-      updatedAt: new Date().toISOString(),
+      updatedAt: getIsoNow(),
     };
 
     await saveAproveitamento(updated);

@@ -32,8 +32,9 @@ export const MONTH_NAMES = [
 ];
 
 export function getDaysInMonth(period: string): number {
-  const [y, m] = period.split('-').map(Number);
-  return new Date(y, m, 0).getDate();
+  const parts = period.split('-').map(Number);
+  if (parts.length < 2 || isNaN(parts[0]) || isNaN(parts[1])) return 30;
+  return new Date(parts[0], parts[1], 0).getDate();
 }
 
 export function buildAnnualMonths(year: number): MonthRecord[] {
@@ -53,5 +54,7 @@ export function currentPeriod(): string {
 
 export function formatPeriodLabel(period: string): string {
   const [y, m] = period.split('-');
-  return `${MONTH_NAMES[Number(m) - 1]}/${y}`;
+  const monthIndex = Number(m) - 1;
+  const monthName = monthIndex >= 0 && monthIndex < 12 ? MONTH_NAMES[monthIndex] : period;
+  return `${monthName}/${y}`;
 }

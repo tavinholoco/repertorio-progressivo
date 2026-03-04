@@ -1,5 +1,9 @@
 # Repertório Progressivo
 
+![CI](https://github.com/tavinholoco/repertorio-progressivo/actions/workflows/test.yml/badge.svg?branch=master)
+![Versão](https://img.shields.io/badge/vers%C3%A3o-2.0-6C2DC7)
+![Testes](https://img.shields.io/badge/testes-144%20passing-brightgreen)
+
 Aplicativo mobile para organizar e acompanhar o aprendizado progressivo — gerencie seus lembretes de estudo e registre seu aproveitamento diário, mensal e anual.
 
 ---
@@ -8,26 +12,84 @@ Aplicativo mobile para organizar e acompanhar o aprendizado progressivo — gere
 
 O **Repertório Progressivo** é um app Android desenvolvido com React Native e Expo. Ele foi criado para quem quer manter uma rotina de estudos organizada, oferecendo duas funcionalidades principais:
 
-- **Agenda** — crie lembretes com data, horário e prioridade, visualize no calendário e receba notificações push.
+- **Agenda** — crie lembretes com data, horário, prioridade e cor personalizada; visualize no calendário e receba notificações push.
 - **Aproveitamento** — registre eventos de estudo com carga horária e marque os dias em que estudou, acompanhando seu progresso mensal e anual.
+
+---
+
+## Screenshots
+
+### Aba Agenda (v2)
+
+<div align="center">
+
+| Formulário de lembrete | Seletor de cor personalizada | Calendário e lembretes salvos |
+|:---:|:---:|:---:|
+| <img src="docs/screenshots/V2/Agenda-form.png" width="200" alt="Formulário de criação de lembrete"> | <img src="docs/screenshots/V2/Agenda-cor.png" width="200" alt="Seletor de cor personalizada"> | <img src="docs/screenshots/V2/Agenda-lembretes.png" width="200" alt="Calendário e lembretes salvos"> |
+
+</div>
+
+### Aba Aproveitamento (v2)
+
+<div align="center">
+
+| Formulário e dias (mensal) | Formulário e meses (anual) | Registros salvos |
+|:---:|:---:|:---:|
+| <img src="docs/screenshots/V2/Aproveitamento-mes.png" width="200" alt="Formulário e grid de dias do mês"> | <img src="docs/screenshots/V2/Aproveitamento-anual.png" width="200" alt="Formulário e grid de meses do ano"> | <img src="docs/screenshots/V2/Aproveitamento-registros.png" width="200" alt="Registros salvos de aproveitamento"> |
+
+</div>
+
+---
+
+### Versão anterior (v1)
+
+<details>
+<summary>Ver screenshots da v1</summary>
+
+#### Aba Agenda (v1)
+
+<div align="center">
+
+| Formulário de lembrete | Calendário e lembretes salvos |
+|:---:|:---:|
+| <img src="docs/screenshots/V1/agenda-form.png" width="220" alt="Formulário de criação de lembrete (v1)"> | <img src="docs/screenshots/V1/agenda-calendar.png" width="220" alt="Calendário e lembretes salvos (v1)"> |
+
+</div>
+
+#### Aba Aproveitamento (v1)
+
+<div align="center">
+
+| Formulário | Seletor de período e grid | Registros salvos |
+|:---:|:---:|:---:|
+| <img src="docs/screenshots/V1/Aproveitamento-form.png" width="180" alt="Formulário de aproveitamento (v1)"> | <img src="docs/screenshots/V1/Aproveitamento-Mensal-Anual.png" width="180" alt="Seletor mensal/anual e grid de dias (v1)"> | <img src="docs/screenshots/V1/Aproveitamento-Atualizar.png" width="180" alt="Botão de atualizar e registros salvos (v1)"> |
+
+</div>
+
+</details>
 
 ---
 
 ## Funcionalidades
 
 ### Agenda de Lembretes
-- Criar lembretes com nome, data, horário e prioridade (baixa, média, alta)
+- Criar lembretes com nome, data, horário e prioridade (baixa, média, alta ou **cor personalizada**)
+- Seletor cromático para cor customizada via `reanimated-color-picker`
 - Calendário visual com os dias que possuem lembretes marcados
 - Notificações push agendadas via `expo-notifications`
 - Editar e excluir lembretes existentes
 
 ### Aproveitamento
-- Registrar eventos de estudo com carga horária total e horas concluídas
+- Registrar eventos de estudo com carga horária total
 - **Modo mensal**: grid de dias do mês para marcar quais dias você estudou
 - **Modo anual**: resumo dos 12 meses com dias completados e total
-- Gráfico em donut com percentual de aproveitamento
-- Barra de progresso da carga horária
+- Barra de progresso animada calculada automaticamente pelos dias/meses marcados
 - Navegar entre períodos anteriores e posteriores
+
+### Interface
+- Tab bar flutuante customizada com ícones SVG (sem dependência de fontes)
+- Gradiente linear na aba ativa via `expo-linear-gradient`
+- Tema unificado com tokens de cor e espaçamento (`AppColors`, `Layout`)
 
 ---
 
@@ -44,9 +106,14 @@ O **Repertório Progressivo** é um app Android desenvolvido com React Native e 
 | expo-notifications | 0.32.16 | Notificações push |
 | react-native-calendars | 1.1313.0 | Componente de calendário |
 | react-native-reanimated | 4.1.1 | Animações (New Architecture) |
-| Jest + jest-expo | 30.2.0 / 54.0.17 | Testes automatizados (103 testes) |
+| react-native-svg | 15.15.3 | Ícones SVG da tab bar |
+| expo-linear-gradient | — | Gradiente na tab bar ativa |
+| reanimated-color-picker | — | Seletor cromático de cor personalizada |
+| Jest + jest-expo | 30.2.0 / 54.0.17 | Testes automatizados (144 testes) |
 
-> React Compiler habilitado (`experiments.reactCompiler: true` no `app.json`) — não adicionar `useMemo`/`useCallback` manualmente.
+> **React Compiler habilitado** (`experiments.reactCompiler: true` no `app.json`) — não adicionar `useMemo`/`useCallback` manualmente.
+
+> **New Architecture habilitada** (`newArchEnabled: true`) — usa o renderer Fabric e o sistema de módulos nativos TurboModules.
 
 ---
 
@@ -140,7 +207,7 @@ npm start
 | `npm run ios` | Build nativo + executa no simulador iOS |
 | `npm start` | Inicia dev server via Expo Go (sem notificações) |
 | `npm run web` | Inicia servidor web (React Native Web) |
-| `npm test` | Executa os 103 testes automatizados |
+| `npm test` | Executa os 144 testes automatizados |
 | `npm run test:watch` | Testes em modo watch |
 | `npm run lint` | Executa ESLint |
 | `npx tsc --noEmit` | Verificação de tipos sem compilar |
@@ -149,24 +216,100 @@ npm start
 
 ## Testes
 
-O projeto possui 103 testes automatizados distribuídos em 6 suites:
+O projeto possui **144 testes automatizados** distribuídos em **8 suites**:
 
-| Suite | Testes | Descrição |
-|-------|--------|-----------|
-| `utils/validation.test.ts` | 20 | Validação de lembretes e aproveitamento |
-| `utils/dateHelpers.test.ts` | 30 | Funções puras de data e período |
-| `services/storage.test.ts` | 12 | Camada AsyncStorage com mocks |
-| `services/notifications.test.ts` | 10 | expo-notifications com mocks |
-| `context/remindersReducer.test.ts` | 20 | Reducer de lembretes |
-| `context/aproveitamentoReducer.test.ts` | 24 | Reducer de aproveitamento |
+| Suite | Tipo | Testes | O que cobre |
+|-------|------|--------|-------------|
+| `utils/validation.test.ts` | Unitário | 29 | `validateReminder`, `validateAproveitamento`, `isValidHex` — incluindo edge cases de hex e whitespace |
+| `utils/dateHelpers.test.ts` | Unitário | 36 | `toDateString`, `toTimeString`, `getDaysInMonth`, `currentPeriod`, `formatPeriodLabel`, `buildAnnualMonths` |
+| `services/storage.test.ts` | Unitário | 13 | Camada AsyncStorage via mocks — get, save, delete para reminders e records |
+| `services/notifications.test.ts` | Unitário | 11 | `scheduleReminderNotification`, `cancelNotification` via mocks do `expo-notifications` |
+| `context/remindersReducer.test.ts` | Unitário | 17 | Reducer puro: todas as actions (`LOAD_START/SUCCESS/ERROR`, `ADD`, `UPDATE`, `DELETE`) + default case |
+| `context/aproveitamentoReducer.test.ts` | Unitário | 18 | Idem para o reducer de aproveitamento |
+| `context/remindersContext.test.ts` | Integração | 12 | Orquestração completa de `addReminder`, `updateReminder`, `removeReminder` |
+| `context/aproveitamentoContext.test.ts` | Integração | 8 | Orquestração completa de `addRecord`, `updateRecord`, `removeRecord` |
 
-Para executar:
+### Como executar
 
 ```bash
-npm test               # todos os testes
-npm run test:watch     # modo watch (re-executa ao salvar)
-npx jest __tests__/services/storage.test.ts  # arquivo específico
+npm test                                              # todos os 144 testes
+npm run test:watch                                    # modo watch (re-executa ao salvar)
+npx jest __tests__/services/storage.test.ts           # suite específica
+npx jest --testNamePattern="addReminder"              # testes por nome
 ```
+
+### Padrões adotados
+
+**Mocks antes dos imports** — native modules (AsyncStorage, expo-notifications) exigem que `jest.mock()` seja declarado antes de qualquer `import`:
+
+```ts
+jest.mock('@react-native-async-storage/async-storage', () =>
+  require('@react-native-async-storage/async-storage/jest/async-storage-mock'),
+);
+jest.mock('@/services/storage');
+
+import { reducer } from '@/context/RemindersContext';
+```
+
+**Fake timers com construtor local** — `new Date('YYYY-MM-DD')` é interpretado como UTC midnight; em fusos negativos (ex.: UTC-3) isso retorna o dia anterior. Use sempre o construtor local:
+
+```ts
+// ❌ pode falhar em UTC-3
+jest.useFakeTimers().setSystemTime(new Date('2025-01-01'));
+
+// ✅ sempre correto
+jest.useFakeTimers().setSystemTime(new Date(2025, 0, 1)); // mês 0-indexado
+```
+
+**`invocationCallOrder` para ordem de chamadas** — verifica que o storage é persistido *antes* de agendar a notificação (race condition fix):
+
+```ts
+expect(saveCallOrder).toBeLessThan(scheduleCallOrder);
+```
+
+### Testes de integração de contexto
+
+As duas últimas suites testam a lógica de orquestração dos contextos — a parte mais crítica do app. Cada teste renderiza o Provider completo via `renderHook` e verifica o comportamento end-to-end:
+
+```ts
+const wrapper = ({ children }: { children: React.ReactNode }) => (
+  React.createElement(RemindersProvider, null, children)
+);
+
+it('salva novamente com notificationId quando schedule retorna id', async () => {
+  notificationsModule.scheduleReminderNotification.mockResolvedValue('notif-123');
+
+  const { result } = renderHook(() => useReminders(), { wrapper });
+  await waitFor(() => expect(result.current.state.isLoading).toBe(false));
+
+  await act(async () => {
+    await result.current.addReminder(makeInput());
+  });
+
+  expect(storageModule.saveReminder).toHaveBeenCalledTimes(2);
+  const secondCall = storageModule.saveReminder.mock.calls[1][0] as Reminder;
+  expect(secondCall.notificationId).toBe('notif-123');
+});
+```
+
+---
+
+## Diagramas de Arquitetura
+
+A pasta [`docs/architecture.md`](docs/architecture.md) contém **8 diagramas Mermaid** cobrindo toda a arquitetura do projeto:
+
+| # | Diagrama | Tipo | Foco |
+|---|----------|------|------|
+| 1 | Arquitetura de Dados | `graph TD` | Fluxo AsyncStorage → storage → contexts → hooks → screens |
+| 2 | Hierarquia de Componentes | `graph LR` | Árvore completa do layout raiz até componentes folha |
+| 3 | Fluxo de Notificações | `sequenceDiagram` | `addReminder`, `updateReminder`, `removeReminder` com race condition fix |
+| 4 | State Machine — Agenda | `stateDiagram-v2` | Estados do formulário de lembretes (Idle → Creating → Saving) |
+| 5 | State Machine — Aproveitamento | `stateDiagram-v2` | Hydration automática, `skipNextHydrationRef`, navegação de período |
+| 6a | RemindersContext Actions | `graph TD` | Actions do reducer, mutações de estado e side effects |
+| 6b | AproveitamentoContext Actions | `graph TD` | Idem para o contexto de aproveitamento |
+| 7 | ER — Tipos de Dados | `erDiagram` | `Reminder`, `AproveitamentoRecord`, `MonthRecord`, `Priority`, `PeriodType` |
+
+> Os diagramas renderizam nativamente no GitHub e no VSCode com a extensão [`bierner.markdown-mermaid`](https://marketplace.visualstudio.com/items?itemName=bierner.markdown-mermaid).
 
 ---
 
@@ -174,52 +317,72 @@ npx jest __tests__/services/storage.test.ts  # arquivo específico
 
 ```
 Repertorio_progressivo/
-├── app/                    # Rotas do Expo Router (file-based routing)
-│   ├── _layout.tsx         # Layout raiz: ErrorBoundary → Providers → Tabs
-│   ├── index.tsx           # Aba Agenda
-│   └── Aproveitamento.tsx  # Aba Aproveitamento (apenas JSX)
+├── app/                         # Rotas do Expo Router (file-based routing)
+│   ├── _layout.tsx              # Layout raiz: ErrorBoundary → Providers → Tabs
+│   ├── index.tsx                # Aba Agenda
+│   └── Aproveitamento.tsx       # Aba Aproveitamento (apenas JSX)
 │
-├── components/             # Componentes de UI
-│   ├── index.ts            # Barrel export
-│   ├── AgendaScreen.tsx    # Tela da agenda (apenas JSX)
-│   ├── ReminderItem.tsx    # Item da lista de lembretes
-│   ├── PriorityPicker.tsx  # Seletor de prioridade (3 cores)
-│   ├── RecordItem.tsx      # Item da lista de registros
-│   ├── ProgressDonut.tsx   # Gráfico em donut de progresso
-│   ├── DayGrid.tsx         # Grid de dias do mês
-│   ├── MonthGrid.tsx       # Grid dos 12 meses do ano
-│   └── ErrorBoundary.tsx   # Captura erros de runtime
+├── components/                  # Componentes de UI
+│   ├── index.ts                 # Barrel export
+│   ├── AgendaScreen.tsx         # Tela da agenda (apenas JSX)
+│   ├── ReminderItem.tsx         # Item da lista de lembretes
+│   ├── PriorityPicker.tsx       # Seletor de prioridade (baixa/média/alta/custom)
+│   ├── ColorPickerModal.tsx     # Modal de seleção de cor cromática
+│   ├── RecordItem.tsx           # Item da lista de registros de aproveitamento
+│   ├── DayGrid.tsx              # Grid de dias do mês (modo mensal)
+│   ├── MonthGrid.tsx            # Grid dos 12 meses (modo anual)
+│   ├── ProgressBar.tsx          # Barra de progresso animada (reutilizável)
+│   ├── Badge.tsx                # Pill de label reutilizável
+│   ├── SegmentedToggle.tsx      # Toggle Mensal / Anual
+│   ├── FloatingTabBar.tsx       # Tab bar flutuante customizada
+│   ├── TabBarIcon.tsx           # Ícones SVG da tab bar
+│   └── ErrorBoundary.tsx        # Captura erros de runtime
 │
-├── hooks/                  # Custom hooks (toda lógica de negócio)
+├── hooks/                       # Custom hooks (toda lógica de negócio)
 │   ├── index.ts
-│   ├── useAgendaForm.ts    # Lógica e estado do formulário da Agenda
-│   └── useAproveitamentoForm.ts  # Lógica e estado do formulário de Aproveitamento
+│   ├── useAgendaForm.ts         # Lógica e estado do formulário da Agenda
+│   └── useAproveitamentoForm.ts # Lógica e estado do formulário de Aproveitamento
 │
-├── context/                # Estado global (useReducer)
+├── context/                     # Estado global (useReducer)
 │   ├── RemindersContext.tsx
 │   └── AproveitamentoContext.tsx
 │
-├── services/               # Camada de serviços
+├── services/                    # Camada de serviços
 │   ├── index.ts
-│   ├── storage.ts          # Único ponto de acesso ao AsyncStorage
-│   └── notifications.ts    # Wrapper do expo-notifications
+│   ├── storage.ts               # Único ponto de acesso ao AsyncStorage
+│   └── notifications.ts         # Wrapper do expo-notifications
 │
-├── utils/                  # Funções puras
+├── utils/                       # Funções puras
 │   ├── index.ts
-│   ├── dateHelpers.ts      # Helpers de data e período
-│   └── validation.ts       # Validação de formulários
+│   ├── dateHelpers.ts           # Helpers de data e período
+│   ├── validation.ts            # Validação de formulários
+│   └── id.ts                    # generateId(), getIsoNow()
 │
-├── constants/              # Tokens de tema
+├── constants/                   # Tokens de tema
 │   ├── index.ts
-│   └── theme.ts            # AppColors, calendarTheme
+│   └── theme.ts                 # AppColors, calendarTheme, Layout
 │
-├── types/                  # Interfaces TypeScript compartilhadas
-│   └── index.ts
+├── types/                       # Interfaces TypeScript compartilhadas
+│   └── index.ts                 # Reminder, AproveitamentoRecord, MonthRecord, Priority, PeriodType
 │
-└── __tests__/              # Suites de teste Jest
+├── docs/                        # Documentação
+│   ├── architecture.md          # 8 diagramas Mermaid da arquitetura
+│   └── screenshots/
+│       ├── V1/                  # Capturas da versão 1.0
+│       └── V2/                  # Capturas da versão 2.0 (atual)
+│
+└── __tests__/                   # Suites de teste Jest
     ├── utils/
+    │   ├── dateHelpers.test.ts
+    │   └── validation.test.ts
     ├── services/
+    │   ├── storage.test.ts
+    │   └── notifications.test.ts
     └── context/
+        ├── remindersReducer.test.ts
+        ├── aproveitamentoReducer.test.ts
+        ├── remindersContext.test.ts      ← integração
+        └── aproveitamentoContext.test.ts ← integração
 ```
 
 ---
@@ -231,25 +394,54 @@ O projeto segue o padrão de **separação de responsabilidades em camadas**:
 ```
 AsyncStorage (disco)
       ↕
-services/storage.ts          ← único ponto de acesso ao AsyncStorage
+services/storage.ts              ← único ponto de acesso ao AsyncStorage
       ↕
-context/ (RemindersContext, AproveitamentoContext)  ← estado global via useReducer
+context/ (RemindersContext,      ← estado global via useReducer
+          AproveitamentoContext)
       ↕
-hooks/ (useAgendaForm, useAproveitamentoForm)       ← lógica de formulário
+hooks/ (useAgendaForm,           ← lógica de formulário e validação
+        useAproveitamentoForm)
       ↕
-components/ e app/           ← apenas JSX (sem lógica de negócio)
+components/ e app/               ← apenas JSX (sem lógica de negócio)
 ```
 
-**Regra principal:** Nenhum componente acessa o `AsyncStorage` diretamente. Toda leitura e escrita passa por `services/storage.ts`.
+**Regra principal:** Nenhum componente acessa o `AsyncStorage` diretamente. Toda leitura e escrita passa por `services/storage.ts`. Nenhum componente usa `useContext` diretamente — sempre via hooks (`useReminders()`, `useAproveitamento()`).
 
-**Barrel exports:** Cada diretório tem um `index.ts`. Prefira imports via barrel:
-
+**Regra de Barrel:** Cada diretório tem um `index.ts`. Código **fora** do diretório usa o barrel:
 ```ts
 import { ReminderItem, DayGrid } from '@/components';
 import { useAgendaForm } from '@/hooks';
-import { AppColors } from '@/constants';
-import { toDateString } from '@/utils';
+import { AppColors, Layout } from '@/constants';
+import { toDateString, validateReminder } from '@/utils';
 ```
+Código **dentro** do mesmo diretório usa imports diretos (`./Foo`) — nunca o próprio barrel — para evitar require cycles.
+
+**`utils/id.ts`:** Centraliza `generateId()` e `getIsoNow()`, eliminando duplicação entre `RemindersContext` e `AproveitamentoContext`.
+
+**React Compiler:** Habilitado em `app.json` (`experiments.reactCompiler: true`). Não adicionar `useMemo` / `useCallback` manualmente — o compilador faz as memoizações necessárias.
+
+---
+
+## Changelog
+
+### v2.0.0 — 2026-03-04
+
+- **Tab bar flutuante customizada** com ícones SVG (FloatingTabBar + TabBarIcon) — elimina dependência de fontes e bugs de renderização no Fabric
+- **Prioridade custom** com seletor de cor cromático (ColorPickerModal + reanimated-color-picker)
+- **Novos componentes reutilizáveis:** ProgressBar (animada), Badge (pill), SegmentedToggle (mensal/anual)
+- **Tokens de tema unificados:** AppColors, Layout, calendarTheme em `constants/theme.ts` — ~40 hex hardcoded substituídos
+- **`utils/id.ts`:** centraliza `generateId` e `getIsoNow` (elimina duplicação entre contextos)
+- **Fix de race condition** em RemindersContext: storage persistido antes de `scheduleNotification`
+- **Fix de bug:** reducers retornam state intacto para actions desconhecidas (default case ausente)
+- **Suite de testes expandida:** 99 → 144 testes, 6 → 8 suites (+2 suites de integração de contexto)
+- **Documentação visual** com 8 diagramas Mermaid em `docs/architecture.md`
+- React Compiler + New Architecture habilitados
+
+### v1.0.0 — inicial
+
+- Agenda de lembretes com notificações push (expo-notifications)
+- Aproveitamento com modo mensal e anual
+- 99 testes automatizados em 6 suites
 
 ---
 

@@ -1,1 +1,1 @@
-export { AppColors, calendarTheme } from './theme';
+export { AppColors, calendarTheme, FontFamily, Gradients, Layout } from './theme';

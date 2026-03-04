@@ -63,6 +63,25 @@ describe('validateReminder', () => {
     expect(validateReminder({ ...valid, priority: 'red' }).valid).toBe(true);
   });
 
+  it('aceita prioridade custom com hex válido', () => {
+    expect(validateReminder({ ...valid, priority: 'custom', customColor: '#A855F7' }).valid).toBe(true);
+  });
+
+  it('rejeita custom sem customColor', () => {
+    const { errors } = validateReminder({ ...valid, priority: 'custom', customColor: null });
+    expect(errors.priority).toBe('Selecione uma cor personalizada');
+  });
+
+  it('rejeita custom com hex malformado', () => {
+    const { errors } = validateReminder({ ...valid, priority: 'custom', customColor: 'roxo' });
+    expect(errors.priority).toBe('Selecione uma cor personalizada');
+  });
+
+  it('rejeita custom com hex de 3 dígitos', () => {
+    const { errors } = validateReminder({ ...valid, priority: 'custom', customColor: '#A8F' });
+    expect(errors.priority).toBe('Selecione uma cor personalizada');
+  });
+
   it('retorna múltiplos erros ao mesmo tempo', () => {
     const { valid: isValid, errors } = validateReminder({
       name: '',
@@ -73,6 +92,27 @@ describe('validateReminder', () => {
     expect(isValid).toBe(false);
     expect(Object.keys(errors).length).toBeGreaterThan(1);
   });
+
+  it('rejeita name com mais de 100 caracteres', () => {
+    const { errors } = validateReminder({ ...valid, name: 'a'.repeat(101) });
+    expect(errors.name).toBe('Nome deve ter no máximo 100 caracteres');
+  });
+
+  it('aceita name com exatamente 100 caracteres', () => {
+    expect(validateReminder({ ...valid, name: 'a'.repeat(100) }).valid).toBe(true);
+  });
+
+  it('rejeita custom com hex de 5 dígitos', () => {
+    expect(validateReminder({ ...valid, priority: 'custom', customColor: '#12345' }).valid).toBe(false);
+  });
+
+  it('rejeita custom com hex de 7 dígitos', () => {
+    expect(validateReminder({ ...valid, priority: 'custom', customColor: '#1234567' }).valid).toBe(false);
+  });
+
+  it('rejeita custom com caracteres inválidos no hex', () => {
+    expect(validateReminder({ ...valid, priority: 'custom', customColor: '#GGGGGG' }).valid).toBe(false);
+  });
 });
 
 // ─── validateAproveitamento ───────────────────────────────────────────────────
@@ -81,16 +121,10 @@ describe('validateAproveitamento', () => {
   const valid = {
     eventName: 'Álgebra',
     totalHours: '40',
-    completedHours: '10',
   };
 
   it('retorna valid:true para campos corretos', () => {
     expect(validateAproveitamento(valid).valid).toBe(true);
-  });
-
-  it('aceita horas concluídas vazio (campo opcional)', () => {
-    const result = validateAproveitamento({ ...valid, completedHours: '' });
-    expect(result.valid).toBe(true);
   });
 
   it('exige nome do evento', () => {
@@ -113,26 +147,26 @@ describe('validateAproveitamento', () => {
     expect(errors.totalHours).toBe('Carga horária deve ser maior que 0');
   });
 
-  it('rejeita horas concluídas maiores que a carga total', () => {
+  it('rejeita eventName com mais de 100 caracteres', () => {
     const { errors } = validateAproveitamento({
       ...valid,
-      totalHours: '10',
-      completedHours: '15',
+      eventName: 'a'.repeat(101),
     });
-    expect(errors.completedHours).toBe('Horas concluídas não podem exceder a carga total');
+    expect(errors.eventName).toBe('Nome deve ter no máximo 100 caracteres');
   });
 
-  it('rejeita horas concluídas negativas', () => {
-    const { errors } = validateAproveitamento({ ...valid, completedHours: '-1' });
-    expect(errors.completedHours).toBe('Horas concluídas inválidas');
+  it('rejeita carga horária maior que 9999', () => {
+    const { errors } = validateAproveitamento({ ...valid, totalHours: '10000' });
+    expect(errors.totalHours).toBe('Carga horária máxima é 9999h');
   });
 
-  it('aceita horas concluídas igual à carga total', () => {
-    const result = validateAproveitamento({
-      ...valid,
-      totalHours: '10',
-      completedHours: '10',
-    });
-    expect(result.valid).toBe(true);
+  it('aceita carga horária de exatamente 9999', () => {
+    expect(validateAproveitamento({ ...valid, totalHours: '9999' }).valid).toBe(true);
+  });
+
+  it('rejeita eventName composto só de espaços', () => {
+    const r = validateAproveitamento({ ...valid, eventName: '   ' });
+    expect(r.valid).toBe(false);
+    expect(r.errors.eventName).toBeDefined();
   });
 });

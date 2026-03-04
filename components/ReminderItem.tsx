@@ -1,19 +1,22 @@
 import { Alert, Text, TouchableOpacity, View } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
+import Animated, { FadeInDown, LinearTransition } from 'react-native-reanimated';
 
-import { AppColors } from '@/constants/theme';
-import { PRIORITY_COLORS } from '@/hooks/useAgendaForm';
-import { formatDisplayDate, formatDisplayTime } from '@/utils/dateHelpers';
+import { AppColors, FontFamily } from '@/constants/theme';
+import { resolveColor } from '@/hooks';
+import { formatDisplayDate, formatDisplayTime } from '@/utils';
 import type { Reminder } from '@/types';
+import { Badge } from './Badge';
 
 interface ReminderItemProps {
   reminder: Reminder;
+  index: number;
   onEdit: (r: Reminder) => void;
   onDelete: (id: string) => void;
 }
 
-export function ReminderItem({ reminder, onEdit, onDelete }: ReminderItemProps) {
-  const color = PRIORITY_COLORS[reminder.priority];
+export function ReminderItem({ reminder, index, onEdit, onDelete }: ReminderItemProps) {
+  const color = resolveColor(reminder);
 
   function handleDelete() {
     Alert.alert(
@@ -31,26 +34,46 @@ export function ReminderItem({ reminder, onEdit, onDelete }: ReminderItemProps) 
   }
 
   return (
-    <View
-      style={{ borderLeftColor: color, borderLeftWidth: 4 }}
-      className="flex-row items-center bg-white rounded-2xl p-4 mb-3 border border-brand-border"
+    <Animated.View
+      entering={FadeInDown.delay(index * 60).springify()}
+      layout={LinearTransition.springify()}
+      style={{ elevation: 2, flexDirection: 'row', alignItems: 'center' }}
+      className="bg-white rounded-2xl p-4 mb-3 shadow-sm"
     >
-      <View className="flex-1">
-        <Text className="text-brand-dark font-semibold text-base" numberOfLines={1}>
+      {/* Faixa lateral refinada */}
+      <View
+        importantForAccessibility="no"
+        style={{
+          width: 4,
+          borderRadius: 4,
+          alignSelf: 'stretch',
+          marginRight: 12,
+          backgroundColor: color,
+        }}
+      />
+
+      <View style={{ flex: 1 }}>
+        <Text
+          style={{ fontFamily: FontFamily.semiBold, fontSize: 16, color: AppColors.dark }}
+          numberOfLines={1}
+        >
           {reminder.name}
         </Text>
-        <Text className="text-brand-muted text-sm mt-1">
-          {formatDisplayDate(reminder.date)} às {formatDisplayTime(reminder.time)}
-        </Text>
+        <View style={{ marginTop: 6 }}>
+          <Badge
+            label={`${formatDisplayDate(reminder.date)} às ${formatDisplayTime(reminder.time)}`}
+            backgroundColor={AppColors.yellow}
+          />
+        </View>
       </View>
 
-      <TouchableOpacity onPress={() => onEdit(reminder)} className="p-2 mr-1">
+      <TouchableOpacity onPress={() => onEdit(reminder)} style={{ minWidth: 44, minHeight: 44, alignItems: 'center', justifyContent: 'center', marginRight: 2 }} accessibilityLabel="Editar lembrete" accessibilityRole="button">
         <MaterialIcons name="edit" size={22} color={AppColors.accent} />
       </TouchableOpacity>
 
-      <TouchableOpacity onPress={handleDelete} className="p-2">
+      <TouchableOpacity onPress={handleDelete} style={{ minWidth: 44, minHeight: 44, alignItems: 'center', justifyContent: 'center' }} accessibilityLabel="Remover lembrete" accessibilityRole="button">
         <MaterialIcons name="delete-outline" size={22} color={AppColors.priority.red} />
       </TouchableOpacity>
-    </View>
+    </Animated.View>
   );
 }

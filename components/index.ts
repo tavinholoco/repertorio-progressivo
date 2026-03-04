@@ -1,8 +1,15 @@
 export { default as AgendaScreen } from './AgendaScreen';
+export { AnimatedTextInput } from './AnimatedTextInput';
+export { Badge } from './Badge';
+export { ColorPickerModal } from './ColorPickerModal';
+export { EmptyState } from './EmptyState';
 export { ErrorBoundary } from './ErrorBoundary';
+export { FloatingTabBar } from './FloatingTabBar';
 export { DayGrid } from './DayGrid';
 export { MonthGrid } from './MonthGrid';
+export { ProgressBar } from './ProgressBar';
 export { PriorityPicker } from './PriorityPicker';
-export { ProgressDonut } from './ProgressDonut';
 export { RecordItem } from './RecordItem';
 export { ReminderItem } from './ReminderItem';
+export { SegmentedToggle } from './SegmentedToggle';
+export { TabBarIcon } from './TabBarIcon';
