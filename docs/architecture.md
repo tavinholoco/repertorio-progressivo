@@ -2,198 +2,240 @@
 
 Documentação visual da arquitetura do projeto. Cada diagrama cobre uma camada ou fluxo específico.
 
+**Índice:**
+1. [Arquitetura de Dados](#1-arquitetura-de-dados)
+2. [Hierarquia de Componentes](#2-hierarquia-de-componentes)
+3. [Fluxo de Notificações](#3-fluxo-de-notificações)
+4. [State Machine — Agenda](#4-state-machine--formulário-de-agenda)
+5. [State Machine — Aproveitamento](#5-state-machine--formulário-de-aproveitamento--hydration)
+6a. [RemindersContext — Ações e Side Effects](#6a-reminderscontext--ações-reducer-e-side-effects)
+6b. [AproveitamentoContext — Ações e Side Effects](#6b-aproveitamentocontext--ações-reducer-e-side-effects)
+7. [ER — Tipos de Dados](#7-er--tipos-de-dados)
+
 ---
 
 ## 1. Arquitetura de Dados
 
-Fluxo vertical completo de dados: desde a persistência em disco até as telas, passando pelas camadas de serviço, contexto e hooks. As setas indicam a direção do fluxo de dados e chamadas entre módulos.
+**Pergunta que responde:** Como os dados fluem desde a persistência em disco até as telas?
+
+**Público-alvo:** Devs que precisam entender quem chama quem e onde adicionar nova lógica.
+
+**Última atualização:** 2026-03-04
 
 ```mermaid
 graph TD
-    subgraph Disco["💾 Persistência"]
+    %% === ESTILOS ===
+    classDef storage  fill:#fff3e0,stroke:#f57c00,stroke-width:2px,color:#e65100
+    classDef service  fill:#e1f5fe,stroke:#0288d1,stroke-width:2px,color:#01579b
+    classDef utils    fill:#f5f5f5,stroke:#9e9e9e,stroke-width:2px,color:#424242
+    classDef context  fill:#f3e5f5,stroke:#7b1fa2,stroke-width:2px,color:#4a148c
+    classDef hooks    fill:#e8f5e9,stroke:#388e3c,stroke-width:2px,color:#1b5e20
+    classDef screen   fill:#e1f5fe,stroke:#0288d1,stroke-width:2px,color:#01579b
+
+    %% === PERSISTÊNCIA ===
+    subgraph DISK["💾 Persistência"]
         AS[(AsyncStorage)]
     end
 
-    subgraph Services["🔧 Serviços"]
-        ST["services/storage.ts\ngetReminders · saveReminder · deleteReminder\ngetAproveitamentos · saveAproveitamento · deleteAproveitamento"]
-        NT["services/notifications.ts\nscheduleReminderNotification · cancelNotification · requestPermissions"]
+    %% === SERVIÇOS E UTILITÁRIOS ===
+    subgraph SVC["🔧 Serviços e Utilitários"]
+        ST["storage.ts"]
+        NT["notifications.ts"]
+        ID["utils/id.ts"]
+        DH["utils/dateHelpers.ts"]
+        VL["utils/validation.ts"]
     end
 
-    subgraph Utils["🛠️ Utilitários Puros"]
-        ID["utils/id.ts\ngenerateId · getIsoNow"]
-        DH["utils/dateHelpers.ts\ntoDateString · formatPeriodLabel · getDaysInMonth..."]
-        VL["utils/validation.ts\nvalidateReminder · validateAproveitamento"]
+    %% === ESTADO GLOBAL ===
+    subgraph CTX["🗃️ Estado Global"]
+        RC["RemindersContext"]
+        AC["AproveitamentoContext"]
     end
 
-    subgraph Contexts["🗃️ Estado Global"]
-        RC["context/RemindersContext\nuseReminders()\naddReminder · updateReminder · removeReminder"]
-        AC["context/AproveitamentoContext\nuseAproveitamento()\naddRecord · updateRecord · removeRecord"]
+    %% === LÓGICA DE FORMULÁRIO ===
+    subgraph HKS["🪝 Lógica de Formulário"]
+        UAF["useAgendaForm"]
+        UAPF["useAproveitamentoForm"]
     end
 
-    subgraph Hooks["🪝 Lógica de Formulário"]
-        UAF["hooks/useAgendaForm\nform fields · handleSave · populateForm\nresetForm · markedDates"]
-        UAPF["hooks/useAproveitamentoForm\nform fields · handleSave · navigatePeriod\ntoggleDia · adjustMonth · hydration"]
+    %% === TELAS E ROTEAMENTO ===
+    subgraph SCR["📱 Telas e Roteamento"]
+        AGS["AgendaScreen"]
+        APR["Aproveitamento.tsx"]
+        LAY["_layout.tsx"]
+        IDX["index.tsx"]
     end
 
-    subgraph Screens["📱 Telas"]
-        AGS["components/AgendaScreen\n(consome useAgendaForm)"]
-        APR["app/Aproveitamento.tsx\n(consome useAproveitamentoForm)"]
-    end
-
-    subgraph Router["🧭 Roteamento"]
-        LAY["app/_layout.tsx\nExpo Router + Providers + FloatingTabBar"]
-        IDX["app/index.tsx\n(wrapper da Agenda)"]
-    end
-
-    %% Disco ↔ Serviços
-    AS <-->|"JSON serializado\n@app:reminders\n@app:aproveitamento"| ST
-
-    %% Serviços → Contextos
-    ST -->|"leitura na inicialização\nescrita em cada mutation"| RC
-    ST -->|"leitura na inicialização\nescrita em cada mutation"| AC
-    NT -->|"schedule / cancel\nretorna notificationId ou null"| RC
-
-    %% Utils → Contextos e Hooks
-    ID -->|"generateId · getIsoNow"| RC
-    ID -->|"generateId · getIsoNow"| AC
-    VL -->|"validateReminder"| UAF
-    VL -->|"validateAproveitamento"| UAPF
-    DH -->|"toDateString · toTimeString\nformatDisplayDate · formatDisplayTime"| UAF
-    DH -->|"getDaysInMonth · buildAnnualMonths\nformatPeriodLabel · currentPeriod"| UAPF
-
-    %% Contextos → Hooks
-    RC -->|"state.reminders · isLoading\naddReminder · updateReminder · removeReminder"| UAF
-    AC -->|"state.records · isLoading\naddRecord · updateRecord · removeRecord"| UAPF
-
-    %% Hooks → Telas
-    UAF -->|"todos os campos + handlers"| AGS
-    UAPF -->|"todos os campos + handlers"| APR
-
-    %% Router
+    %% === CONEXÕES ===
+    AS <-->|"JSON serializado"| ST
+    ST -->|"leitura/escrita"| RC
+    ST -->|"leitura/escrita"| AC
+    NT -->|"schedule / cancel"| RC
+    ID --> RC
+    ID --> AC
+    VL --> UAF
+    VL --> UAPF
+    DH --> UAF
+    DH --> UAPF
+    RC --> UAF
+    AC --> UAPF
+    UAF --> AGS
+    UAPF --> APR
     LAY --> IDX
     IDX --> AGS
     LAY --> APR
+
+    %% === CLASSES ===
+    class AS storage
+    class ST,NT service
+    class ID,DH,VL utils
+    class RC,AC context
+    class UAF,UAPF hooks
+    class AGS,APR,LAY,IDX screen
 ```
 
----
+**Legenda:**
+- 🟠 Laranja: Persistência (AsyncStorage)
+- 🔵 Azul: Serviços internos e telas
+- ⚫ Cinza: Utilitários puros
+- 🟣 Roxo: Estado global (contextos)
+- 🟢 Verde: Lógica de formulário (hooks)
 
-> **Regras de ouro desta arquitetura:**
-> - Nenhum componente acessa `AsyncStorage` diretamente — tudo passa por `services/storage.ts`.
-> - Nenhum componente usa `useContext(RemindersContext)` diretamente — sempre via `useReminders()` / `useAproveitamento()`.
-> - Utilitários em `utils/` são funções puras, sem efeitos colaterais.
+**Notas:**
+- `storage.ts` exporta: `getReminders`, `saveReminder`, `deleteReminder`, `getAproveitamentos`, `saveAproveitamento`, `deleteAproveitamento`
+- `notifications.ts` exporta: `scheduleReminderNotification`, `cancelNotification`, `requestPermissions`
+- `dateHelpers.ts` exporta: `toDateString`, `toTimeString`, `formatDisplayDate`, `formatDisplayTime`, `getDaysInMonth`, `buildAnnualMonths`, `formatPeriodLabel`, `currentPeriod`
+- Chaves AsyncStorage: `@app:reminders`, `@app:aproveitamento`
+- Nenhum componente acessa `AsyncStorage` diretamente — tudo passa por `storage.ts`.
+- Nenhum componente usa `useContext` diretamente — sempre via `useReminders()` / `useAproveitamento()`.
 
 ---
 
 ## 2. Hierarquia de Componentes
 
-Árvore completa de componentes partindo do layout raiz. Mostra a ordem de wrapping dos providers, as duas rotas de navegação e todos os componentes folha utilizados em cada tela.
+**Pergunta que responde:** Qual é a árvore de componentes do layout raiz até as folhas?
+
+**Público-alvo:** Devs frontend que precisam localizar onde um componente está montado ou adicionar um novo.
+
+**Última atualização:** 2026-03-04
 
 ```mermaid
 graph LR
-    subgraph Root["🏠 Raiz"]
+    %% === ESTILOS ===
+    classDef provider fill:#f3e5f5,stroke:#7b1fa2,stroke-width:2px,color:#4a148c
+    classDef navigator fill:#f5f5f5,stroke:#9e9e9e,stroke-width:2px,color:#424242
+    classDef screen   fill:#e1f5fe,stroke:#0288d1,stroke-width:2px,color:#01579b
+    classDef shared   fill:#e8f5e9,stroke:#388e3c,stroke-width:2px,color:#1b5e20
+
+    %% === RAIZ ===
+    subgraph ROOT["🏠 Raiz"]
         GHRV["GestureHandlerRootView"]
         EB["ErrorBoundary"]
         RP["RemindersProvider"]
         AP["AproveitamentoProvider"]
-        TB["Tabs\n(Expo Router)"]
+        TB["Tabs (Expo Router)"]
     end
 
-    subgraph TabBar["🧭 Tab Bar Customizada"]
+    %% === TAB BAR ===
+    subgraph TABBAR["🧭 Tab Bar"]
         FTB["FloatingTabBar"]
-        TBI["TabBarIcon\n(SVG: calendar / bar-chart)"]
+        TBI["TabBarIcon (SVG)"]
     end
 
-    subgraph AgendaRoute["📅 Rota: Agenda (index)"]
-        IDX["app/index.tsx"]
+    %% === ROTA: AGENDA ===
+    subgraph AGENDA["📅 Agenda"]
+        IDX["index.tsx"]
         AGS["AgendaScreen"]
-
-        subgraph AgendaForm["Formulário"]
-            ATI1["AnimatedTextInput\n(nome do lembrete)"]
-            DTF1["DateTimeField\n(data)"]
-            DTF2["DateTimeField\n(horário)"]
-            PP["PriorityPicker"]
-            CPM["ColorPickerModal"]
-        end
-
-        subgraph AgendaList["Lista de Lembretes"]
-            RI["ReminderItem"]
-            BAD1["Badge\n(prioridade)"]
-            CAL["Calendar\n(react-native-calendars)"]
-            BADGE_COUNT1["Badge\n(contador)"]
-            ES1["EmptyState"]
-        end
+        ATI1["AnimatedTextInput"]
+        DTF["DateTimeField"]
+        PP["PriorityPicker"]
+        CPM["ColorPickerModal"]
+        CAL["Calendar"]
+        RI["ReminderItem"]
     end
 
-    subgraph AprovRoute["📊 Rota: Aproveitamento"]
-        APR["app/Aproveitamento.tsx"]
-
-        subgraph AprovForm["Formulário"]
-            ATI2["AnimatedTextInput\n(nome do evento)"]
-            ATI3["AnimatedTextInput\n(carga horária)"]
-            ST["SegmentedToggle\n(mensal / anual)"]
-            PB1["ProgressBar\n(progresso de dias)"]
-            DG["DayGrid\n(modo mensal)"]
-            MG["MonthGrid\n(modo anual)"]
-        end
-
-        subgraph AprovList["Lista de Registros"]
-            RECI["RecordItem"]
-            BAD2["Badge\n(período)"]
-            PB2["ProgressBar\n(progresso por item)"]
-            BADGE_COUNT2["Badge\n(contador)"]
-            ES2["EmptyState"]
-        end
+    %% === ROTA: APROVEITAMENTO ===
+    subgraph APROV["📊 Aproveitamento"]
+        APR["Aproveitamento.tsx"]
+        ATI2["AnimatedTextInput"]
+        ST_TOG["SegmentedToggle"]
+        DG["DayGrid"]
+        MG["MonthGrid"]
+        RECI["RecordItem"]
     end
 
-    %% Wrapping dos providers (ordem importa)
+    %% === COMPONENTES COMPARTILHADOS ===
+    subgraph SHARED["♻️ Compartilhados"]
+        BADGE["Badge"]
+        PB["ProgressBar"]
+        ES["EmptyState"]
+    end
+
+    %% === WRAPPING DOS PROVIDERS ===
     GHRV --> EB --> RP --> AP --> TB
 
-    %% Tab bar customizada
+    %% === TAB BAR ===
     TB -->|"prop tabBar"| FTB
     FTB --> TBI
 
-    %% Rotas
+    %% === ROTAS ===
     TB --> IDX
     TB --> APR
 
-    %% Agenda
+    %% === AGENDA ===
     IDX --> AGS
     AGS --> ATI1
-    AGS --> DTF1
-    AGS --> DTF2
+    AGS --> DTF
     AGS --> PP
     AGS --> CPM
     AGS --> CAL
     AGS --> RI
-    AGS --> BADGE_COUNT1
-    AGS --> ES1
-    RI --> BAD1
 
-    %% Aproveitamento
+    %% === APROVEITAMENTO ===
     APR --> ATI2
-    APR --> ATI3
-    APR --> ST
-    APR --> PB1
+    APR --> ST_TOG
     APR --> DG
     APR --> MG
     APR --> RECI
-    APR --> BADGE_COUNT2
-    APR --> ES2
-    RECI --> BAD2
-    RECI --> PB2
+
+    %% === COMPONENTES COMPARTILHADOS ===
+    AGS --> BADGE
+    AGS --> ES
+    APR --> BADGE
+    APR --> ES
+    APR --> PB
+    RI --> BADGE
+    RECI --> BADGE
+    RECI --> PB
+
+    %% === CLASSES ===
+    class RP,AP provider
+    class GHRV,EB,TB,FTB,TBI,IDX navigator
+    class AGS,APR screen
+    class ATI1,ATI2,DTF,PP,CPM,CAL,RI,ST_TOG,DG,MG,RECI screen
+    class BADGE,PB,ES shared
 ```
 
----
+**Legenda:**
+- 🟣 Roxo: Providers de estado global
+- ⚫ Cinza: Navegação e wrappers
+- 🔵 Azul: Telas e componentes de rota
+- 🟢 Verde: Componentes compartilhados entre rotas
 
-> **Nota de imports dentro de `components/`:**
-> Arquivos dentro da pasta `components/` usam imports diretos (`./Foo`) para outros arquivos da mesma pasta.
-> O barrel `@/components` é exclusivo para código **fora** de `components/` — violações geram `WARN Require cycle` no Metro.
+**Notas:**
+- A ordem dos providers importa: `GestureHandlerRootView → ErrorBoundary → RemindersProvider → AproveitamentoProvider → Tabs`.
+- Arquivos dentro de `components/` usam imports diretos (`./Foo`), nunca o barrel `@/components` — violações geram `WARN Require cycle`.
+- `Badge` e `ProgressBar` aparecem em ambas as rotas; `EmptyState` também é compartilhado.
 
 ---
 
 ## 3. Fluxo de Notificações
 
-Detalha as três operações que envolvem notificações: criação, atualização e remoção de um lembrete. O fix de race condition está explícito: o `saveReminder` ocorre **antes** do agendamento da notificação, garantindo que o lembrete persiste mesmo que a notificação falhe.
+**Pergunta que responde:** Em que ordem exata são executadas as operações ao criar, editar ou remover um lembrete com notificação?
+
+**Público-alvo:** Devs que mantêm a lógica de notificações ou investigam bugs de agendamento.
+
+**Última atualização:** 2026-03-04
 
 ```mermaid
 sequenceDiagram
@@ -209,44 +251,50 @@ sequenceDiagram
         Note over U,OS: ➕ addReminder — criar novo lembrete
 
         U->>H: handleSave()
+        activate H
         H->>H: validateReminder() ✓
         H->>RC: addReminder(input)
+        activate RC
 
-        RC->>RC: gera Reminder<br/>(generateId · getIsoNow)
-
-        Note over RC,ST: 🔒 Storage ANTES de notificação (race condition fix)
+        Note over RC,ST: 🔒 Storage ANTES da notificação (race condition fix)
         RC->>ST: saveReminder(reminder)
-        ST->>ST: readList → upsert → AsyncStorage.setItem
+        activate ST
         ST-->>RC: ok
+        deactivate ST
 
         RC->>NT: scheduleReminderNotification(reminder)
-        NT->>NT: requestPermissions()
-        NT->>NT: parse date + time → triggerDate<br/>guard: triggerDate > now && !isNaN
+        activate NT
+        Note over NT: verifica permissão + valida data/hora
 
         alt permissão concedida e data futura
             NT->>OS: scheduleNotificationAsync(trigger: DATE)
             OS-->>NT: notificationId
             NT-->>RC: notificationId
-
-            RC->>RC: reminder.notificationId = notificationId
-            RC->>ST: saveReminder(reminder) ← atualiza com notificationId
+            deactivate NT
+            RC->>ST: saveReminder(reminder + notificationId)
+            activate ST
             ST-->>RC: ok
+            deactivate ST
         else permissão negada ou data passada
             NT-->>RC: null
+            deactivate NT
         end
 
         RC->>RC: dispatch ADD
-        RC-->>H: (state atualizado via contexto)
+        deactivate RC
         H->>H: resetForm()
+        deactivate H
     end
 
     %% ─── ATUALIZAR LEMBRETE ────────────────────────────────────────
     rect rgb(255, 248, 230)
         Note over U,OS: ✏️ updateReminder — editar lembrete existente
 
-        U->>H: handleSave() (editingReminder != null)
+        U->>H: handleSave() [editingReminder != null]
+        activate H
         H->>H: validateReminder() ✓
         H->>RC: updateReminder(reminder)
+        activate RC
 
         opt reminder tem notificationId
             RC->>NT: cancelNotification(notificationId)
@@ -259,13 +307,15 @@ sequenceDiagram
         OS-->>NT: newNotificationId (ou null)
         NT-->>RC: newNotificationId
 
-        RC->>RC: updated = { ...reminder,<br/>  notificationId: newNotificationId,<br/>  updatedAt: getIsoNow() }
-        RC->>ST: saveReminder(updated)
+        RC->>ST: saveReminder(updated + updatedAt)
+        activate ST
         ST-->>RC: ok
+        deactivate ST
 
         RC->>RC: dispatch UPDATE
-        RC-->>H: (state atualizado via contexto)
+        deactivate RC
         H->>H: resetForm()
+        deactivate H
     end
 
     %% ─── REMOVER LEMBRETE ──────────────────────────────────────────
@@ -274,8 +324,7 @@ sequenceDiagram
 
         U->>H: onDelete(id)
         H->>RC: removeReminder(id)
-
-        RC->>RC: busca reminder por id em state.reminders
+        activate RC
 
         opt reminder tem notificationId
             RC->>NT: cancelNotification(notificationId)
@@ -284,108 +333,116 @@ sequenceDiagram
         end
 
         RC->>ST: deleteReminder(id)
-        ST->>ST: readList → filter → AsyncStorage.setItem
+        activate ST
         ST-->>RC: ok
+        deactivate ST
 
         RC->>RC: dispatch DELETE
+        deactivate RC
     end
 ```
 
----
-
-> **Garantias do fluxo de notificações:**
-> - `scheduleReminderNotification` retorna `null` se: permissão negada, data no passado, data inválida (`isNaN`), ou falha do SO.
-> - `cancelNotification` nunca lança exceção para cima — tem `try/catch` interno.
-> - Em `updateReminder`, o cancelamento da notificação antiga ocorre **antes** de agendar a nova.
-> - `expo-notifications` não é suportado no Expo Go (SDK 53+) — requer `npm run android`.
+**Notas:**
+- `scheduleReminderNotification` retorna `null` se: permissão negada, data no passado, data inválida (`isNaN`), ou falha do SO.
+- `cancelNotification` nunca lança exceção — tem `try/catch` interno.
+- Em `updateReminder`, o cancelamento da notificação antiga ocorre **antes** de agendar a nova.
+- `expo-notifications` não é suportado no Expo Go (SDK 53+) — requer `npm run android`.
 
 ---
 
 ## 4. State Machine — Formulário de Agenda
 
-Máquina de estados do hook `useAgendaForm`. Cobre o ciclo de vida completo do formulário: criação, edição, validação e salvamento. Os estados de sobreposição (pickers e modal de cor) são modelados como regiões paralelas independentes do estado principal.
+**Pergunta que responde:** Quais são os estados possíveis do formulário de Agenda e o que causa cada transição?
+
+**Público-alvo:** Devs que mantêm `useAgendaForm` ou adicionam novos campos ao formulário.
+
+**Última atualização:** 2026-03-04
 
 ```mermaid
 stateDiagram-v2
     [*] --> Idle
 
     %% ── ESTADO PRINCIPAL ──────────────────────────────────────────
-    state "Idle\n(formulário vazio, editingReminder = null)" as Idle
-    state "Creating\n(editingReminder = null)" as Creating
-    state "Editing\n(editingReminder = Reminder)" as Editing
+    state "Idle" as Idle
+    state "Creating" as Creating
+    state "Editing" as Editing
 
     state "Saving" as Saving {
-        state "isSubmitting = true" as Submitting
         [*] --> Submitting
+        state "isSubmitting = true" as Submitting
     }
 
-    Idle --> Creating     : usuário digita nome\nou seleciona data/hora/cor
-    Idle --> Editing      : populateForm(reminder)\n→ form preenchido com dados do lembrete
+    Idle --> Creating : digita nome / seleciona data/hora/cor
+    Idle --> Editing  : populateForm(reminder)
 
-    Creating --> Creating : handleNameChange\nsetDate · setTime\nhandleSelectColor
+    Creating --> Creating : handleNameChange / setDate / setTime / handleSelectColor
+    Editing  --> Editing  : handleNameChange / setDate / setTime / handleSelectColor
 
-    Editing --> Editing   : handleNameChange\nsetDate · setTime\nhandleSelectColor
+    Creating --> Saving  : handleSave() [válido]
+    Editing  --> Saving  : handleSave() [válido]
 
-    Creating --> Saving   : handleSave()\n→ validateReminder() ✓\n→ addReminder()
-    Editing  --> Saving   : handleSave()\n→ validateReminder() ✓\n→ updateReminder()
+    Creating --> Creating : handleSave() [inválido]
+    Editing  --> Editing  : handleSave() [inválido]
 
-    Creating --> Creating : handleSave()\n→ validateReminder() ✗\n(errors preenchidos)
-    Editing  --> Editing  : handleSave()\n→ validateReminder() ✗\n(errors preenchidos)
+    Saving --> Idle : dispatch ADD / UPDATE → resetForm()
 
-    Saving --> Idle       : sucesso\n→ dispatch ADD / UPDATE\n→ resetForm()
-
-    Editing --> Idle      : botão "Cancelar"\n→ resetForm()
+    Editing --> Idle : botão "Cancelar" → resetForm()
 
     %% ── PICKERS (paralelo ao estado principal) ────────────────────
     state "Pickers e Modal (paralelo)" as Pickers {
         state "DatePicker" as DP {
-            state "fechado\n(showDatePicker=false)" as DPClosed
-            state "aberto\n(showDatePicker=true)" as DPOpen
+            state "fechado" as DPClosed
+            state "aberto" as DPOpen
             DPClosed --> DPOpen   : onPress no campo de data
-            DPOpen   --> DPClosed : onValueChange(date)\n→ setDate · setShow(iOS only)
+            DPOpen   --> DPClosed : onValueChange(date)
         }
 
         state "TimePicker" as TP {
-            state "fechado\n(showTimePicker=false)" as TPClosed
-            state "aberto\n(showTimePicker=true)" as TPOpen
+            state "fechado" as TPClosed
+            state "aberto" as TPOpen
             TPClosed --> TPOpen   : onPress no campo de horário
-            TPOpen   --> TPClosed : onValueChange(time)\n→ setTime · setShow(iOS only)
+            TPOpen   --> TPClosed : onValueChange(time)
         }
 
         state "ColorPickerModal" as CM {
-            state "fechado\n(showColorModal=false)" as CMClosed
-            state "aberto\n(showColorModal=true)" as CMOpen
+            state "fechado" as CMClosed
+            state "aberto" as CMOpen
             CMClosed --> CMOpen   : PriorityPicker → onOpenColorPicker
-            CMOpen   --> CMClosed : onSelect(hex) → handleSelectColor\nou onClose (descarta)
+            CMOpen   --> CMClosed : onSelect(hex) / onClose
         }
     }
 
     note right of Pickers
-        No Android, o DateTimePicker
-        fecha sozinho ao confirmar.
+        No Android, DateTimePicker fecha
+        sozinho ao confirmar.
         Padrão: setShow(Platform.OS === 'ios')
     end note
 ```
 
----
-
-> **Campos do estado do formulário (`useAgendaForm`):**
-> `name`, `selectedColor`, `customColor`, `date`, `time`, `showDatePicker`, `showTimePicker`, `showColorModal`, `editingReminder`, `isSubmitting`, `errors`
->
-> **Derivados calculados:** `markedDates` — mapa de datas para o componente `Calendar`, recalculado a cada mudança em `state.reminders`.
+**Notas:**
+- `Idle`: `editingReminder = null`, formulário vazio.
+- `Creating`: `editingReminder = null`, usuário preenchendo campos.
+- `Editing`: `editingReminder = Reminder`, campos populados via `populateForm()`.
+- Validação inválida mantém o estado atual com `errors` preenchidos — sem transição.
+- **Campos do estado:** `name`, `selectedColor`, `customColor`, `date`, `time`, `showDatePicker`, `showTimePicker`, `showColorModal`, `editingReminder`, `isSubmitting`, `errors`
+- **Derivados calculados:** `markedDates` — mapa de datas para o `Calendar`, recalculado a cada mudança em `state.reminders`.
 
 ---
 
 ## 5. State Machine — Formulário de Aproveitamento + Hydration
 
-Máquina de estados do hook `useAproveitamentoForm`. O diferencial em relação ao formulário de Agenda é a **lógica de hydration automática**: o formulário não possui botão de edição explícito — ao navegar para um período que já possui registro, o form é preenchido automaticamente. O `skipNextHydrationRef` controla o caso pós-salvamento.
+**Pergunta que responde:** Como o formulário de Aproveitamento carrega automaticamente dados ao navegar entre períodos?
+
+**Público-alvo:** Devs que mantêm `useAproveitamentoForm` ou modificam a lógica de hydration/navegação de período.
+
+**Última atualização:** 2026-03-04
 
 ```mermaid
 stateDiagram-v2
     [*] --> Hydrating
 
     %% ── HYDRATION (useEffect) ──────────────────────────────────────
-    state "Hydrating\n(useEffect disparado)" as Hydrating
+    state "Hydrating" as Hydrating
 
     note right of Hydrating
         Triggers do useEffect:
@@ -397,162 +454,203 @@ stateDiagram-v2
     state hydrationChoice <<choice>>
     Hydrating --> hydrationChoice
 
-    hydrationChoice --> ClearForm   : skipNextHydrationRef = true\n(pós-salvamento)
-    hydrationChoice --> PopulateForm : registro existe para\nreferencePeriod + tempo
+    hydrationChoice --> ClearForm    : skipNextHydrationRef = true
+    hydrationChoice --> PopulateForm : registro existe para referencePeriod + tempo
     hydrationChoice --> EmptyForm    : nenhum registro encontrado
 
-    state "ClearForm\n→ limpa todos os campos\n→ skipNextHydrationRef = false" as ClearForm
-    state "PopulateForm\n→ preenche evento, cargaHoraria,\n   dias / annualMonths do registro\n→ editingId = record.id" as PopulateForm
-    state "EmptyForm\n→ dias = [] (daysInMonth booleans)\n→ annualMonths = buildAnnualMonths(year)\n→ editingId = null" as EmptyForm
+    state "ClearForm\n(limpa campos + flag)" as ClearForm
+    state "PopulateForm\n(preenche campos + editingId)" as PopulateForm
+    state "EmptyForm\n(dias = [], annualMonths fresh)" as EmptyForm
 
     ClearForm    --> Creating
     EmptyForm    --> Creating
     PopulateForm --> Editing
 
     %% ── ESTADO PRINCIPAL ──────────────────────────────────────────
-    state "Creating\n(editingId = null)" as Creating
-    state "Editing\n(editingId = record.id)" as Editing
+    state "Creating" as Creating
+    state "Editing" as Editing
 
     state "Saving" as Saving {
-        state "isSubmitting = true" as Submitting
         [*] --> Submitting
+        state "isSubmitting = true" as Submitting
     }
 
-    %% Interações dentro do formulário (não mudam o estado principal)
-    Creating --> Creating : handleEventoChange\nhandleCargaHorariaChange\ntoggleDia(index)\nadjustMonth(monthIndex, delta)
-    Editing  --> Editing  : handleEventoChange\nhandleCargaHorariaChange\ntoggleDia(index)\nadjustMonth(monthIndex, delta)
+    Creating --> Creating : onChange / toggleDia / adjustMonth
+    Editing  --> Editing  : onChange / toggleDia / adjustMonth
 
-    %% Navegação de período → re-trigger de hydration
-    Creating --> Hydrating : navigatePeriod(±1)\n→ referencePeriod muda
-    Editing  --> Hydrating : navigatePeriod(±1)\n→ referencePeriod muda
+    Creating --> Hydrating : navigatePeriod(±1)
+    Editing  --> Hydrating : navigatePeriod(±1)
 
-    %% Toggle de modo → re-trigger de hydration
-    Creating --> Hydrating : setTempo('mensal'|'anual')\n→ tempo muda
-    Editing  --> Hydrating : setTempo('mensal'|'anual')\n→ tempo muda
+    Creating --> Hydrating : setTempo('mensal' | 'anual')
+    Editing  --> Hydrating : setTempo('mensal' | 'anual')
 
-    %% Salvamento
-    Creating --> Saving : handleSave()\n→ validateAproveitamento() ✓\n→ addRecord()
-    Editing  --> Saving : handleSave()\n→ validateAproveitamento() ✓\n→ updateRecord()
+    Creating --> Saving : handleSave() [válido] → addRecord()
+    Editing  --> Saving : handleSave() [válido] → updateRecord()
 
-    Creating --> Creating : handleSave()\n→ validateAproveitamento() ✗\n(errors preenchidos)
-    Editing  --> Editing  : handleSave()\n→ validateAproveitamento() ✗\n(errors preenchidos)
+    Creating --> Creating : handleSave() [inválido]
+    Editing  --> Editing  : handleSave() [inválido]
 
-    %% Pós-salvamento: skipNextHydrationRef = true → dispatch ADD/UPDATE → Hydrating
-    Saving --> Hydrating : sucesso\n→ dispatch ADD / UPDATE\n→ skipNextHydrationRef = true\n→ state.records muda → useEffect dispara
+    Saving --> Hydrating : dispatch ADD/UPDATE\n[skipNextHydrationRef = true]
 ```
 
----
-
-> **Por que `skipNextHydrationRef` e não estado React?**
-> O ref é mutado de forma síncrona antes do dispatch, garantindo que quando o `useEffect` de hydration for re-executado (causado pelo `state.records` atualizado), o flag já está `true` — sem janela de corrida entre estado e ref.
->
-> **Campos do estado (`useAproveitamentoForm`):**
-> `evento`, `cargaHoraria`, `tempo`, `referencePeriod`, `dias`, `annualMonths`, `editingId`, `isSubmitting`, `errors`
->
-> **Derivados calculados:** `daysInMonth`, `diasMarcados`, `totalHours`, `cargaProgress`, `progressLabel`
+**Notas:**
+- **Por que `skipNextHydrationRef` e não estado React?** O ref é mutado de forma síncrona antes do dispatch, garantindo que quando o `useEffect` de hydration for re-executado (causado pelo `state.records` atualizado), o flag já está `true` — sem janela de corrida.
+- **Campos do estado:** `evento`, `cargaHoraria`, `tempo`, `referencePeriod`, `dias`, `annualMonths`, `editingId`, `isSubmitting`, `errors`
+- **Derivados calculados:** `daysInMonth`, `diasMarcados`, `totalHours`, `cargaProgress`, `progressLabel`
 
 ---
 
-## 6. Reducers — Ações e Transições de Estado
+## 6a. RemindersContext — Ações, Reducer e Side Effects
 
-Os dois reducers exportados para teste compartilham o mesmo conjunto de action types. A distinção está nos **efeitos colaterais** disparados pelos métodos do contexto **antes** do dispatch — o reducer em si é uma função pura. O diagrama mostra as ações, a mutação de estado resultante e os side effects associados.
+**Pergunta que responde:** Como o RemindersContext gerencia estado: quais ações o reducer aceita e quais side effects disparam cada ação?
+
+**Público-alvo:** Devs que adicionam novas operações ao contexto de lembretes ou escrevem testes de unidade do reducer.
+
+**Última atualização:** 2026-03-04
 
 ```mermaid
 graph TD
-    subgraph RState["Estado — RemindersContext"]
-        RS["{ reminders: Reminder[]\n  isLoading: boolean\n  error: string | null }"]
+    %% === ESTILOS ===
+    classDef state_node fill:#e8f5e9,stroke:#388e3c,stroke-width:2px,color:#1b5e20
+    classDef action     fill:#f3e5f5,stroke:#7b1fa2,stroke-width:2px,color:#4a148c
+    classDef effect     fill:#fff3e0,stroke:#f57c00,stroke-width:2px,color:#e65100
+
+    %% === ESTADO ===
+    subgraph STATE["🗄️ Estado"]
+        RS["reminders: Reminder[]\nisLoading · error"]
     end
 
-    subgraph AState["Estado — AproveitamentoContext"]
-        AS["{ records: AproveitamentoRecord[]\n  isLoading: boolean\n  error: string | null }"]
+    %% === REDUCER (FUNÇÃO PURA) ===
+    subgraph ACTIONS["⚙️ Reducer — função pura"]
+        LOAD_START["LOAD_START\n→ isLoading = true"]
+        LOAD_SUCCESS["LOAD_SUCCESS\n→ reminders = payload"]
+        LOAD_ERROR["LOAD_ERROR\n→ error = payload"]
+        ADD["ADD\n→ [...reminders, payload]"]
+        UPDATE["UPDATE\n→ map por id"]
+        DEL["DELETE\n→ filter por id"]
     end
 
-    subgraph RActions["Ações — RemindersContext"]
-        direction TB
-
-        RLS["LOAD_START\n─────────────────\nisLoading = true\nerror = null"]
-        RLSu["LOAD_SUCCESS\npayload: Reminder[]\n─────────────────\nreminders = payload\nisLoading = false"]
-        RLE["LOAD_ERROR\npayload: string\n─────────────────\nerror = payload\nisLoading = false"]
-        RADD["ADD\npayload: Reminder\n─────────────────\nreminders = [...reminders, payload]"]
-        RUPD["UPDATE\npayload: Reminder\n─────────────────\nreminders.map(r =>\n  r.id === payload.id\n    ? payload : r)"]
-        RDEL["DELETE\npayload: id\n─────────────────\nreminders.filter(r =>\n  r.id !== payload)"]
+    %% === SIDE EFFECTS (MÉTODOS DO CONTEXTO) ===
+    subgraph EFFECTS["🔧 Métodos do Contexto (side effects antes do dispatch)"]
+        SE_INIT["init useEffect\n→ LOAD_START → getReminders()\n→ LOAD_SUCCESS | LOAD_ERROR"]
+        SE_ADD["addReminder()\n① saveReminder\n② scheduleNotification\n③ dispatch ADD"]
+        SE_UPD["updateReminder()\n① cancelNotification\n② scheduleNotification\n③ saveReminder\n④ dispatch UPDATE"]
+        SE_DEL["removeReminder()\n① cancelNotification\n② deleteReminder\n③ dispatch DELETE"]
     end
 
-    subgraph AActions["Ações — AproveitamentoContext"]
-        direction TB
+    %% === SIDE EFFECTS → AÇÕES ===
+    SE_INIT  -->|dispatch| LOAD_START
+    SE_INIT  -->|dispatch| LOAD_SUCCESS
+    SE_INIT  -->|dispatch| LOAD_ERROR
+    SE_ADD   -->|dispatch| ADD
+    SE_UPD   -->|dispatch| UPDATE
+    SE_DEL   -->|dispatch| DEL
 
-        ALS["LOAD_START\n─────────────────\nisLoading = true\nerror = null"]
-        ALSu["LOAD_SUCCESS\npayload: AproveitamentoRecord[]\n─────────────────\nrecords = payload\nisLoading = false"]
-        ALE["LOAD_ERROR\npayload: string\n─────────────────\nerror = payload\nisLoading = false"]
-        AADD["ADD\npayload: AproveitamentoRecord\n─────────────────\nrecords = [...records, payload]"]
-        AUPD["UPDATE\npayload: AproveitamentoRecord\n─────────────────\nrecords.map(r =>\n  r.id === payload.id\n    ? payload : r)"]
-        ADEL["DELETE\npayload: id\n─────────────────\nrecords.filter(r =>\n  r.id !== payload)"]
-    end
+    %% === AÇÕES → ESTADO ===
+    LOAD_START   -->|atualiza| RS
+    LOAD_SUCCESS -->|atualiza| RS
+    LOAD_ERROR   -->|atualiza| RS
+    ADD          -->|atualiza| RS
+    UPDATE       -->|atualiza| RS
+    DEL          -->|atualiza| RS
 
-    subgraph RSideEffects["Side Effects — só RemindersContext"]
-        direction TB
-
-        SE1["addReminder()\n① saveReminder(reminder)\n② scheduleReminderNotification()\n③ dispatch ADD"]
-        SE2["updateReminder()\n① cancelNotification(old id)\n② scheduleReminderNotification()\n③ saveReminder(updated)\n④ dispatch UPDATE"]
-        SE3["removeReminder()\n① cancelNotification(id)\n② deleteReminder(id)\n③ dispatch DELETE"]
-        SE4["init useEffect()\n① dispatch LOAD_START\n② getReminders()\n③ dispatch LOAD_SUCCESS / LOAD_ERROR"]
-    end
-
-    subgraph ASideEffects["Side Effects — AproveitamentoContext"]
-        direction TB
-
-        SE5["addRecord()\n① saveAproveitamento(record)\n② dispatch ADD"]
-        SE6["updateRecord()\n① saveAproveitamento(updated)\n② dispatch UPDATE"]
-        SE7["removeRecord()\n① deleteAproveitamento(id)\n② dispatch DELETE"]
-        SE8["init useEffect()\n① dispatch LOAD_START\n② getAproveitamentos()\n③ dispatch LOAD_SUCCESS / LOAD_ERROR"]
-    end
-
-    %% Side effects disparam as ações
-    SE4 -->|"dispatch"| RLS
-    SE4 -->|"dispatch"| RLSu
-    SE4 -->|"dispatch"| RLE
-    SE1 -->|"dispatch"| RADD
-    SE2 -->|"dispatch"| RUPD
-    SE3 -->|"dispatch"| RDEL
-
-    SE8 -->|"dispatch"| ALS
-    SE8 -->|"dispatch"| ALSu
-    SE8 -->|"dispatch"| ALE
-    SE5 -->|"dispatch"| AADD
-    SE6 -->|"dispatch"| AUPD
-    SE7 -->|"dispatch"| ADEL
-
-    %% Ações atualizam o estado
-    RLS  -->|"atualiza"| RS
-    RLSu -->|"atualiza"| RS
-    RLE  -->|"atualiza"| RS
-    RADD -->|"atualiza"| RS
-    RUPD -->|"atualiza"| RS
-    RDEL -->|"atualiza"| RS
-
-    ALS  -->|"atualiza"| AS
-    ALSu -->|"atualiza"| AS
-    ALE  -->|"atualiza"| AS
-    AADD -->|"atualiza"| AS
-    AUPD -->|"atualiza"| AS
-    ADEL -->|"atualiza"| AS
+    %% === CLASSES ===
+    class RS state_node
+    class LOAD_START,LOAD_SUCCESS,LOAD_ERROR,ADD,UPDATE,DEL action
+    class SE_INIT,SE_ADD,SE_UPD,SE_DEL effect
 ```
+
+**Legenda:**
+- 🟠 Laranja: Métodos do contexto (side effects — acessam storage e notifications)
+- 🟣 Roxo: Action types do reducer (função pura)
+- 🟢 Verde: Estado resultante
+
+**Notas:**
+- O reducer é exportado para testes de unidade: `import { reducer } from '@/context/RemindersContext'`
+- Side effects ocorrem nos métodos do contexto **antes** do dispatch — o reducer nunca acessa storage ou notifications.
+- Os action types (`LOAD_START`, `LOAD_SUCCESS`, `LOAD_ERROR`, `ADD`, `UPDATE`, `DELETE`) são idênticos ao AproveitamentoContext.
 
 ---
 
-> **Reducers são funções puras** — não acessam storage nem notifications. Todo efeito colateral ocorre nos métodos do contexto (`addReminder`, `updateRecord`, etc.) antes do `dispatch`.
->
-> **Ambos os reducers são exportados** para que os testes de unidade possam exercitá-los diretamente, sem precisar montar providers:
-> ```ts
-> import { reducer } from '@/context/RemindersContext'
-> import { reducer } from '@/context/AproveitamentoContext'
-> ```
+## 6b. AproveitamentoContext — Ações, Reducer e Side Effects
+
+**Pergunta que responde:** Como o AproveitamentoContext gerencia estado: quais ações o reducer aceita e quais side effects disparam cada ação?
+
+**Público-alvo:** Devs que adicionam novas operações ao contexto de aproveitamento ou escrevem testes de unidade do reducer.
+
+**Última atualização:** 2026-03-04
+
+```mermaid
+graph TD
+    %% === ESTILOS ===
+    classDef state_node fill:#e8f5e9,stroke:#388e3c,stroke-width:2px,color:#1b5e20
+    classDef action     fill:#f3e5f5,stroke:#7b1fa2,stroke-width:2px,color:#4a148c
+    classDef effect     fill:#fff3e0,stroke:#f57c00,stroke-width:2px,color:#e65100
+
+    %% === ESTADO ===
+    subgraph STATE["🗄️ Estado"]
+        AS["records: AproveitamentoRecord[]\nisLoading · error"]
+    end
+
+    %% === REDUCER (FUNÇÃO PURA) ===
+    subgraph ACTIONS["⚙️ Reducer — função pura"]
+        LOAD_START["LOAD_START\n→ isLoading = true"]
+        LOAD_SUCCESS["LOAD_SUCCESS\n→ records = payload"]
+        LOAD_ERROR["LOAD_ERROR\n→ error = payload"]
+        ADD["ADD\n→ [...records, payload]"]
+        UPDATE["UPDATE\n→ map por id"]
+        DEL["DELETE\n→ filter por id"]
+    end
+
+    %% === SIDE EFFECTS (MÉTODOS DO CONTEXTO) ===
+    subgraph EFFECTS["🔧 Métodos do Contexto (side effects antes do dispatch)"]
+        SE_INIT["init useEffect\n→ LOAD_START → getAproveitamentos()\n→ LOAD_SUCCESS | LOAD_ERROR"]
+        SE_ADD["addRecord()\n① saveAproveitamento\n② dispatch ADD"]
+        SE_UPD["updateRecord()\n① saveAproveitamento\n② dispatch UPDATE"]
+        SE_DEL["removeRecord()\n① deleteAproveitamento\n② dispatch DELETE"]
+    end
+
+    %% === SIDE EFFECTS → AÇÕES ===
+    SE_INIT  -->|dispatch| LOAD_START
+    SE_INIT  -->|dispatch| LOAD_SUCCESS
+    SE_INIT  -->|dispatch| LOAD_ERROR
+    SE_ADD   -->|dispatch| ADD
+    SE_UPD   -->|dispatch| UPDATE
+    SE_DEL   -->|dispatch| DEL
+
+    %% === AÇÕES → ESTADO ===
+    LOAD_START   -->|atualiza| AS
+    LOAD_SUCCESS -->|atualiza| AS
+    LOAD_ERROR   -->|atualiza| AS
+    ADD          -->|atualiza| AS
+    UPDATE       -->|atualiza| AS
+    DEL          -->|atualiza| AS
+
+    %% === CLASSES ===
+    class AS state_node
+    class LOAD_START,LOAD_SUCCESS,LOAD_ERROR,ADD,UPDATE,DEL action
+    class SE_INIT,SE_ADD,SE_UPD,SE_DEL effect
+```
+
+**Legenda:**
+- 🟠 Laranja: Métodos do contexto (side effects — acessam storage)
+- 🟣 Roxo: Action types do reducer (função pura)
+- 🟢 Verde: Estado resultante
+
+**Notas:**
+- O reducer é exportado para testes de unidade: `import { reducer } from '@/context/AproveitamentoContext'`
+- AproveitamentoContext não usa notifications — os side effects de add/update/delete são mais simples (apenas storage + dispatch).
+- Action types idênticos ao RemindersContext — a diferença está no shape do payload e nos side effects.
 
 ---
 
 ## 7. ER — Tipos de Dados
 
-Entidades do domínio definidas em `types/index.ts` e sua persistência no `AsyncStorage`. Atributos com `?` são opcionais. Os tipos `Priority` e `PeriodType` são union types do TypeScript, representados como entidades de lookup para explicitar os valores válidos.
+**Pergunta que responde:** Quais são as entidades do domínio, seus atributos e relacionamentos?
+
+**Público-alvo:** Devs que precisam entender a estrutura de dados ou adicionar novos campos.
+
+**Última atualização:** 2026-03-04
 
 ```mermaid
 erDiagram
@@ -620,12 +718,14 @@ erDiagram
     AsyncStorage        ||--o{ AproveitamentoRecord : "serializa"
 ```
 
----
+**Legenda:**
+- Entidades principais: `Reminder`, `AproveitamentoRecord`, `MonthRecord`
+- Tipos escalares (union types do TypeScript): `Priority`, `PeriodType`
+- Infraestrutura de persistência: `AsyncStorage`
 
-> **Invariantes de dados garantidas em runtime:**
-> - `Reminder.date` deve estar no formato `"YYYY-MM-DD"` — chave do `markedDates` do `react-native-calendars`.
-> - `Reminder.priority === 'custom'` implica `customColor` presente e válido (`/^#[0-9A-Fa-f]{6}$/`).
-> - `AproveitamentoRecord.monthlyDays.length` é sempre igual ao número de dias reais do mês de `referencePeriod`.
-> - `MonthRecord.totalDays` reflete o calendário gregoriano real (28/29/30/31) — calculado por `getDaysInMonth()`.
-> - `MonthRecord.completedDays` está sempre no intervalo `[0, totalDays]`.
-> - Ambas as entidades usam `id` gerado por `generateId()` (`utils/id.ts`) — colisões são praticamente impossíveis.
+**Notas:**
+- `Reminder.date` deve estar no formato `"YYYY-MM-DD"` — chave do `markedDates` do `react-native-calendars`.
+- `Reminder.priority === 'custom'` implica `customColor` presente e válido (`/^#[0-9A-Fa-f]{6}$/`).
+- `AproveitamentoRecord.monthlyDays.length` é sempre igual ao número de dias reais do mês de `referencePeriod`.
+- `MonthRecord.totalDays` reflete o calendário gregoriano real (28/29/30/31) — calculado por `getDaysInMonth()`.
+- `MonthRecord.completedDays` está sempre no intervalo `[0, totalDays]`.
