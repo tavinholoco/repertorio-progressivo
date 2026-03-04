@@ -186,4 +186,9 @@ describe('aproveitamentoReducer', () => {
       expect(next.records).toHaveLength(0);
     });
   });
+
+  it('retorna o state sem alterações para action desconhecida', () => {
+    const next = reducer(initialState, { type: 'UNKNOWN' } as never);
+    expect(next).toEqual(initialState);
+  });
 });

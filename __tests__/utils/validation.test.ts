@@ -101,6 +101,18 @@ describe('validateReminder', () => {
   it('aceita name com exatamente 100 caracteres', () => {
     expect(validateReminder({ ...valid, name: 'a'.repeat(100) }).valid).toBe(true);
   });
+
+  it('rejeita custom com hex de 5 dígitos', () => {
+    expect(validateReminder({ ...valid, priority: 'custom', customColor: '#12345' }).valid).toBe(false);
+  });
+
+  it('rejeita custom com hex de 7 dígitos', () => {
+    expect(validateReminder({ ...valid, priority: 'custom', customColor: '#1234567' }).valid).toBe(false);
+  });
+
+  it('rejeita custom com caracteres inválidos no hex', () => {
+    expect(validateReminder({ ...valid, priority: 'custom', customColor: '#GGGGGG' }).valid).toBe(false);
+  });
 });
 
 // ─── validateAproveitamento ───────────────────────────────────────────────────
@@ -150,5 +162,11 @@ describe('validateAproveitamento', () => {
 
   it('aceita carga horária de exatamente 9999', () => {
     expect(validateAproveitamento({ ...valid, totalHours: '9999' }).valid).toBe(true);
+  });
+
+  it('rejeita eventName composto só de espaços', () => {
+    const r = validateAproveitamento({ ...valid, eventName: '   ' });
+    expect(r.valid).toBe(false);
+    expect(r.errors.eventName).toBeDefined();
   });
 });

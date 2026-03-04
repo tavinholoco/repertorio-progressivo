@@ -169,4 +169,9 @@ describe('remindersReducer', () => {
       expect(next.reminders).toHaveLength(0);
     });
   });
+
+  it('retorna o state sem alterações para action desconhecida', () => {
+    const next = reducer(initialState, { type: 'UNKNOWN' } as never);
+    expect(next).toEqual(initialState);
+  });
 });

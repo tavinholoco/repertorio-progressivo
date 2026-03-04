@@ -51,6 +51,8 @@ export function reducer(state: State, action: Action): State {
         ...state,
         records: state.records.filter((r) => r.id !== action.payload),
       };
+    default:
+      return state;
   }
 }
 

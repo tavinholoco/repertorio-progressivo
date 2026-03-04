@@ -55,6 +55,8 @@ export function reducer(state: State, action: Action): State {
         ...state,
         reminders: state.reminders.filter((r) => r.id !== action.payload),
       };
+    default:
+      return state;
   }
 }
 
