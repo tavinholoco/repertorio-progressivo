@@ -188,6 +188,30 @@ org.gradle.java.home=C:\\Program Files\\Android\\Android Studio\\jbr
 ```
 Already configured in this repository. Adjust the path if Android Studio is installed elsewhere.
 
+### `android/gradle.properties` — R8 Minification + Resource Shrinking
+Added manually for release build optimization:
+```
+android.enableMinifyInReleaseBuilds=true
+android.enableShrinkResourcesInReleaseBuilds=true
+```
+
+### `android/app/build.gradle` — AAB Bundle Splits
+Added manually inside the `android { }` block (after `androidResources`):
+```groovy
+bundle {
+    language { enableSplit = true }
+    density { enableSplit = true }
+    abi { enableSplit = true }
+}
+```
+
+### `android/app/proguard-rules.pro` — Keep Rules
+Added manually (in addition to the existing Reanimated keep rules):
+```proguard
+# expo-splash-screen (manual AAR, not autolinked)
+-keep class expo.modules.splashscreen.** { *; }
+```
+
 ### `expo-splash-screen` — Not autolinked (manual AAR)
 `expo-splash-screen ~31.0.10` has no `android/` folder, so Expo autolinking ignores it entirely. The following were added **manually** and must not be removed:
 

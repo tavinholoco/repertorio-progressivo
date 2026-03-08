@@ -1,6 +1,7 @@
 import {
   ActivityIndicator,
   FlatList,
+  Platform,
   Text,
   TouchableOpacity,
   View,
@@ -208,6 +209,10 @@ export default function Aproveitamento() {
       }
       data={state.records}
       keyExtractor={(item) => item.id}
+      initialNumToRender={8}
+      maxToRenderPerBatch={5}
+      windowSize={7}
+      removeClippedSubviews={Platform.OS === 'android'}
       renderItem={({ item, index }) => (
         <RecordItem
           record={item}

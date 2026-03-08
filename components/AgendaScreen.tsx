@@ -277,6 +277,10 @@ export default function AgendaScreen() {
       }
       data={state.reminders}
       keyExtractor={(item) => item.id}
+      initialNumToRender={8}
+      maxToRenderPerBatch={5}
+      windowSize={7}
+      removeClippedSubviews={Platform.OS === 'android'}
       renderItem={({ item, index }) => (
         <ReminderItem
           reminder={item}
