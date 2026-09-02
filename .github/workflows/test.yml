@@ -3,7 +3,7 @@ name: CI — Testes, Tipos e Lint
 on:
   push:
     branches:
-      - dev
+      - master
   pull_request:
     branches:
       - master
