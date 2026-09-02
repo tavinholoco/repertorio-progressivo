@@ -69,15 +69,17 @@ app/Aproveitamento.tsx        ← presentational, consumes useAproveitamentoForm
 ```
 app/              ← Expo Router routes (_layout, index, Aproveitamento)
 components/       ← UI components + ErrorBoundary (index.ts barrel)
-  AgendaScreen.tsx, ReminderItem, PriorityPicker
-  RecordItem, ProgressDonut, DayGrid, MonthGrid
+  AgendaScreen.tsx, ReminderItem, PriorityPicker, ColorPickerModal
+  RecordItem, DayGrid, MonthGrid, ProgressBar
+  Badge, SegmentedToggle, EmptyState, AnimatedTextInput
+  FloatingTabBar, TabBarIcon
   ErrorBoundary.tsx
 hooks/            ← Custom hooks (index.ts barrel)
   useAgendaForm.ts, useAproveitamentoForm.ts
 services/         ← Service layer (index.ts barrel)
   storage.ts, notifications.ts
 utils/            ← Pure functions (index.ts barrel)
-  dateHelpers.ts, validation.ts
+  dateHelpers.ts, validation.ts, id.ts
 context/          ← Global state providers
   RemindersContext.tsx, AproveitamentoContext.tsx
 constants/        ← Theme tokens (index.ts barrel)
@@ -86,43 +88,59 @@ types/            ← Shared TypeScript interfaces
   index.ts
 __tests__/        ← Jest test suites
   utils/dateHelpers.test.ts
-  context/remindersReducer.test.ts
-  context/aproveitamentoReducer.test.ts
+  utils/validation.test.ts
   services/storage.test.ts
   services/notifications.test.ts
-  utils/validation.test.ts
+  context/remindersReducer.test.ts
+  context/aproveitamentoReducer.test.ts
+  context/remindersContext.test.ts       ← integration
+  context/aproveitamentoContext.test.ts  ← integration
+docs/             ← architecture.md (8 Mermaid diagrams) + screenshots/
 ```
 
 ### Barrel Exports
 
-Each directory has an `index.ts` that re-exports all public symbols. Prefer barrel imports:
+Each directory has an `index.ts` that re-exports all public symbols. Code **outside** a directory uses the barrel:
 ```ts
 import { ReminderItem, DayGrid } from '@/components';
 import { useAgendaForm } from '@/hooks';
-import { AppColors } from '@/constants';
+import { AppColors, Layout } from '@/constants';
 import { toDateString, validateReminder } from '@/utils';
 ```
+
+Code **inside** a directory imports its siblings directly (`./ReminderItem`), never through its own
+barrel — that creates a require cycle.
 
 ### Sub-components
 
 | Component | Props | Used in |
 |-----------|-------|---------|
-| `ReminderItem` | `reminder, onEdit, onDelete` | AgendaScreen |
-| `PriorityPicker` | `selectedColor, onSelect, error` | AgendaScreen |
-| `RecordItem` | `record, onEdit, onDelete` | Aproveitamento |
-| `ProgressDonut` | `percentage` | Aproveitamento |
+| `ReminderItem` | `reminder, index, onEdit, onDelete` | AgendaScreen |
+| `PriorityPicker` | `selectedColor, onSelect, error?, customColor?, onOpenColorPicker` | AgendaScreen |
+| `ColorPickerModal` | `visible, selectedColor, onSelect, onClose` | AgendaScreen |
+| `RecordItem` | `record, index, onEdit, onDelete` | Aproveitamento |
 | `DayGrid` | `days: boolean[], onToggle` | Aproveitamento |
 | `MonthGrid` | `months: MonthRecord[], onAdjust` | Aproveitamento |
+| `ProgressBar` | `progress, style?` | RecordItem, Aproveitamento |
+| `Badge` | `label, backgroundColor, textColor?` | ReminderItem, RecordItem |
+| `SegmentedToggle` | `tempo: PeriodType, onSelect` | Aproveitamento |
+| `EmptyState` | `icon, title, subtitle?` | AgendaScreen, Aproveitamento |
+| `AnimatedTextInput` | `containerClassName?` + all `TextInputProps` | AgendaScreen, Aproveitamento |
+| `FloatingTabBar` | `BottomTabBarProps` | _layout (via the `tabBar` prop of `<Tabs>`) |
+| `TabBarIcon` | `name, color, size?` | FloatingTabBar |
 | `ErrorBoundary` | `children` | _layout (wraps entire tree) |
+
+`ProgressDonut` was removed in v2.0.0 — `ProgressBar` replaced it. Do not reintroduce it.
 
 ### Custom Hooks
 
 - `useAgendaForm()` — all state and logic for the Agenda form. Exports form fields, `handleSave`, `resetForm`, `populateForm`, `markedDates`, and the `PRIORITY_COLORS`/`COLOR_TO_PRIORITY` maps.
 - `useAproveitamentoForm()` — all state and logic for Aproveitamento. Exports period navigation, `toggleDia`, `adjustMonth`, `handleSave`, computed `diasMarcados`, `percentualDias`, `cargaProgress`.
 
-### Pure Utils (`utils/dateHelpers.ts`)
+### Pure Utils
 
-`toDateString`, `toTimeString`, `formatDisplayDate`, `formatDisplayTime`, `getDaysInMonth`, `buildAnnualMonths`, `currentPeriod`, `formatPeriodLabel`, `MONTH_NAMES`
+- `utils/dateHelpers.ts` — `toDateString`, `toTimeString`, `formatDisplayDate`, `formatDisplayTime`, `getDaysInMonth`, `buildAnnualMonths`, `currentPeriod`, `formatPeriodLabel`, `MONTH_NAMES`
+- `utils/id.ts` — `generateId()` and `getIsoNow()`, used by both contexts. Do not re-implement either inline.
 
 ### Notifications
 
@@ -136,7 +154,9 @@ import { toDateString, validateReminder } from '@/utils';
 
 ### Validation
 
-`utils/validation.ts` exports `validateReminder()` and `validateAproveitamento()`, both returning `{ valid: boolean; errors: Record<string, string> }`. Called in the hook's `handleSave` before any async operations. `validateReminder` also validates that `priority`, when present, is one of `'green' | 'yellow' | 'red'` — any other string value produces a `'Prioridade inválida'` error.
+`utils/validation.ts` exports `validateReminder()` and `validateAproveitamento()`, both returning `{ valid: boolean; errors: Record<string, string> }`. Called in the hook's `handleSave` before any async operations.
+
+`validateReminder` checks that `priority`, when present, is one of `'green' | 'yellow' | 'red' | 'custom'` — any other value produces `'Prioridade inválida'`. When `priority === 'custom'`, `customColor` must additionally match `/^#[0-9A-Fa-f]{6}$/`, or the error is `'Selecione uma cor personalizada'`.
 
 ## Styling — NativeWind v2
 
@@ -170,6 +190,10 @@ Defined in `tailwind.config.js` (Tailwind tokens) and `constants/theme.ts` (for 
 - **`react-native-reanimated` v4** is installed (breaking API vs v3). Use v4 API only.
 - **React Compiler is enabled** (`"reactCompiler": true` in `app.json`). Do not add manual `useMemo` / `useCallback`.
 - **New Architecture is enabled** (`"newArchEnabled": true`).
+- **`GestureHandlerRootView` inside a Modal is mandatory on Android** — a modal is a separate native window and does not inherit the root one.
+- **`metro.config.js` sets `drop_console: true`** in the minifier config, so `console.*` is stripped from production bundles. Do not rely on logging for production behavior.
+- **`FlatList` tuning is intentional** on both list screens (`initialNumToRender={8}`, `maxToRenderPerBatch={5}`, `windowSize={7}`, `removeClippedSubviews` on Android only). Keep these when editing the lists.
+- **Do not introduce** FlashList, FastImage, or `React.lazy` — evaluated and rejected; the current list sizes do not justify them.
 
 ## Android Build — Manual Configurations
 
@@ -238,16 +262,20 @@ The project uses `jest-expo` preset with Expo SDK 54 + New Architecture. The `ex
 
 **Do not remove** `jest.setup.after.js` or the `moduleNameMapper` entry — tests will break.
 
-### Test Coverage (103 tests across 6 suites)
+### Test Coverage (144 tests across 8 suites)
 
 | Suite | Tests | Notes |
 |-------|-------|-------|
-| `utils/validation.test.ts` | ~20 | Pure function, no mocks needed |
-| `utils/dateHelpers.test.ts` | ~30 | Pure function, no mocks needed |
-| `services/storage.test.ts` | ~12 | Uses AsyncStorage jest mock |
-| `services/notifications.test.ts` | 10 | Mocks `expo-notifications`; `Platform.OS` set via direct assignment (not `spyOn` — it's a plain property in RN Jest env) |
-| `context/remindersReducer.test.ts` | ~20 | Must mock `@react-native-async-storage/async-storage` and `@/services/storage` to avoid native module error when importing the context |
-| `context/aproveitamentoReducer.test.ts` | ~24 | Same pattern as remindersReducer |
+| `utils/validation.test.ts` | 29 | Pure function, no mocks needed |
+| `utils/dateHelpers.test.ts` | 36 | Pure function, no mocks needed |
+| `services/storage.test.ts` | 13 | Uses AsyncStorage jest mock |
+| `services/notifications.test.ts` | 11 | Mocks `expo-notifications`; `Platform.OS` set via direct assignment (not `spyOn` — it's a plain property in RN Jest env) |
+| `context/remindersReducer.test.ts` | 17 | Must mock `@react-native-async-storage/async-storage` and `@/services/storage` to avoid native module error when importing the context |
+| `context/aproveitamentoReducer.test.ts` | 18 | Same pattern as remindersReducer |
+| `context/remindersContext.test.ts` | 12 | Integration: mounts `RemindersProvider` with `renderHook`, asserts `addReminder` / `updateReminder` / `removeReminder` orchestration end to end |
+| `context/aproveitamentoContext.test.ts` | 8 | Integration: same pattern for `addRecord` / `updateRecord` / `removeRecord` |
+
+Update these numbers whenever a suite changes — they are quoted in `README.md` and `README.pt-BR.md` too.
 
 **Pattern for reducer tests** (mocks must be declared before imports):
 ```ts
@@ -266,10 +294,34 @@ beforeEach(() => { (Platform as unknown as { OS: string }).OS = 'android'; });
 afterAll(() => { (Platform as unknown as { OS: string }).OS = originalOS; });
 ```
 
+**Pattern for fake timers** — `new Date('YYYY-MM-DD')` parses as UTC midnight, which resolves to the
+previous day in negative offsets such as UTC-3. Always use the local constructor:
+```ts
+jest.useFakeTimers().setSystemTime(new Date(2025, 0, 1)); // month is 0-indexed
+```
+
+**Pattern for call ordering** — `RemindersContext` must persist to storage *before* scheduling the
+notification. `invocationCallOrder` guards that race condition fix:
+```ts
+expect(saveCallOrder).toBeLessThan(scheduleCallOrder);
+```
+
 ## Types
 
 All shared TypeScript interfaces are in [types/index.ts](types/index.ts):
-- `Reminder` — reminder with `date: string` ("YYYY-MM-DD"), `time: string` ("HH:MM"), `priority: Priority`
-- `AproveitamentoRecord` — study record with `monthlyDays: boolean[]` (real month length), `annualMonths: MonthRecord[]` (12 independent entries)
+- `Priority` — `'green' | 'yellow' | 'red' | 'custom'`
+- `Reminder` — reminder with `date: string` ("YYYY-MM-DD"), `time: string` ("HH:MM"), `priority: Priority`, plus the optionals `customColor?` (hex `#RRGGBB`, only when `priority === 'custom'`), `notificationId?` (undefined when permission was denied) and `updatedAt?` (undefined on records created before v2.0.0)
+- `AproveitamentoRecord` — study record with `monthlyDays: boolean[]` (real month length), `annualMonths: MonthRecord[]` (12 independent entries), `referencePeriod: string` ("YYYY-MM")
 - `PeriodType` — `"mensal" | "anual"`
 - `MonthRecord` — `{ monthIndex, completedDays, totalDays }` with actual days per month (28/29/30/31)
+
+## Documentation Files
+
+Keep these in sync when behavior changes — they contradict each other quickly otherwise:
+
+| File | Holds |
+|------|-------|
+| `README.md` / `README.pt-BR.md` | Public-facing docs, mirrored section by section. Both quote the test count and dependency versions. |
+| `CHANGELOG.md` | Keep a Changelog format. New work goes under `[Unreleased]` until a version is tagged. |
+| `docs/architecture.md` | 8 Mermaid diagrams: data flow, component tree, notification sequence, both form state machines, reducer actions per context, ER of the shared types. |
+| `Boas_praticas/` | Reference notes on Mermaid and React Native performance. Not part of the app. |
