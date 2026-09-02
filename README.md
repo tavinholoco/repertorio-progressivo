@@ -1,471 +1,267 @@
 # Repertório Progressivo
 
-![CI](https://github.com/tavinholoco/repertorio-progressivo/actions/workflows/test.yml/badge.svg?branch=master)
-![Versão](https://img.shields.io/badge/vers%C3%A3o-2.0-6C2DC7)
-![Testes](https://img.shields.io/badge/testes-144%20passing-brightgreen)
+Android app for planning study reminders and tracking monthly and yearly study progress.
 
-[![Download APK](https://img.shields.io/badge/Download-APK%20v2.0-6C2DC7?style=for-the-badge&logo=android&logoColor=white)](https://github.com/tavinholoco/repertorio-progressivo/releases/latest)
+[![CI](https://github.com/tavinholoco/repertorio-progressivo/actions/workflows/test.yml/badge.svg)](https://github.com/tavinholoco/repertorio-progressivo/actions/workflows/test.yml) ![License](https://img.shields.io/badge/license-MIT-green?style=for-the-badge) ![Expo](https://img.shields.io/badge/Expo-SDK%2054-000020?style=for-the-badge&logo=expo&logoColor=white) ![React Native](https://img.shields.io/badge/React%20Native-0.81.5-61DAFB?style=for-the-badge&logo=react&logoColor=white) ![TypeScript](https://img.shields.io/badge/TypeScript-5.9-3178C6?style=for-the-badge&logo=typescript&logoColor=white) ![Release](https://img.shields.io/badge/release-v2.0.2-6C2DC7?style=for-the-badge)
 
-Aplicativo mobile para organizar e acompanhar o aprendizado progressivo — gerencie seus lembretes de estudo e registre seu aproveitamento diário, mensal e anual.
+**English** | [Português](README.pt-BR.md)
 
----
+## Quick links
 
-## Download
+- [Download the latest APK](https://github.com/tavinholoco/repertorio-progressivo/releases/latest) — Android, sideload install
+- [Architecture documentation](docs/architecture.md) — 8 Mermaid diagrams
+- [Releases](https://github.com/tavinholoco/repertorio-progressivo/releases) — notes per version
 
-**[Baixar APK mais recente](https://github.com/tavinholoco/repertorio-progressivo/releases/latest)**
+## Table of contents
 
-> Para instalar, habilite "Instalar de fontes desconhecidas" nas configurações do Android.
-
----
-
-## Sobre o App
-
-O **Repertório Progressivo** é um app Android desenvolvido com React Native e Expo. Ele foi criado para quem quer manter uma rotina de estudos organizada, oferecendo duas funcionalidades principais:
-
-- **Agenda** — crie lembretes com data, horário, prioridade e cor personalizada; visualize no calendário e receba notificações push.
-- **Aproveitamento** — registre eventos de estudo com carga horária e marque os dias em que estudou, acompanhando seu progresso mensal e anual.
-
----
+- [Screenshots](#screenshots)
+- [About](#about)
+- [Features](#features)
+- [Tech stack](#tech-stack)
+- [Architecture](#architecture)
+- [Project structure](#project-structure)
+- [Getting started](#getting-started)
+- [Scripts](#scripts)
+- [Tests](#tests)
+- [Deploy](#deploy)
+- [License](#license)
+- [Author](#author)
 
 ## Screenshots
 
-### Aba Agenda (v2)
+### Agenda tab
 
 <div align="center">
 
-| Formulário de lembrete | Seletor de cor personalizada | Calendário e lembretes salvos |
+| Reminder form | Custom color picker | Calendar and saved reminders |
 |:---:|:---:|:---:|
-| <img src="docs/screenshots/V2/Agenda-form.png" width="200" alt="Formulário de criação de lembrete"> | <img src="docs/screenshots/V2/Agenda-cor.png" width="200" alt="Seletor de cor personalizada"> | <img src="docs/screenshots/V2/Agenda-lembretes.png" width="200" alt="Calendário e lembretes salvos"> |
+| <img src="docs/screenshots/V2/Agenda-form.png" width="200" alt="Reminder creation form with name, date, time and priority fields"> | <img src="docs/screenshots/V2/Agenda-cor.png" width="200" alt="Chromatic color picker for a custom reminder priority"> | <img src="docs/screenshots/V2/Agenda-lembretes.png" width="200" alt="Month calendar with marked days and the list of saved reminders"> |
 
 </div>
 
-### Aba Aproveitamento (v2)
+### Aproveitamento tab
 
 <div align="center">
 
-| Formulário e dias (mensal) | Formulário e meses (anual) | Registros salvos |
+| Monthly mode | Yearly mode | Saved records |
 |:---:|:---:|:---:|
-| <img src="docs/screenshots/V2/Aproveitamento-mes.png" width="200" alt="Formulário e grid de dias do mês"> | <img src="docs/screenshots/V2/Aproveitamento-anual.png" width="200" alt="Formulário e grid de meses do ano"> | <img src="docs/screenshots/V2/Aproveitamento-registros.png" width="200" alt="Registros salvos de aproveitamento"> |
+| <img src="docs/screenshots/V2/Aproveitamento-mes.png" width="200" alt="Study record form with the day grid for the current month"> | <img src="docs/screenshots/V2/Aproveitamento-anual.png" width="200" alt="Study record form with the twelve-month grid for yearly mode"> | <img src="docs/screenshots/V2/Aproveitamento-registros.png" width="200" alt="List of saved study records with animated progress bars"> |
 
 </div>
-
----
-
-### Versão anterior (v1)
 
 <details>
-<summary>Ver screenshots da v1</summary>
-
-#### Aba Agenda (v1)
+<summary>Version 1.0 screenshots</summary>
 
 <div align="center">
 
-| Formulário de lembrete | Calendário e lembretes salvos |
+| Agenda form (v1) | Agenda calendar (v1) |
 |:---:|:---:|
-| <img src="docs/screenshots/V1/agenda-form.png" width="220" alt="Formulário de criação de lembrete (v1)"> | <img src="docs/screenshots/V1/agenda-calendar.png" width="220" alt="Calendário e lembretes salvos (v1)"> |
+| <img src="docs/screenshots/V1/agenda-form.png" width="220" alt="Reminder creation form in version 1.0"> | <img src="docs/screenshots/V1/agenda-calendar.png" width="220" alt="Calendar and saved reminders in version 1.0"> |
 
-</div>
-
-#### Aba Aproveitamento (v1)
-
-<div align="center">
-
-| Formulário | Seletor de período e grid | Registros salvos |
+| Aproveitamento form (v1) | Period selector (v1) | Saved records (v1) |
 |:---:|:---:|:---:|
-| <img src="docs/screenshots/V1/Aproveitamento-form.png" width="180" alt="Formulário de aproveitamento (v1)"> | <img src="docs/screenshots/V1/Aproveitamento-Mensal-Anual.png" width="180" alt="Seletor mensal/anual e grid de dias (v1)"> | <img src="docs/screenshots/V1/Aproveitamento-Atualizar.png" width="180" alt="Botão de atualizar e registros salvos (v1)"> |
+| <img src="docs/screenshots/V1/Aproveitamento-form.png" width="180" alt="Study record form in version 1.0"> | <img src="docs/screenshots/V1/Aproveitamento-Mensal-Anual.png" width="180" alt="Monthly and yearly selector with the day grid in version 1.0"> | <img src="docs/screenshots/V1/Aproveitamento-Atualizar.png" width="180" alt="Update button and saved records in version 1.0"> |
 
 </div>
 
 </details>
 
----
+## About
 
-## Funcionalidades
+Keeping a study routine falls apart in two places: forgetting when to study, and losing track of whether you actually studied. Generic to-do apps solve the first and ignore the second. Spreadsheets do the opposite.
 
-### Agenda de Lembretes
-- Criar lembretes com nome, data, horário e prioridade (baixa, média, alta ou **cor personalizada**)
-- Seletor cromático para cor customizada via `reanimated-color-picker`
-- Calendário visual com os dias que possuem lembretes marcados
-- Notificações push agendadas via `expo-notifications`
-- Editar e excluir lembretes existentes
+Repertório Progressivo puts both in one app, split across two tabs. **Agenda** holds scheduled reminders with a date, a time and a priority, backed by real Android notifications. **Aproveitamento** tracks execution: you register a study event with its total workload, then tick off the days you actually studied, monthly or across a full year, and watch the progress bar move.
 
-### Aproveitamento
-- Registrar eventos de estudo com carga horária total
-- **Modo mensal**: grid de dias do mês para marcar quais dias você estudou
-- **Modo anual**: resumo dos 12 meses com dias completados e total
-- Barra de progresso animada calculada automaticamente pelos dias/meses marcados
-- Navegar entre períodos anteriores e posteriores
+Everything runs offline. There is no account, no server and no network call — records live in AsyncStorage on the device, and notifications are scheduled by the OS.
 
-### Interface
-- Tab bar flutuante customizada com ícones SVG (sem dependência de fontes)
-- Gradiente linear na aba ativa via `expo-linear-gradient`
-- Tema unificado com tokens de cor e espaçamento (`AppColors`, `Layout`)
+The app was also built as an exercise in layered architecture on React Native. Business logic sits in hooks and contexts, disk access is isolated behind a single service, and screens are JSX only. That separation is what makes 144 automated tests possible in a mobile project without putting an emulator in the loop.
 
----
+## Features
 
-## Stack Tecnológica
+**Reminders (Agenda)**
 
-| Tecnologia | Versão | Descrição |
-|------------|--------|-----------|
-| React Native | 0.81.5 | Framework mobile |
-| Expo | SDK 54 | Plataforma de build e runtime |
-| expo-router | 6.0.14 | Roteamento baseado em arquivos |
-| NativeWind | 2.0.11 | Tailwind CSS para React Native |
-| TypeScript | 5.9.2 | Tipagem estática (strict mode) |
-| AsyncStorage | 2.2.0 | Persistência local de dados |
-| expo-notifications | 0.32.16 | Notificações push |
-| react-native-calendars | 1.1313.0 | Componente de calendário |
-| react-native-reanimated | 4.1.1 | Animações (New Architecture) |
-| react-native-svg | 15.15.3 | Ícones SVG da tab bar |
-| expo-linear-gradient | — | Gradiente na tab bar ativa |
-| reanimated-color-picker | — | Seletor cromático de cor personalizada |
-| Jest + jest-expo | 30.2.0 / 54.0.17 | Testes automatizados (144 testes) |
+- Create reminders with name, date, time and priority: low, medium, high, or a custom color
+- Chromatic color picker for custom priorities, presented in a blurred modal
+- Month calendar marking every day that has a reminder
+- Scheduled Android notifications, cancelled automatically when a reminder is deleted
+- Edit and delete existing reminders
 
-> **React Compiler habilitado** (`experiments.reactCompiler: true` no `app.json`) — não adicionar `useMemo`/`useCallback` manualmente.
+**Study tracking (Aproveitamento)**
 
-> **New Architecture habilitada** (`newArchEnabled: true`) — usa o renderer Fabric e o sistema de módulos nativos TurboModules.
+- Register study events with a total workload in hours
+- Monthly mode: a grid with the real number of days in the month, tick the days you studied
+- Yearly mode: 12 independent months, each with completed days out of its own real total
+- Animated progress bar computed from the ticked days or months
+- Navigate to previous and next periods, loading the matching record automatically
 
----
+**Interface**
 
-## Pré-requisitos
+- Custom floating tab bar with SVG icons and a linear gradient on the active tab
+- Text inputs with an animated focus border
+- Empty states with icon and guidance when a list has no items
+- Haptic feedback on selection and on save
+- Unified theme tokens for color, spacing and typography
 
-Antes de clonar e rodar o projeto, certifique-se de ter instalado:
+## Tech stack
 
-- **Node.js** (versão LTS recomendada) — [nodejs.org](https://nodejs.org)
-- **Git** — [git-scm.com](https://git-scm.com)
-- **Android Studio** com o Android SDK instalado — [developer.android.com/studio](https://developer.android.com/studio)
-- **JDK** — o Android Studio já inclui um JDK interno (`jbr`); não é necessário instalar separadamente
-- **Emulador Android** configurado no AVD Manager (Android Virtual Device)
+| Layer | Technologies |
+| --- | --- |
+| App | React Native 0.81.5, React 19.1.0, Expo SDK 54.0.23, expo-router 6.0.14 (file-based routing) |
+| Language | TypeScript 5.9.3 in strict mode |
+| UI | NativeWind 2.0.11 (Tailwind CSS 3.3.2), react-native-reanimated 4.1.5, react-native-svg 15.15.3, expo-linear-gradient 15.0.8, reanimated-color-picker 4.2.0, react-native-calendars 1.1313.0, Inter via @expo-google-fonts |
+| Storage | AsyncStorage 2.2.0 |
+| Notifications | expo-notifications 0.32.16 |
+| Quality | Jest 30.2.0, jest-expo 54.0.17, @testing-library/react-native 13.3.3, ESLint 9 with eslint-config-expo |
+| Build | Expo Prebuild with Gradle, EAS Build, GitHub Actions |
 
----
+The New Architecture (Fabric and TurboModules) is enabled through `newArchEnabled: true`, and the React Compiler through `experiments.reactCompiler: true`, both in `app.json`. Since the compiler handles memoization, `useMemo` and `useCallback` are not written by hand anywhere in the codebase.
 
-## Instalação
+## Architecture
 
-### 1. Clonar o repositório
+```mermaid
+flowchart TD
+    A["app/ — Expo Router routes"] --> B["components/ — JSX only"]
+    B --> C["hooks/ — form logic and validation"]
+    C --> D["context/ — global state via useReducer"]
+    C --> I["utils/ — pure functions"]
+    D --> E["services/storage.ts"]
+    D --> F["services/notifications.ts"]
+    E --> G[("AsyncStorage on device")]
+    F --> H["Android notification channel"]
+```
+
+Data flows in one direction. A screen renders what a hook gives it, the hook validates input and calls a context, the context reduces state and delegates every side effect to a service. Two rules keep the layers from leaking: no component ever touches `AsyncStorage` directly, and no component calls `useContext` directly — always the `useReminders()` and `useAproveitamento()` hooks.
+
+Every directory exposes an `index.ts` barrel, so code outside a directory imports from `@/components`, `@/hooks`, `@/utils` and `@/constants`. Code inside a directory imports its siblings directly with `./Foo`, never through the barrel, which would create a require cycle.
+
+Reducers are exported separately from their providers, which is what allows them to be unit tested as pure functions. In `RemindersContext`, the record is persisted before the notification is scheduled and then saved again with the returned `notificationId`. That ordering is asserted by a test, so the race condition cannot come back.
+
+[`docs/architecture.md`](docs/architecture.md) holds 8 Mermaid diagrams covering the data flow, the component tree, the notification sequence, both form state machines, the reducer actions of each context, and the ER diagram of the shared types.
+
+## Project structure
+
+```
+.
+├── app/                  Expo Router routes: _layout, index (Agenda), Aproveitamento
+├── components/           UI components, JSX only, plus ErrorBoundary and FloatingTabBar
+├── hooks/                useAgendaForm, useAproveitamentoForm — all form logic
+├── context/              RemindersContext, AproveitamentoContext — useReducer state
+├── services/             storage.ts (sole AsyncStorage owner), notifications.ts
+├── utils/                dateHelpers, validation, id — pure functions
+├── constants/            theme.ts — AppColors, Layout, FontFamily, calendarTheme
+├── types/                Shared TypeScript interfaces
+├── __tests__/            Jest suites, mirroring the source folders
+├── docs/                 architecture.md and screenshots
+└── android/              Native project generated by Expo Prebuild
+```
+
+## Getting started
+
+### Prerequisites
+
+- Node.js 20 or newer — the CI pipeline runs on Node 20
+- Git
+- Android Studio with the Android SDK
+- An Android emulator configured in AVD Manager, or a physical device with USB debugging
+
+A separate JDK install is not needed: Android Studio ships one at `jbr`.
+
+### Installation
 
 ```bash
 git clone https://github.com/tavinholoco/repertorio-progressivo.git
 cd repertorio-progressivo
-```
-
-### 2. Instalar dependências
-
-```bash
 npm install
 ```
 
-> Para adicionar novos pacotes no futuro, use sempre `npx expo install <pacote>` em vez de `npm install` — o Expo fixa versões validadas para o SDK 54.
+Use `npx expo install <package>` rather than `npm install <package>` when adding dependencies. Expo pins versions validated against SDK 54.
 
----
+### Required manual configuration
 
-## Configuração Manual Obrigatória
+The app uses no environment variables and has no `.env` file. It does need one machine-specific Gradle file, which is gitignored and must be created by hand.
 
-Esses arquivos **não são versionados** e precisam ser criados manualmente em cada máquina.
-
-### `android/local.properties`
-
-Aponta para o Android SDK instalado na sua máquina. Crie o arquivo `android/local.properties` com o conteúdo abaixo, substituindo pelo caminho real do seu SDK:
+Create `android/local.properties` pointing at your Android SDK:
 
 ```properties
-sdk.dir=C\:\\Users\\<seu-usuario>\\AppData\\Local\\Android\\Sdk
+sdk.dir=C\:\\Users\\<your-user>\\AppData\\Local\\Android\\Sdk
 ```
 
-No Linux/macOS:
+On Linux or macOS:
+
 ```properties
-sdk.dir=/Users/<seu-usuario>/Library/Android/sdk
+sdk.dir=/Users/<your-user>/Library/Android/sdk
 ```
 
-> Esse arquivo já está no `.gitignore` — não versione; cada desenvolvedor cria o seu.
-
-### `android/gradle.properties` — caminho do JDK
-
-O arquivo `android/gradle.properties` já está no repositório configurado com o JDK interno do Android Studio:
+`android/gradle.properties` is committed and already points Gradle at the Android Studio JDK:
 
 ```properties
 org.gradle.java.home=C:\\Program Files\\Android\\Android Studio\\jbr
 ```
 
-Se o Android Studio estiver instalado em outro caminho na sua máquina, ajuste essa linha. Caso o `JAVA_HOME` do sistema já aponte para um JDK válido, você pode remover essa linha.
+Adjust that line if Android Studio lives elsewhere on your machine, or remove it if your system `JAVA_HOME` already points at a valid JDK.
 
----
+### Running
 
-## Executando o App
-
-### Modo recomendado — Build nativo (com suporte a notificações)
+Build and install the native development app on a running emulator or a connected device:
 
 ```bash
 npm run android
 ```
 
-Isso compila o APK de desenvolvimento e instala no emulador Android em execução. Necessário para testar notificações push.
+This is the required mode for testing notifications. `expo-notifications` has not worked in Expo Go since Expo SDK 53, so `npm start` runs the app but silently skips every notification.
 
-### Modo rápido — Expo Go (sem notificações)
+## Scripts
 
-```bash
-npm start
-```
+| Script | Description |
+| --- | --- |
+| `npm run android` | Build the native app and run it on Android |
+| `npm run ios` | Build the native app and run it on the iOS simulator |
+| `npm start` | Start the Expo dev server for Expo Go, without notification support |
+| `npm run web` | Start the app in the browser through React Native Web |
+| `npm test` | Run the Jest suite |
+| `npm run test:watch` | Run Jest in watch mode |
+| `npm run lint` | Run ESLint through `expo lint` |
+| `npm run reset-project` | Reset the project back to the create-expo-app boilerplate |
 
-> **Atenção:** desde o Expo SDK 53, o `expo-notifications` **não funciona** no Expo Go. Para testar notificações, use sempre `npm run android`.
+## Tests
 
----
+144 tests across 8 suites, all passing. Six suites are unit tests over pure functions and mocked service boundaries. The other two are integration tests that mount the real providers with `renderHook` and assert the full orchestration, including the order in which storage and notifications are called.
 
-## Scripts Disponíveis
-
-| Script | Descrição |
-|--------|-----------|
-| `npm run android` | Build nativo + executa no emulador Android |
-| `npm run ios` | Build nativo + executa no simulador iOS |
-| `npm start` | Inicia dev server via Expo Go (sem notificações) |
-| `npm run web` | Inicia servidor web (React Native Web) |
-| `npm test` | Executa os 144 testes automatizados |
-| `npm run test:watch` | Testes em modo watch |
-| `npm run lint` | Executa ESLint |
-| `npx tsc --noEmit` | Verificação de tipos sem compilar |
-
----
-
-## Testes
-
-O projeto possui **144 testes automatizados** distribuídos em **8 suites**:
-
-| Suite | Tipo | Testes | O que cobre |
-|-------|------|--------|-------------|
-| `utils/validation.test.ts` | Unitário | 29 | `validateReminder`, `validateAproveitamento`, `isValidHex` — incluindo edge cases de hex e whitespace |
-| `utils/dateHelpers.test.ts` | Unitário | 36 | `toDateString`, `toTimeString`, `getDaysInMonth`, `currentPeriod`, `formatPeriodLabel`, `buildAnnualMonths` |
-| `services/storage.test.ts` | Unitário | 13 | Camada AsyncStorage via mocks — get, save, delete para reminders e records |
-| `services/notifications.test.ts` | Unitário | 11 | `scheduleReminderNotification`, `cancelNotification` via mocks do `expo-notifications` |
-| `context/remindersReducer.test.ts` | Unitário | 17 | Reducer puro: todas as actions (`LOAD_START/SUCCESS/ERROR`, `ADD`, `UPDATE`, `DELETE`) + default case |
-| `context/aproveitamentoReducer.test.ts` | Unitário | 18 | Idem para o reducer de aproveitamento |
-| `context/remindersContext.test.ts` | Integração | 12 | Orquestração completa de `addReminder`, `updateReminder`, `removeReminder` |
-| `context/aproveitamentoContext.test.ts` | Integração | 8 | Orquestração completa de `addRecord`, `updateRecord`, `removeRecord` |
-
-### Como executar
+| Suite | Type | Tests | Coverage |
+| --- | --- | --- | --- |
+| `utils/validation.test.ts` | Unit | 29 | `validateReminder`, `validateAproveitamento`, hex and whitespace edge cases |
+| `utils/dateHelpers.test.ts` | Unit | 36 | Date and period helpers, including real month lengths and leap years |
+| `services/storage.test.ts` | Unit | 13 | AsyncStorage layer: get, save and delete for reminders and records |
+| `services/notifications.test.ts` | Unit | 11 | Scheduling and cancelling, with denied permission and past dates |
+| `context/remindersReducer.test.ts` | Unit | 17 | Every reducer action plus the unknown-action default case |
+| `context/aproveitamentoReducer.test.ts` | Unit | 18 | Same coverage for the Aproveitamento reducer |
+| `context/remindersContext.test.ts` | Integration | 12 | `addReminder`, `updateReminder`, `removeReminder` end to end |
+| `context/aproveitamentoContext.test.ts` | Integration | 8 | `addRecord`, `updateRecord`, `removeRecord` end to end |
 
 ```bash
-npm test                                              # todos os 144 testes
-npm run test:watch                                    # modo watch (re-executa ao salvar)
-npx jest __tests__/services/storage.test.ts           # suite específica
-npx jest --testNamePattern="addReminder"              # testes por nome
+npm test                                       # full suite
+npm run test:watch                             # watch mode
+npx jest __tests__/services/storage.test.ts    # a single suite
+npx jest --testNamePattern="addReminder"       # by test name
+npx tsc --noEmit                               # type check, no emit
 ```
 
-### Padrões adotados
+## Deploy
 
-**Mocks antes dos imports** — native modules (AsyncStorage, expo-notifications) exigem que `jest.mock()` seja declarado antes de qualquer `import`:
+The app ships as an Android APK attached to GitHub Releases. Builds come from EAS Build using the profiles in `eas.json`: `development` for a debuggable client, `preview-apk` for the release APK that gets published, and `production` for the store bundle with `autoIncrement` enabled.
 
-```ts
-jest.mock('@react-native-async-storage/async-storage', () =>
-  require('@react-native-async-storage/async-storage/jest/async-storage-mock'),
-);
-jest.mock('@/services/storage');
+Release builds run R8 minification and resource shrinking, strip `console.*` calls through the Metro minifier config, and split the AAB by language, density and ABI.
 
-import { reducer } from '@/context/RemindersContext';
-```
+Continuous integration runs on GitHub Actions through [`.github/workflows/test.yml`](.github/workflows/test.yml), on every push to `dev` and every pull request into `master`. The job type checks with `tsc --noEmit`, lints, and runs the full Jest suite on Node 20.
 
-**Fake timers com construtor local** — `new Date('YYYY-MM-DD')` é interpretado como UTC midnight; em fusos negativos (ex.: UTC-3) isso retorna o dia anterior. Use sempre o construtor local:
+Branches follow a two-track flow: `dev` takes all active work, `master` holds stable releases only. Work lands on `dev`, is verified by CI, merges into `master`, and is tagged for the release.
 
-```ts
-// ❌ pode falhar em UTC-3
-jest.useFakeTimers().setSystemTime(new Date('2025-01-01'));
+## License
 
-// ✅ sempre correto
-jest.useFakeTimers().setSystemTime(new Date(2025, 0, 1)); // mês 0-indexado
-```
+Distributed under the MIT License. See [LICENSE](LICENSE) for details.
 
-**`invocationCallOrder` para ordem de chamadas** — verifica que o storage é persistido *antes* de agendar a notificação (race condition fix):
+## Author
 
-```ts
-expect(saveCallOrder).toBeLessThan(scheduleCallOrder);
-```
+**Pedro Levi Dias** — Fullstack Developer
 
-### Testes de integração de contexto
-
-As duas últimas suites testam a lógica de orquestração dos contextos — a parte mais crítica do app. Cada teste renderiza o Provider completo via `renderHook` e verifica o comportamento end-to-end:
-
-```ts
-const wrapper = ({ children }: { children: React.ReactNode }) => (
-  React.createElement(RemindersProvider, null, children)
-);
-
-it('salva novamente com notificationId quando schedule retorna id', async () => {
-  notificationsModule.scheduleReminderNotification.mockResolvedValue('notif-123');
-
-  const { result } = renderHook(() => useReminders(), { wrapper });
-  await waitFor(() => expect(result.current.state.isLoading).toBe(false));
-
-  await act(async () => {
-    await result.current.addReminder(makeInput());
-  });
-
-  expect(storageModule.saveReminder).toHaveBeenCalledTimes(2);
-  const secondCall = storageModule.saveReminder.mock.calls[1][0] as Reminder;
-  expect(secondCall.notificationId).toBe('notif-123');
-});
-```
-
----
-
-## Diagramas de Arquitetura
-
-A pasta [`docs/architecture.md`](docs/architecture.md) contém **8 diagramas Mermaid** cobrindo toda a arquitetura do projeto:
-
-| # | Diagrama | Tipo | Foco |
-|---|----------|------|------|
-| 1 | Arquitetura de Dados | `graph TD` | Fluxo AsyncStorage → storage → contexts → hooks → screens |
-| 2 | Hierarquia de Componentes | `graph LR` | Árvore completa do layout raiz até componentes folha |
-| 3 | Fluxo de Notificações | `sequenceDiagram` | `addReminder`, `updateReminder`, `removeReminder` com race condition fix |
-| 4 | State Machine — Agenda | `stateDiagram-v2` | Estados do formulário de lembretes (Idle → Creating → Saving) |
-| 5 | State Machine — Aproveitamento | `stateDiagram-v2` | Hydration automática, `skipNextHydrationRef`, navegação de período |
-| 6a | RemindersContext Actions | `graph TD` | Actions do reducer, mutações de estado e side effects |
-| 6b | AproveitamentoContext Actions | `graph TD` | Idem para o contexto de aproveitamento |
-| 7 | ER — Tipos de Dados | `erDiagram` | `Reminder`, `AproveitamentoRecord`, `MonthRecord`, `Priority`, `PeriodType` |
-
-> Os diagramas renderizam nativamente no GitHub e no VSCode com a extensão [`bierner.markdown-mermaid`](https://marketplace.visualstudio.com/items?itemName=bierner.markdown-mermaid).
-
----
-
-## Estrutura de Pastas
-
-```
-Repertorio_progressivo/
-├── app/                         # Rotas do Expo Router (file-based routing)
-│   ├── _layout.tsx              # Layout raiz: ErrorBoundary → Providers → Tabs
-│   ├── index.tsx                # Aba Agenda
-│   └── Aproveitamento.tsx       # Aba Aproveitamento (apenas JSX)
-│
-├── components/                  # Componentes de UI
-│   ├── index.ts                 # Barrel export
-│   ├── AgendaScreen.tsx         # Tela da agenda (apenas JSX)
-│   ├── ReminderItem.tsx         # Item da lista de lembretes
-│   ├── PriorityPicker.tsx       # Seletor de prioridade (baixa/média/alta/custom)
-│   ├── ColorPickerModal.tsx     # Modal de seleção de cor cromática
-│   ├── RecordItem.tsx           # Item da lista de registros de aproveitamento
-│   ├── DayGrid.tsx              # Grid de dias do mês (modo mensal)
-│   ├── MonthGrid.tsx            # Grid dos 12 meses (modo anual)
-│   ├── ProgressBar.tsx          # Barra de progresso animada (reutilizável)
-│   ├── Badge.tsx                # Pill de label reutilizável
-│   ├── SegmentedToggle.tsx      # Toggle Mensal / Anual
-│   ├── FloatingTabBar.tsx       # Tab bar flutuante customizada
-│   ├── TabBarIcon.tsx           # Ícones SVG da tab bar
-│   └── ErrorBoundary.tsx        # Captura erros de runtime
-│
-├── hooks/                       # Custom hooks (toda lógica de negócio)
-│   ├── index.ts
-│   ├── useAgendaForm.ts         # Lógica e estado do formulário da Agenda
-│   └── useAproveitamentoForm.ts # Lógica e estado do formulário de Aproveitamento
-│
-├── context/                     # Estado global (useReducer)
-│   ├── RemindersContext.tsx
-│   └── AproveitamentoContext.tsx
-│
-├── services/                    # Camada de serviços
-│   ├── index.ts
-│   ├── storage.ts               # Único ponto de acesso ao AsyncStorage
-│   └── notifications.ts         # Wrapper do expo-notifications
-│
-├── utils/                       # Funções puras
-│   ├── index.ts
-│   ├── dateHelpers.ts           # Helpers de data e período
-│   ├── validation.ts            # Validação de formulários
-│   └── id.ts                    # generateId(), getIsoNow()
-│
-├── constants/                   # Tokens de tema
-│   ├── index.ts
-│   └── theme.ts                 # AppColors, calendarTheme, Layout
-│
-├── types/                       # Interfaces TypeScript compartilhadas
-│   └── index.ts                 # Reminder, AproveitamentoRecord, MonthRecord, Priority, PeriodType
-│
-├── docs/                        # Documentação
-│   ├── architecture.md          # 8 diagramas Mermaid da arquitetura
-│   └── screenshots/
-│       ├── V1/                  # Capturas da versão 1.0
-│       └── V2/                  # Capturas da versão 2.0 (atual)
-│
-└── __tests__/                   # Suites de teste Jest
-    ├── utils/
-    │   ├── dateHelpers.test.ts
-    │   └── validation.test.ts
-    ├── services/
-    │   ├── storage.test.ts
-    │   └── notifications.test.ts
-    └── context/
-        ├── remindersReducer.test.ts
-        ├── aproveitamentoReducer.test.ts
-        ├── remindersContext.test.ts      ← integração
-        └── aproveitamentoContext.test.ts ← integração
-```
-
----
-
-## Arquitetura
-
-O projeto segue o padrão de **separação de responsabilidades em camadas**:
-
-```
-AsyncStorage (disco)
-      ↕
-services/storage.ts              ← único ponto de acesso ao AsyncStorage
-      ↕
-context/ (RemindersContext,      ← estado global via useReducer
-          AproveitamentoContext)
-      ↕
-hooks/ (useAgendaForm,           ← lógica de formulário e validação
-        useAproveitamentoForm)
-      ↕
-components/ e app/               ← apenas JSX (sem lógica de negócio)
-```
-
-**Regra principal:** Nenhum componente acessa o `AsyncStorage` diretamente. Toda leitura e escrita passa por `services/storage.ts`. Nenhum componente usa `useContext` diretamente — sempre via hooks (`useReminders()`, `useAproveitamento()`).
-
-**Regra de Barrel:** Cada diretório tem um `index.ts`. Código **fora** do diretório usa o barrel:
-```ts
-import { ReminderItem, DayGrid } from '@/components';
-import { useAgendaForm } from '@/hooks';
-import { AppColors, Layout } from '@/constants';
-import { toDateString, validateReminder } from '@/utils';
-```
-Código **dentro** do mesmo diretório usa imports diretos (`./Foo`) — nunca o próprio barrel — para evitar require cycles.
-
-**`utils/id.ts`:** Centraliza `generateId()` e `getIsoNow()`, eliminando duplicação entre `RemindersContext` e `AproveitamentoContext`.
-
-**React Compiler:** Habilitado em `app.json` (`experiments.reactCompiler: true`). Não adicionar `useMemo` / `useCallback` manualmente — o compilador faz as memoizações necessárias.
-
----
-
-## Changelog
-
-### v2.0.0 — 2026-03-04
-
-- **Tab bar flutuante customizada** com ícones SVG (FloatingTabBar + TabBarIcon) — elimina dependência de fontes e bugs de renderização no Fabric
-- **Prioridade custom** com seletor de cor cromático (ColorPickerModal + reanimated-color-picker)
-- **Novos componentes reutilizáveis:** ProgressBar (animada), Badge (pill), SegmentedToggle (mensal/anual)
-- **Tokens de tema unificados:** AppColors, Layout, calendarTheme em `constants/theme.ts` — ~40 hex hardcoded substituídos
-- **`utils/id.ts`:** centraliza `generateId` e `getIsoNow` (elimina duplicação entre contextos)
-- **Fix de race condition** em RemindersContext: storage persistido antes de `scheduleNotification`
-- **Fix de bug:** reducers retornam state intacto para actions desconhecidas (default case ausente)
-- **Suite de testes expandida:** 99 → 144 testes, 6 → 8 suites (+2 suites de integração de contexto)
-- **Documentação visual** com 8 diagramas Mermaid em `docs/architecture.md`
-- React Compiler + New Architecture habilitados
-
-### v1.0.0 — inicial
-
-- Agenda de lembretes com notificações push (expo-notifications)
-- Aproveitamento com modo mensal e anual
-- 99 testes automatizados em 6 suites
-
----
-
-## Branch Strategy
-
-| Branch | Uso |
-|--------|-----|
-| `master` | Releases estáveis |
-| `dev` | Desenvolvimento ativo — features e correções |
-
-Fluxo: desenvolver em `dev` → testar → mergear para `master` quando estável.
-
----
-
-## Licença
-
-Este projeto é de uso pessoal e educacional.
+[GitHub](https://github.com/tavinholoco) · [LinkedIn](https://www.linkedin.com/in/pedro-levi-dias-96720126a/) · [Portfolio](https://portfolio-tau-five-f86nc5khr8.vercel.app/)
