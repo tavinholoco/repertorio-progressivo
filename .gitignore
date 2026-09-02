@@ -44,3 +44,6 @@ app-example
 
 # Claude Code internal files (plans, session memory)
 .claude/
+
+# Instrucoes internas de geracao de README (ferramenta pessoal, nao faz parte do app)
+README-GENERATOR.md
