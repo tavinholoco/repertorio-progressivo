@@ -2,15 +2,16 @@
 
 App Android para planejar lembretes de estudo e acompanhar o aproveitamento mensal e anual.
 
-[![CI](https://github.com/tavinholoco/repertorio-progressivo/actions/workflows/test.yml/badge.svg)](https://github.com/tavinholoco/repertorio-progressivo/actions/workflows/test.yml) ![License](https://img.shields.io/badge/license-MIT-green?style=for-the-badge) ![Expo](https://img.shields.io/badge/Expo-SDK%2054-000020?style=for-the-badge&logo=expo&logoColor=white) ![React Native](https://img.shields.io/badge/React%20Native-0.81.5-61DAFB?style=for-the-badge&logo=react&logoColor=white) ![TypeScript](https://img.shields.io/badge/TypeScript-5.9-3178C6?style=for-the-badge&logo=typescript&logoColor=white) ![Release](https://img.shields.io/badge/release-v2.0.2-6C2DC7?style=for-the-badge)
+[![CI](https://img.shields.io/github/actions/workflow/status/tavinholoco/repertorio-progressivo/test.yml?branch=master&style=for-the-badge&label=CI)](https://github.com/tavinholoco/repertorio-progressivo/actions/workflows/test.yml)
+![License](https://img.shields.io/badge/license-MIT-green?style=for-the-badge)
+![Expo](https://img.shields.io/badge/Expo-SDK%2054-000020?style=for-the-badge&logo=expo&logoColor=white)
+![React Native](https://img.shields.io/badge/React%20Native-0.81.5-61DAFB?style=for-the-badge&logo=react&logoColor=white)
+![TypeScript](https://img.shields.io/badge/TypeScript-5.9-3178C6?style=for-the-badge&logo=typescript&logoColor=white)
+![Release](https://img.shields.io/badge/release-v2.0.2-6C2DC7?style=for-the-badge)
 
 [English](README.md) | **Português**
 
-## Links rápidos
-
-- [Baixar o APK mais recente](https://github.com/tavinholoco/repertorio-progressivo/releases/latest) — Android, instalação por sideload
-- [Documentação de arquitetura](docs/architecture.md) — 8 diagramas Mermaid
-- [Releases](https://github.com/tavinholoco/repertorio-progressivo/releases) — notas por versão
+[Baixar o APK mais recente](https://github.com/tavinholoco/repertorio-progressivo/releases/latest) · [Arquitetura](docs/architecture.md) · [Releases](https://github.com/tavinholoco/repertorio-progressivo/releases)
 
 ## Índice
 
@@ -252,9 +253,9 @@ O app é distribuído como APK Android anexado às GitHub Releases. Os builds sa
 
 Builds de release rodam minificação R8 e shrinking de recursos, removem chamadas `console.*` pela configuração do minifier do Metro e dividem o AAB por idioma, densidade e ABI.
 
-A integração contínua roda no GitHub Actions pelo [`.github/workflows/test.yml`](.github/workflows/test.yml), a cada push em `dev` e a cada pull request para `master`. O job verifica tipos com `tsc --noEmit`, roda o lint e executa a suite Jest completa no Node 20.
+A integração contínua roda no GitHub Actions pelo [`.github/workflows/test.yml`](.github/workflows/test.yml), a cada push em `master` e a cada pull request para ele. O job verifica tipos com `tsc --noEmit`, roda o lint e executa a suite Jest completa no Node 20.
 
-As branches seguem um fluxo de duas vias: `dev` recebe todo o trabalho ativo, `master` guarda apenas releases estáveis. O trabalho entra em `dev`, é verificado pela CI, é mergeado em `master` e recebe a tag da release.
+O trabalho entra em `master` por pull request, é verificado pela CI e recebe a tag de cada release.
 
 ## Licença
 
